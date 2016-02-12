@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi;
+package ca.hoogit.garagepi.Settings;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

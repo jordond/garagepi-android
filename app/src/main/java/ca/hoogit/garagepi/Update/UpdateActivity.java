@@ -22,17 +22,18 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi;
+package ca.hoogit.garagepi.Update;
 
-import android.app.Application;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 
-/**
- * Created by jordon on 12/02/16.
- */
-public class GaragePiApp extends Application {
+import ca.hoogit.garagepi.R;
+
+public class UpdateActivity extends AppCompatActivity {
+
     @Override
-    public void onCreate() {
-        super.onCreate();
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_update);
     }
 }

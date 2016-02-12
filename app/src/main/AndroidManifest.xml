@@ -20,8 +20,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:name=".Settings.SettingsActivity"
+            android:label="@string/title_activity_settings" />
+        <activity android:name=".Update.UpdateActivity"></activity>
     </application>
 
 </manifest>
