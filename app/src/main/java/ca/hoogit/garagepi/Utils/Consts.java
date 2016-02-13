@@ -32,4 +32,7 @@ public class Consts {
         public static final String DEFAULT_ADDRESS = "https://hoogit.ca/garage";
         public static final int DEFAULT_PORT = 80;
     }
+    public class SharedPrefs {
+        public static final String KEY_FIRST_RUN = "first_run";
+    }
 }

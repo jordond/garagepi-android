@@ -22,18 +22,40 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi;
+package ca.hoogit.garagepi.Utils;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 /**
- * To work on unit tests, switch the Test Artifact in the Build Variants view.
+ * Created by jordon on 12/02/16.
+ * Shared Preferences manager
  */
-public class ExampleUnitTest {
-    @Test
-    public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
+public class SharedPrefs {
+
+    private static SharedPrefs mInstance;
+
+    private SharedPreferences sharedPreferences;
+
+    private SharedPrefs(Context context) {
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
+
+    public static void create(Context context) {
+        mInstance = new SharedPrefs(context);
+    }
+
+    public static SharedPrefs getInstance() {
+        return mInstance;
+    }
+
+    public void setFirstRun(boolean firstRun) {
+        sharedPreferences.edit().putBoolean(Consts.SharedPrefs.KEY_FIRST_RUN, firstRun).apply();
+    }
+
+    public boolean isFirstRun() {
+        return sharedPreferences.getBoolean("FIRST_RUN", true);
+    }
+
 }

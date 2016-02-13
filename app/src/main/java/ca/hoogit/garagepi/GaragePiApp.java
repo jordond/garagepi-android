@@ -27,12 +27,16 @@ package ca.hoogit.garagepi;
 import android.app.Application;
 import android.util.Log;
 
+import ca.hoogit.garagepi.Utils.SharedPrefs;
+
 /**
  * Created by jordon on 12/02/16.
+ * Entry-point for application
  */
 public class GaragePiApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        SharedPrefs.create(this);
     }
 }

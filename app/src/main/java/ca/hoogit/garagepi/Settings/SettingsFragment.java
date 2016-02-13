@@ -88,7 +88,7 @@ public class SettingsFragment extends PreferenceFragment {
         Preference check = findPreference(getString(R.string.pref_key_updates_check));
         check.setSummary(check.getSummary() + " " + lastChecked);
 
-        // Handle the authenticate now setting
+        // Handle the authenticate now setting // TODO implement logic
         Preference auth = findPreference(getString(R.string.pref_key_account_authenticate));
         auth.setOnPreferenceClickListener(preference -> {
             Snackbar
