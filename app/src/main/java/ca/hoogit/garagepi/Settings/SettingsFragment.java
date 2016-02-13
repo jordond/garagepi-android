@@ -24,12 +24,14 @@
 
 package ca.hoogit.garagepi.Settings;
 
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 
@@ -38,7 +40,6 @@ import ca.hoogit.garagepi.R;
 
 /**
  * Created by jordon on 12/02/16.
- *
  */
 public class SettingsFragment extends PreferenceFragment {
 
@@ -59,6 +60,7 @@ public class SettingsFragment extends PreferenceFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.pref_settings);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         if (mListener != null) {
             mListener.onBind(findPreference(getString(R.string.pref_key_server_address)));
@@ -75,8 +77,11 @@ public class SettingsFragment extends PreferenceFragment {
 
         // Update the current version
         String currentVersion = "Name: " + BuildConfig.VERSION_NAME + "\nHash: " + BuildConfig.GitHash;
+        String branch = sharedPref
+                .getBoolean(getString(R.string.pref_key_updates_unstable), false)
+                ? "develop" : "master";
         Preference version = findPreference(getString(R.string.pref_key_updates_version));
-        version.setSummary(currentVersion);
+        version.setSummary("Branch: " + branch + "\n" + currentVersion);
 
         // Update the last checked
         String lastChecked = getString(R.string.never_updated); // TODO Replace with update logic
@@ -87,8 +92,8 @@ public class SettingsFragment extends PreferenceFragment {
         Preference auth = findPreference(getString(R.string.pref_key_account_authenticate));
         auth.setOnPreferenceClickListener(preference -> {
             Snackbar
-                .make(getView(), "Authenticate test", Snackbar.LENGTH_LONG)
-                .show();
+                    .make(getView(), "Authenticate test", Snackbar.LENGTH_LONG)
+                    .show();
             return true;
         });
     }

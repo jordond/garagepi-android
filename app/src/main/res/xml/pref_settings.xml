@@ -95,14 +95,19 @@
 
         <SwitchPreference
             android:defaultValue="true"
-            android:key="pref_key_misc_auto_update"
+            android:key="@string/pref_key_updates_auto"
             android:title="@string/pref_title_updates_auto" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/pref_key_updates_unstable"
+            android:summary="@string/pref_summary_updates_unstable"
+            android:title="@string/pref_title_updates_unstable" />
 
         <Preference
             android:key="@string/pref_key_updates_check"
             android:summary="@string/pref_summary_updates_check"
             android:title="@string/pref_title_updates_check" />
-
 
     </PreferenceCategory>
 

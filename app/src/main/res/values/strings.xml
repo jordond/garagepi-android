@@ -40,5 +40,9 @@
     <string name="pref_key_account_authenticate">pref_key_account_authenticate</string>
     <string name="pref_summary_account_authenticate">Get a new token and authenticate with the server now.</string>
     <string name="pref_summary_title_authenticate">Authenticate Now</string>
+    <string name="pref_summary_updates_unstable">WARNING: This will enable a less stable version of the application.</string>
+    <string name="pref_title_updates_unstable">Use developer build</string>
+    <string name="pref_key_updates_unstable">pref_key_updates_unstable</string>
+    <string name="pref_key_updates_auto">pref_key_misc_auto_update</string>
 
 </resources>
