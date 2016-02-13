@@ -22,7 +22,9 @@
   ~ SOFTWARE.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="pref_screen_key_server"
+    android:title="Server Settings">
 
     <PreferenceCategory
         android:key="@string/pref_category_key_server"
@@ -42,7 +44,7 @@
             android:capitalize="none"
             android:defaultValue="@string/server_address_port"
             android:inputType="number"
-            android:key="@string/pref_key_server_port"
+            android:key="@string/pref_key_server_address"
             android:maxLines="1"
             android:selectAllOnFocus="true"
             android:singleLine="true"
@@ -74,58 +76,8 @@
 
         <Preference
             android:defaultValue="none"
-            android:key="@string/pref_key_account_token"
-            android:summary="@string/pref_summary_account_token"
+            android:key="pref_key_account_token"
             android:title="@string/pref_title_account_token" />
-
-        <Preference
-            android:key="@string/pref_key_account_authenticate"
-            android:summary="@string/pref_summary_account_authenticate"
-            android:title="@string/pref_summary_title_authenticate" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:key="@string/pref_category_key_updates"
-        android:title="@string/pref_category_title_updates">
-
-        <Preference
-            android:key="@string/pref_key_updates_version"
-            android:title="@string/pref_title_updates_version" />
-
-        <SwitchPreference
-            android:defaultValue="true"
-            android:key="pref_key_misc_auto_update"
-            android:title="@string/pref_title_updates_auto" />
-
-        <Preference
-            android:key="@string/pref_key_updates_check"
-            android:summary="@string/pref_summary_updates_check"
-            android:title="@string/pref_title_updates_check" />
-
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:key="@string/pref_category_key_about"
-        android:title="@string/pref_category_title_about">
-
-        <Preference
-            android:key="@string/pref_key_about_author"
-            android:summary="@string/pref_summary_about_author"
-            android:title="@string/pref_title_about_author">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="@string/github_author" />
-        </Preference>
-
-        <Preference
-            android:key="@string/pref_key_about_source"
-            android:title="@string/pref_title_about_source">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="@string/github_source" />
-        </Preference>
 
     </PreferenceCategory>
 

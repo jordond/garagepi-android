@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ The MIT License (MIT)
   ~
@@ -22,23 +23,9 @@
   ~ SOFTWARE.
   -->
 
-<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <!-- These settings headers are only used on tablets. -->
-
-    <header
-        android:fragment="ca.hoogit.garagepi.Settings.SettingsActivity$GeneralPreferenceFragment"
-        android:icon="@drawable/ic_info_black_24dp"
-        android:title="@string/pref_header_general" />
-
-    <header
-        android:fragment="ca.hoogit.garagepi.Settings.SettingsActivity$NotificationPreferenceFragment"
-        android:icon="@drawable/ic_notifications_black_24dp"
-        android:title="@string/pref_header_notifications" />
-
-    <header
-        android:fragment="ca.hoogit.garagepi.Settings.SettingsActivity$DataSyncPreferenceFragment"
-        android:icon="@drawable/ic_sync_black_24dp"
-        android:title="@string/pref_header_data_sync" />
-
-</preference-headers>
+<resources>
+    <string name="server_address">https://hoogit.ca/garage</string>
+    <string name="server_address_port">80</string>
+    <string name="github_author">https://github.com/jordond</string>
+    <string name="github_source">https://github.com/jordond/garagepi-android</string>
+</resources>
