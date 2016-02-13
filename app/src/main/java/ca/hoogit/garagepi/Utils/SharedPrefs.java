@@ -24,15 +24,38 @@
 
 package ca.hoogit.garagepi.Utils;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 /**
  * Created by jordon on 12/02/16.
+ * Shared Preferences manager
  */
-public class Consts {
-    public class Server {
-        public static final String DEFAULT_ADDRESS = "https://hoogit.ca/garage";
-        public static final int DEFAULT_PORT = 80;
+public class SharedPrefs {
+
+    private static SharedPrefs mInstance;
+
+    private SharedPreferences sharedPreferences;
+
+    private SharedPrefs(Context context) {
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
-    public class SharedPrefs {
-        public static final String KEY_FIRST_RUN = "first_run";
+
+    public static void create(Context context) {
+        mInstance = new SharedPrefs(context);
     }
+
+    public static SharedPrefs getInstance() {
+        return mInstance;
+    }
+
+    public void setFirstRun(boolean firstRun) {
+        sharedPreferences.edit().putBoolean(Consts.SharedPrefs.KEY_FIRST_RUN, firstRun).apply();
+    }
+
+    public boolean isFirstRun() {
+        return sharedPreferences.getBoolean("FIRST_RUN", true);
+    }
+
 }
