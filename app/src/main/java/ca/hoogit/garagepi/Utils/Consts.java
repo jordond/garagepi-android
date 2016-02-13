@@ -22,17 +22,14 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi;
-
-import android.app.Application;
-import android.util.Log;
+package ca.hoogit.garagepi.Utils;
 
 /**
  * Created by jordon on 12/02/16.
  */
-public class GaragePiApp extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
+public class Consts {
+    public class Server {
+        public static final String DEFAULT_ADDRESS = "https://hoogit.ca/garage";
+        public static final int DEFAULT_PORT = 80;
     }
 }
