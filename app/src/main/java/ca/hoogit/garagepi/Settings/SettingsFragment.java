@@ -71,9 +71,9 @@ public class SettingsFragment extends PreferenceFragment {
 
         // Update the current token
         Preference token = findPreference(getString(R.string.pref_key_account_token));
+        String currentToken = "Token: 213j12h3khk312h3kj"; // TODO Replace with user auth logic
         String updated = token.getSummary() + " " + getString(R.string.never_updated);
-        String currentToken = "token: 213j12h3khk312h3kj"; // TODO Replace with user auth logic
-        token.setSummary(updated + "\n" + currentToken);
+        token.setSummary(currentToken + "\n" + updated);
 
         // Update the current version
         String currentVersion = "Name: " + BuildConfig.VERSION_NAME + "\nHash: " + BuildConfig.GitHash;
@@ -81,7 +81,7 @@ public class SettingsFragment extends PreferenceFragment {
                 .getBoolean(getString(R.string.pref_key_updates_unstable), false)
                 ? "develop" : "master";
         Preference version = findPreference(getString(R.string.pref_key_updates_version));
-        version.setSummary("Branch: " + branch + "\n" + currentVersion);
+        version.setSummary(currentVersion + "\n" + "Branch: " + branch);
 
         // Update the last checked
         String lastChecked = getString(R.string.never_updated); // TODO Replace with update logic
