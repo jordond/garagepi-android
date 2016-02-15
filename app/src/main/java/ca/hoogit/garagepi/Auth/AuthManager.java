@@ -22,18 +22,20 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi.Utils;
+package ca.hoogit.garagepi.Auth;
 
 /**
- * Created by jordon on 12/02/16.
+ * Created by jordon on 15/02/16.
+ * Handles the logging in and authenticating of the user token
  */
-public class Consts {
-    public class Server {
-        public static final String DEFAULT_ADDRESS = "https://hoogit.ca/garage";
-        public static final int DEFAULT_PORT = 80;
-    }
-    public class SharedPrefs {
-        public static final String KEY_FIRST_RUN = "first_run";
-        public static final String KEY_USER_LAST_UPDATED = "user_last_updated";
+public class AuthManager {
+
+    private static final String TAG = AuthManager.class.getSimpleName();
+
+    
+
+    public interface IAuthResult {
+        void onSuccess(String message);
+        void onFailure(String error);
     }
 }

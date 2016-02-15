@@ -35,6 +35,8 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 
+import ca.hoogit.garagepi.Auth.User;
+import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.BuildConfig;
 import ca.hoogit.garagepi.R;
 
@@ -69,24 +71,7 @@ public class SettingsFragment extends PreferenceFragment {
             mListener.onBind(findPreference(getString(R.string.pref_key_account_password)));
         }
 
-        // Update the current token
-        Preference token = findPreference(getString(R.string.pref_key_account_token));
-        String currentToken = "Token: 213j12h3khk312h3kj"; // TODO Replace with user auth logic
-        String updated = token.getSummary() + " " + getString(R.string.never_updated);
-        token.setSummary(currentToken + "\n" + updated);
-
-        // Update the current version
-        String currentVersion = "Name: " + BuildConfig.VERSION_NAME + "\nHash: " + BuildConfig.GitHash;
-        String branch = sharedPref
-                .getBoolean(getString(R.string.pref_key_updates_unstable), false)
-                ? "develop" : "master";
-        Preference version = findPreference(getString(R.string.pref_key_updates_version));
-        version.setSummary(currentVersion + "\n" + "Branch: " + branch);
-
-        // Update the last checked
-        String lastChecked = getString(R.string.never_updated); // TODO Replace with update logic
-        Preference check = findPreference(getString(R.string.pref_key_updates_check));
-        check.setSummary(check.getSummary() + " " + lastChecked);
+        updateViews();
 
         // Handle the authenticate now setting // TODO implement logic
         Preference auth = findPreference(getString(R.string.pref_key_account_authenticate));
@@ -96,5 +81,26 @@ public class SettingsFragment extends PreferenceFragment {
                     .show();
             return true;
         });
+    }
+
+    private void updateViews() {
+        User user = UserManager.getInstance().get();
+
+        // Update the current token
+        Preference token = findPreference(getString(R.string.pref_key_account_token));
+        String currentToken = user.getToken(); // TODO Replace with user auth logic
+        String updated = token.getSummary() + " " + getString(R.string.never_updated);
+        token.setSummary(currentToken + "\n" + updated);
+
+        // Update the current version
+        String currentVersion = "Name: " + BuildConfig.VERSION_NAME + "\nHash: " + BuildConfig.GitHash;
+        String branch = "master"; // TODO replace with update logic
+        Preference version = findPreference(getString(R.string.pref_key_updates_version));
+        version.setSummary(currentVersion + "\n" + "Branch: " + branch);
+
+        // Update the last checked
+        String lastChecked = user.getPrettyLastUpdated();
+        Preference check = findPreference(getString(R.string.pref_key_updates_check));
+        check.setSummary(check.getSummary() + " " + lastChecked);
     }
 }

@@ -28,6 +28,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import ca.hoogit.garagepi.R;
+
 /**
  * Created by jordon on 12/02/16.
  * Shared Preferences manager
@@ -36,9 +38,12 @@ public class SharedPrefs {
 
     private static SharedPrefs mInstance;
 
+    private Context mContext;
+
     private SharedPreferences sharedPreferences;
 
     private SharedPrefs(Context context) {
+        mContext = context;
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
@@ -56,6 +61,35 @@ public class SharedPrefs {
 
     public boolean isFirstRun() {
         return sharedPreferences.getBoolean("FIRST_RUN", true);
+    }
+
+    public String getAddress() {
+        String addressKey = mContext.getString(R.string.pref_key_server_address);
+        return sharedPreferences.getString(addressKey, mContext.getString(R.string.server_address));
+    }
+
+    /**
+     * Shared Preferences accessors
+     */
+
+    public SharedPreferences get() {
+        return sharedPreferences;
+    }
+
+    public String getString(String key, String defaultValue) {
+        return sharedPreferences.getString(key, defaultValue);
+    }
+
+    public void putString(String key, String value) {
+        sharedPreferences.edit().putString(key, value).apply();
+    }
+
+    public long getLong(String key, long defaultValue) {
+        return sharedPreferences.getLong(key, defaultValue);
+    }
+
+    public void putLong(String key, long value) {
+        sharedPreferences.edit().putLong(key, value).apply();
     }
 
 }

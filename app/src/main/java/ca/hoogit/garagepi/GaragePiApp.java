@@ -25,8 +25,10 @@
 package ca.hoogit.garagepi;
 
 import android.app.Application;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
 
 /**
@@ -38,5 +40,7 @@ public class GaragePiApp extends Application {
     public void onCreate() {
         super.onCreate();
         SharedPrefs.create(this);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_settings, false);
+        UserManager.init(this);
     }
 }
