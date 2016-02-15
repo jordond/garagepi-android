@@ -29,12 +29,15 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 
+import ca.hoogit.garagepi.Auth.AuthManager;
 import ca.hoogit.garagepi.Auth.User;
 import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.BuildConfig;
@@ -76,20 +79,34 @@ public class SettingsFragment extends PreferenceFragment {
         // Handle the authenticate now setting // TODO implement logic
         Preference auth = findPreference(getString(R.string.pref_key_account_authenticate));
         auth.setOnPreferenceClickListener(preference -> {
-            Snackbar
-                    .make(getView(), "Authenticate test", Snackbar.LENGTH_LONG)
-                    .show();
+            AuthManager manager = new AuthManager(getActivity());
+            manager.authenticate(new AuthManager.IAuthResult() {
+                @Override
+                public void onSuccess(String message) {
+                    Handler mainHandler = new Handler(Looper.getMainLooper());
+                    mainHandler.post(() -> updateViews());
+                    Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(String error) {
+                    Snackbar.make(getView(), error, Snackbar.LENGTH_LONG).show();
+                }
+            });
             return true;
         });
     }
+
+    private String mOriginalToken = "";
 
     private void updateViews() {
         User user = UserManager.getInstance().get();
 
         // Update the current token
         Preference token = findPreference(getString(R.string.pref_key_account_token));
-        String currentToken = user.getToken(); // TODO Replace with user auth logic
-        String updated = token.getSummary() + " " + getString(R.string.never_updated);
+        mOriginalToken = mOriginalToken.isEmpty() ? token.getSummary().toString() : mOriginalToken;
+        String currentToken = user.getPrettyToken();
+        String updated = mOriginalToken + " " + user.getPrettyLastUpdated();
         token.setSummary(currentToken + "\n" + updated);
 
         // Update the current version
@@ -99,7 +116,7 @@ public class SettingsFragment extends PreferenceFragment {
         version.setSummary(currentVersion + "\n" + "Branch: " + branch);
 
         // Update the last checked
-        String lastChecked = user.getPrettyLastUpdated();
+        String lastChecked = "Never"; // TODO implement;
         Preference check = findPreference(getString(R.string.pref_key_updates_check));
         check.setSummary(check.getSummary() + " " + lastChecked);
     }

@@ -61,7 +61,7 @@ public class UserManager {
         Log.d(TAG, "get: Retrieving user from shared preferences");
         user.setEmail(prefs.getString(mContext.getString(R.string.pref_key_account_email), ""));
         user.setPassword(prefs.getString(mContext.getString(R.string.pref_key_account_password), ""));
-        user.setToken(prefs.getString(mContext.getString(R.string.pref_key_account_token), "none"));
+        user.setToken(prefs.getString(mContext.getString(R.string.pref_key_account_token), "None"));
         user.setLastUpdated(prefs.getLong(Consts.SharedPrefs.KEY_USER_LAST_UPDATED, 0));
         mUser = user;
         return user;

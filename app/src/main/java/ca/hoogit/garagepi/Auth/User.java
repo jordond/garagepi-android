@@ -55,6 +55,14 @@ public class User implements Serializable {
         this.password = password;
     }
 
+    public void save() {
+        UserManager.getInstance().save();
+    }
+
+    public boolean canAuthenticate() {
+        return !this.email.isEmpty() && !this.password.isEmpty();
+    }
+
     public String getEmail() {
         return email;
     }
@@ -85,6 +93,14 @@ public class User implements Serializable {
 
     public void setLastUpdated(long lastUpdated) {
         this.lastUpdated = lastUpdated;
+    }
+
+    public String getPrettyToken() {
+        if (this.token.isEmpty()) {
+            return "None";
+        } else {
+            return "Bearer " + this.token.substring(this.token.length() - 30, this.token.length()) + "...";
+        }
     }
 
     public String getPrettyLastUpdated() {
