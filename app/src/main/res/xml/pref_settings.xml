@@ -38,16 +38,6 @@
             android:singleLine="true"
             android:title="@string/pref_title_server_address" />
 
-        <EditTextPreference
-            android:capitalize="none"
-            android:defaultValue="@string/server_address_port"
-            android:inputType="number"
-            android:key="@string/pref_key_server_port"
-            android:maxLines="1"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:title="@string/pref_title_server_port" />
-
     </PreferenceCategory>
 
     <PreferenceCategory
