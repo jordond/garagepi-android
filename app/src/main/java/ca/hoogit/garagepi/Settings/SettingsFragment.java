@@ -33,6 +33,8 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
 import ca.hoogit.garagepi.Auth.AuthManager;
 import ca.hoogit.garagepi.Auth.User;
 import ca.hoogit.garagepi.Auth.UserManager;
@@ -75,16 +77,24 @@ public class SettingsFragment extends PreferenceFragment {
         Preference auth = findPreference(getString(R.string.pref_key_account_authenticate));
         auth.setOnPreferenceClickListener(preference -> {
             AuthManager manager = new AuthManager(getActivity());
+            MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
+                    .title(R.string.dialog_authenticate_title)
+                    .content(R.string.dialog_wait)
+                    .progress(true, 0).build();
+
+            dialog.show();
             manager.login(new AuthManager.IAuthResult() {
                 @Override
                 public void onSuccess(String message) {
                     Handler mainHandler = new Handler(Looper.getMainLooper());
                     mainHandler.post(() -> updateViews());
+                    dialog.dismiss();
                     Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onFailure(String error) {
+                    dialog.dismiss();
                     Snackbar.make(getView(), error, Snackbar.LENGTH_LONG).show();
                 }
             });

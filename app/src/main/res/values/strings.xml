@@ -29,6 +29,9 @@
     <string name="title_activity_settings">Settings</string>
     <string name="never_updated">Never</string>
 
+    <string name="dialog_authenticate_title">Authenticating</string>
+    <string name="dialog_wait">Please wait…</string>
+
     <!-- Strings related to Settings -->
 
     <string name="pref_category_title_server">Server</string>
