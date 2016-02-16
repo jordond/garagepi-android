@@ -24,14 +24,13 @@
 
 package ca.hoogit.garagepi.Settings;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
+import android.text.TextUtils;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -43,13 +42,12 @@ import ca.hoogit.garagepi.R;
 
 /**
  * Created by jordon on 12/02/16.
+ * Handle the updating of the settings views
  */
 public class SettingsFragment extends PreferenceFragment {
 
     private IBindPreference mListener;
-
-    public SettingsFragment() {
-    }
+    private String mTokenSummary = "";
 
     public interface IBindPreference {
         void onBind(Preference preference);
@@ -63,8 +61,8 @@ public class SettingsFragment extends PreferenceFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.pref_settings);
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
+        // Bind the views to the onchange event in SettingsActivity
         if (mListener != null) {
             mListener.onBind(findPreference(getString(R.string.pref_key_server_address)));
             mListener.onBind(findPreference(getString(R.string.pref_key_account_email)));
@@ -73,56 +71,48 @@ public class SettingsFragment extends PreferenceFragment {
 
         updateViews();
 
-        // Handle the authenticate now setting // TODO implement logic
         Preference auth = findPreference(getString(R.string.pref_key_account_authenticate));
+        AuthManager manager = new AuthManager(getActivity());
         auth.setOnPreferenceClickListener(preference -> {
-            AuthManager manager = new AuthManager(getActivity());
             MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                     .title(R.string.dialog_authenticate_title)
                     .content(R.string.dialog_wait)
                     .progress(true, 0).build();
 
             dialog.show();
-            manager.login(new AuthManager.IAuthResult() {
-                @Override
-                public void onSuccess(String message) {
+            manager.login((wasSuccess, responseMessage) -> {
+                if (wasSuccess) {
                     Handler mainHandler = new Handler(Looper.getMainLooper());
-                    mainHandler.post(() -> updateViews());
-                    dialog.dismiss();
-                    Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+                    mainHandler.post(this::updateViews);
                 }
-
-                @Override
-                public void onFailure(String error) {
-                    dialog.dismiss();
-                    Snackbar.make(getView(), error, Snackbar.LENGTH_LONG).show();
-                }
+                dialog.dismiss();
+                Snackbar.make(getView(), responseMessage, Snackbar.LENGTH_SHORT).show();
             });
             return true;
         });
     }
 
-    private String mOriginalToken = "";
-
     private void updateViews() {
         User user = UserManager.getInstance().user();
 
         // Update the current token
-        Preference token = findPreference(getString(R.string.pref_key_account_token));
-        mOriginalToken = mOriginalToken.isEmpty() ? token.getSummary().toString() : mOriginalToken;
+        Preference tokenPref = findPreference(getString(R.string.pref_key_account_token));
+        String tokenSummary = getString(R.string.pref_summary_account_token);
         String currentToken = user.getPrettyToken();
-        String updated = mOriginalToken + " " + user.getPrettyLastUpdated();
-        token.setSummary(currentToken + "\n" + updated);
+        String updated = tokenSummary + " " + user.getPrettyLastUpdated();
+        tokenPref.setSummary(currentToken + "\n" + updated);
 
         // Update the current version
-        String currentVersion = "Name: " + BuildConfig.VERSION_NAME + "\nHash: " + BuildConfig.GitHash;
-        String branch = "master"; // TODO replace with update logic
-        Preference version = findPreference(getString(R.string.pref_key_updates_version));
-        version.setSummary(currentVersion + "\n" + "Branch: " + branch);
+        Preference versionPref = findPreference(getString(R.string.pref_key_updates_version));
+        String currentVersion = "Name: " + BuildConfig.VERSION_NAME;
+        String hash = "Hash: " + BuildConfig.GitHash;
+        String branch = "Branch: master"; // TODO replace with update logic
+        versionPref.setSummary(TextUtils.join("\n", new String[]{currentVersion, hash, branch}));
 
         // Update the last checked
+        Preference checkNowPref = findPreference(getString(R.string.pref_key_updates_check));
+        String checkNowSummary = getString(R.string.pref_summary_updates_check);
         String lastChecked = "Never"; // TODO implement;
-        Preference check = findPreference(getString(R.string.pref_key_updates_check));
-        check.setSummary(check.getSummary() + " " + lastChecked);
+        checkNowPref.setSummary(checkNowSummary + " " + lastChecked);
     }
 }
