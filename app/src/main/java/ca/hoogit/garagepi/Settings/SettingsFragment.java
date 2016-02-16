@@ -47,7 +47,6 @@ import ca.hoogit.garagepi.R;
 public class SettingsFragment extends PreferenceFragment {
 
     private IBindPreference mListener;
-    private String mTokenSummary = "";
 
     public interface IBindPreference {
         void onBind(Preference preference);
