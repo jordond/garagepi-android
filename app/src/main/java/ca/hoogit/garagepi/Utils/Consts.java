@@ -26,14 +26,12 @@ package ca.hoogit.garagepi.Utils;
 
 /**
  * Created by jordon on 12/02/16.
+ * Some global constants
  */
 public class Consts {
-    public class Server {
-        public static final String DEFAULT_ADDRESS = "https://hoogit.ca/garage";
-        public static final int DEFAULT_PORT = 80;
-    }
     public class SharedPrefs {
         public static final String KEY_FIRST_RUN = "first_run";
         public static final String KEY_USER_LAST_UPDATED = "user_last_updated";
     }
+    public static final int TOKEN_DISPLAY_LENGTH = 30;
 }

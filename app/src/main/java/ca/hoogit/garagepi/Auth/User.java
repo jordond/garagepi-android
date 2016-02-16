@@ -100,7 +100,13 @@ public class User implements Serializable {
         if (this.token.isEmpty() || "None".equals(this.token)) {
             return "None";
         } else {
-            return "Bearer " + this.token.substring(this.token.length() - 30, this.token.length()) + "...";
+            String token = this.token;
+            if (token.length() > Consts.TOKEN_DISPLAY_LENGTH) {
+                token = token.substring(
+                        token.length() - Consts.TOKEN_DISPLAY_LENGTH, token.length())
+                        + "...";
+            }
+            return "Bearer " + token;
         }
     }
 
