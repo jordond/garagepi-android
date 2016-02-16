@@ -84,7 +84,8 @@ public class User implements Serializable {
     }
 
     public void setToken(String token) {
-        this.token = token;
+        this.token = "None".equals(token) ? "" : token;
+        this.lastUpdated = System.currentTimeMillis();
     }
 
     public long getLastUpdated() {
@@ -96,7 +97,7 @@ public class User implements Serializable {
     }
 
     public String getPrettyToken() {
-        if (this.token.isEmpty()) {
+        if (this.token.isEmpty() || "None".equals(this.token)) {
             return "None";
         } else {
             return "Bearer " + this.token.substring(this.token.length() - 30, this.token.length()) + "...";

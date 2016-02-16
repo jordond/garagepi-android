@@ -25,9 +25,6 @@
 package ca.hoogit.garagepi.Settings;
 
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -35,7 +32,6 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 
 import ca.hoogit.garagepi.Auth.AuthManager;
 import ca.hoogit.garagepi.Auth.User;
@@ -69,7 +65,6 @@ public class SettingsFragment extends PreferenceFragment {
 
         if (mListener != null) {
             mListener.onBind(findPreference(getString(R.string.pref_key_server_address)));
-            mListener.onBind(findPreference(getString(R.string.pref_key_server_port)));
             mListener.onBind(findPreference(getString(R.string.pref_key_account_email)));
             mListener.onBind(findPreference(getString(R.string.pref_key_account_password)));
         }
@@ -80,7 +75,7 @@ public class SettingsFragment extends PreferenceFragment {
         Preference auth = findPreference(getString(R.string.pref_key_account_authenticate));
         auth.setOnPreferenceClickListener(preference -> {
             AuthManager manager = new AuthManager(getActivity());
-            manager.authenticate(new AuthManager.IAuthResult() {
+            manager.login(new AuthManager.IAuthResult() {
                 @Override
                 public void onSuccess(String message) {
                     Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -100,7 +95,7 @@ public class SettingsFragment extends PreferenceFragment {
     private String mOriginalToken = "";
 
     private void updateViews() {
-        User user = UserManager.getInstance().get();
+        User user = UserManager.getInstance().user();
 
         // Update the current token
         Preference token = findPreference(getString(R.string.pref_key_account_token));

@@ -55,10 +55,9 @@ public class UserManager {
         sInstance = new UserManager(context);
     }
 
-    public User get() {
+    public User user() {
         SharedPrefs prefs = SharedPrefs.getInstance();
         User user = new User();
-        Log.d(TAG, "get: Retrieving user from shared preferences");
         user.setEmail(prefs.getString(mContext.getString(R.string.pref_key_account_email), ""));
         user.setPassword(prefs.getString(mContext.getString(R.string.pref_key_account_password), ""));
         user.setToken(prefs.getString(mContext.getString(R.string.pref_key_account_token), "None"));
@@ -73,6 +72,5 @@ public class UserManager {
         prefs.putString(mContext.getString(R.string.pref_key_account_password), mUser.getPassword());
         prefs.putString(mContext.getString(R.string.pref_key_account_token), mUser.getToken());
         prefs.putLong(Consts.SharedPrefs.KEY_USER_LAST_UPDATED, mUser.getLastUpdated());
-        Log.d(TAG, "save: User has been saved to shared preferences");
     }
 }

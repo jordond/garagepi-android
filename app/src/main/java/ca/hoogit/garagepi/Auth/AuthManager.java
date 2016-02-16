@@ -25,7 +25,6 @@
 package ca.hoogit.garagepi.Auth;
 
 import android.content.Context;
-import android.net.Uri;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -33,6 +32,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
+import ca.hoogit.garagepi.Networking.Client;
 import ca.hoogit.garagepi.Utils.Helpers;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
 import okhttp3.Call;
@@ -51,28 +51,117 @@ public class AuthManager {
 
     private static final String TAG = AuthManager.class.getSimpleName();
 
-    private final OkHttpClient mClient = new OkHttpClient();
     private final Gson mGson = new Gson();
 
     private Context mContext;
     private SharedPrefs mPrefs = SharedPrefs.getInstance();
+    private User mUser;
 
     public AuthManager(Context context) {
         this.mContext = context;
     }
 
+    private boolean hasNetwork() {
+        return Helpers.isNetworkAvailable(mContext);
+    }
+
+    public void login(IAuthResult callback) {
+        mUser = UserManager.getInstance().user();
+        if (mUser.getToken().isEmpty() || "None".equals(mUser.getToken())) {
+            authenticate(callback);
+        } else {
+            validate((isValid, message) -> {
+                if (isValid) {
+                    Log.d(TAG, "login: Token is valid, will refresh instead of log in.");
+                    refreshToken(success -> {
+                        if (success) {
+                            callback.onSuccess("Successfully refreshed token");
+                        } else {
+                            Log.d(TAG, "login: Refresh failed, attempting full authenticate");
+                            authenticate(callback);
+                        }
+                    });
+                } else {
+                    Log.d(TAG, "login: Token was invalid, trying to log in.");
+                    authenticate(callback);
+                }
+            });
+        }
+    }
+
+    public void validate(IValidateResult callback) {
+        if (!hasNetwork()) {
+            callback.onResponse(false, "No internet connection is available");
+        } else {
+            try {
+                OkHttpClient client = Client.authClient(mPrefs.getToken());
+                Request request = new Request.Builder()
+                        .url(Helpers.urlBuilder(mPrefs.getAddress(), "auth", "valid"))
+                        .build();
+
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.e(TAG, "authenticate onFailure: " + e.getMessage(), e);
+                        callback.onResponse(false, "Server request failed");
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        callback.onResponse(response.isSuccessful(), response.message());
+                    }
+                });
+            } catch (MalformedURLException e) {
+                Log.e(TAG, "authenticate: Invalid server address" + e.getMessage(), e);
+                callback.onResponse(false, "Invalid server address");
+            }
+        }
+    }
+
+    public void refreshToken(IRefreshResult callback) {
+        if (!hasNetwork()) {
+            callback.onResponse(false);
+        } else {
+            try {
+                OkHttpClient client = Client.authClient(mPrefs.getToken());
+                Request request = new Request.Builder()
+                        .url(Helpers.urlBuilder(mPrefs.getAddress(), "auth", "refresh"))
+                        .build();
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        callback.onResponse(false);
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        if (response.isSuccessful()) {
+                            Token token = mGson.fromJson(response.body().string(), Token.class);
+                            Log.d(TAG, "refresh onResponse: Successfully refreshed: " + token.token);
+                            mUser.setToken(token.token);
+                            mUser.save();
+                        }
+                        callback.onResponse(response.isSuccessful());
+                    }
+                });
+            } catch (MalformedURLException e) {
+                Log.e(TAG, "authenticate: Invalid server address" + e.getMessage(), e);
+                callback.onResponse(false);
+            }
+        }
+    }
+
     public void authenticate(IAuthResult callback) {
-        User user = UserManager.getInstance().get();
         if (!Helpers.isNetworkAvailable(mContext)) {
             callback.onFailure("No internet connection is available");
-        } else if (!user.canAuthenticate()) {
+        } else if (!mUser.canAuthenticate()) {
             callback.onFailure("Email or password is empty");
+            // } else if (/* Token exists try validating/refreshing first */) { // TODO Implement
         } else {
             RequestBody formBody = new FormBody.Builder()
-                    .add("email", user.getEmail())
-                    .add("password", user.getPassword())
+                    .add("email", mUser.getEmail())
+                    .add("password", mUser.getPassword())
                     .build();
-
             try {
                 String loginPath = Helpers.urlBuilder(mPrefs.getAddress(), "auth", "local");
                 Request request = new Request.Builder()
@@ -80,7 +169,7 @@ public class AuthManager {
                         .post(formBody)
                         .build();
 
-                mClient.newCall(request).enqueue(new Callback() {
+                Client.get().newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         Log.e(TAG, "authenticate onFailure: " + e.getMessage(), e);
@@ -91,13 +180,14 @@ public class AuthManager {
                     public void onResponse(Call call, Response response) throws IOException {
                         if (!response.isSuccessful()) {
                             Log.i(TAG, "authenticate onResponse: User login attempt failed " + response.body().toString());
+                            mUser.setToken("");
+                            mUser.save();
                             callback.onFailure("Login failed, invalid email or password");
                         } else {
                             Token token = mGson.fromJson(response.body().string(), Token.class);
                             Log.d(TAG, "authenticate onResponse: Successfully authenticated: " + token.token);
-                            user.setToken(token.token);
-                            user.setLastUpdated(System.currentTimeMillis());
-                            user.save();
+                            mUser.setToken(token.token);
+                            mUser.save();
                             callback.onSuccess("Login was successful!");
                         }
                     }
@@ -120,5 +210,13 @@ public class AuthManager {
         void onSuccess(String message);
 
         void onFailure(String error);
+    }
+
+    public interface IValidateResult {
+        void onResponse(boolean isValid, String message);
+    }
+
+    public interface IRefreshResult {
+        void onResponse(boolean success);
     }
 }

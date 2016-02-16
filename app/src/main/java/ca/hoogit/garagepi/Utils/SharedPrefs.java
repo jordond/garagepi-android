@@ -68,6 +68,10 @@ public class SharedPrefs {
         return sharedPreferences.getString(addressKey, mContext.getString(R.string.server_address));
     }
 
+    public String getToken() {
+        return sharedPreferences.getString(mContext.getString(R.string.pref_key_account_token), "");
+    }
+
     /**
      * Shared Preferences accessors
      */
