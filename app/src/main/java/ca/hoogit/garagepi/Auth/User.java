@@ -48,6 +48,8 @@ public class User implements Serializable {
     private long lastUpdated;
 
     public User() {
+        this.email = "";
+        this.password = "";
     }
 
     public User(String email, String password) {
@@ -56,7 +58,7 @@ public class User implements Serializable {
     }
 
     public void save() {
-        UserManager.getInstance().save();
+        UserManager.getInstance().save(this);
     }
 
     public boolean canAuthenticate() {

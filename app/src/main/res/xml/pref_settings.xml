@@ -73,6 +73,11 @@
             android:summary="@string/pref_summary_account_authenticate"
             android:title="@string/pref_summary_title_authenticate" />
 
+        <Preference
+            android:key="@string/pref_key_account_logout"
+            android:summary="@string/pref_summary_account_logout"
+            android:title="@string/pref_title_account_logout" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

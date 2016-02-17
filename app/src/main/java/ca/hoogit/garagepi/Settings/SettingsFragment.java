@@ -27,10 +27,12 @@ package ca.hoogit.garagepi.Settings;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
+import android.widget.EditText;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -39,6 +41,7 @@ import ca.hoogit.garagepi.Auth.User;
 import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.BuildConfig;
 import ca.hoogit.garagepi.R;
+import ca.hoogit.garagepi.Update.Version;
 
 /**
  * Created by jordon on 12/02/16.
@@ -70,16 +73,17 @@ public class SettingsFragment extends PreferenceFragment {
 
         updateViews();
 
-        Preference auth = findPreference(getString(R.string.pref_key_account_authenticate));
-        AuthManager manager = new AuthManager(getActivity());
-        auth.setOnPreferenceClickListener(preference -> {
+        // Handle the clicking of authenticate now field.
+        Preference authPref = findPreference(getString(R.string.pref_key_account_authenticate));
+        authPref.setOnPreferenceClickListener(preference -> {
+            AuthManager authManager = new AuthManager(getActivity());
             MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                     .title(R.string.dialog_authenticate_title)
                     .content(R.string.dialog_wait)
                     .progress(true, 0).build();
 
             dialog.show();
-            manager.login((wasSuccess, responseMessage) -> {
+            authManager.login((wasSuccess, responseMessage) -> {
                 if (wasSuccess) {
                     Handler mainHandler = new Handler(Looper.getMainLooper());
                     mainHandler.post(this::updateViews);
@@ -89,10 +93,33 @@ public class SettingsFragment extends PreferenceFragment {
             });
             return true;
         });
+
+        // Handle the clicking of the logout field
+        Preference logoutPref = findPreference(getString(R.string.pref_key_account_logout));
+        logoutPref.setOnPreferenceClickListener(preference -> {
+            AuthManager authManager = new AuthManager(getActivity());
+            new MaterialDialog.Builder(getActivity())
+                    .title(R.string.dialog_sure)
+                    .content(R.string.dialog_logout_content)
+                    .positiveText(R.string.dialog_okay)
+                    .negativeText(R.string.dialog_cancel)
+                    .onPositive((dialog, which) -> authManager.logout((wasSuccess, responseMessage) -> updateViews()))
+                    .build().show();
+            return true;
+        });
     }
 
     private void updateViews() {
         User user = UserManager.getInstance().user();
+
+        Preference emailPref = findPreference(getString(R.string.pref_key_account_email));
+        emailPref.setSummary(user.getEmail());
+
+        // Mask the password
+        Preference passwordPref = findPreference(getString(R.string.pref_key_account_password));
+        EditText edit = ((EditTextPreference) passwordPref).getEditText();
+        String masked = edit.getTransformationMethod().getTransformation(user.getPassword(), edit).toString();
+        passwordPref.setSummary(masked);
 
         // Update the current token
         Preference tokenPref = findPreference(getString(R.string.pref_key_account_token));
@@ -103,10 +130,7 @@ public class SettingsFragment extends PreferenceFragment {
 
         // Update the current version
         Preference versionPref = findPreference(getString(R.string.pref_key_updates_version));
-        String currentVersion = "Name: " + BuildConfig.VERSION_NAME;
-        String hash = "Hash: " + BuildConfig.GitHash;
-        String branch = "Branch: master"; // TODO replace with update logic
-        versionPref.setSummary(TextUtils.join("\n", new String[]{currentVersion, hash, branch}));
+        versionPref.setSummary(Version.output());
 
         // Update the last checked
         Preference checkNowPref = findPreference(getString(R.string.pref_key_updates_check));

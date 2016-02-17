@@ -56,17 +56,46 @@ public class AuthManager {
     private Context mContext;
     private SharedPrefs mPrefs = SharedPrefs.getInstance();
     private User mUser;
+    private String mAddress = mPrefs.getAddress();
 
     public AuthManager(Context context) {
         this.mContext = context;
+        this.mUser = UserManager.getInstance().user();
     }
 
     private boolean hasNetwork() {
         return Helpers.isNetworkAvailable(mContext);
     }
 
+    public void logout(IAuthResult callback) {
+        if (hasNetwork() && mUser.canAuthenticate()) {
+            try {
+                OkHttpClient client = Client.authClient(mUser.getToken());
+                Request request = new Request.Builder()
+                        .url(Helpers.urlBuilder(mAddress, "auth", "logout"))
+                        .build();
+
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.e(TAG, "onFailure: ", e);
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        Log.d(TAG, "onResponse: Logout status " + response.isSuccessful());
+                    }
+                });
+
+            } catch (MalformedURLException e) {
+                callback.onComplete(false, "Invalid server address");
+            }
+        }
+        mUser = UserManager.getInstance().clear();
+        callback.onComplete(true, "Successfully logged out");
+    }
+
     public void login(IAuthResult callback) {
-        mUser = UserManager.getInstance().user();
         if (mUser.getToken().isEmpty() || "None".equals(mUser.getToken())) {
             authenticate(callback);
         } else {
@@ -94,9 +123,9 @@ public class AuthManager {
             callback.onComplete(false, "No internet connection is available");
         } else {
             try {
-                OkHttpClient client = Client.authClient(mPrefs.getToken());
+                OkHttpClient client = Client.authClient(mUser.getToken());
                 Request request = new Request.Builder()
-                        .url(Helpers.urlBuilder(mPrefs.getAddress(), "auth", "valid"))
+                        .url(Helpers.urlBuilder(mAddress, "auth", "valid"))
                         .build();
 
                 client.newCall(request).enqueue(new Callback() {
@@ -123,9 +152,9 @@ public class AuthManager {
             callback.onComplete(false, "No internet connection is available");
         } else {
             try {
-                OkHttpClient client = Client.authClient(mPrefs.getToken());
+                OkHttpClient client = Client.authClient(mUser.getToken());
                 Request request = new Request.Builder()
-                        .url(Helpers.urlBuilder(mPrefs.getAddress(), "auth", "refresh"))
+                        .url(Helpers.urlBuilder(mAddress, "auth", "refresh"))
                         .build();
                 client.newCall(request).enqueue(new Callback() {
                     @Override
@@ -164,7 +193,7 @@ public class AuthManager {
                     .add("password", mUser.getPassword())
                     .build();
             try {
-                String loginPath = Helpers.urlBuilder(mPrefs.getAddress(), "auth", "local");
+                String loginPath = Helpers.urlBuilder(mAddress, "auth", "local");
                 Request request = new Request.Builder()
                         .url(loginPath)
                         .post(formBody)

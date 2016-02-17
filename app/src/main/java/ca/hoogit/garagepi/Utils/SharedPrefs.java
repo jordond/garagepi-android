@@ -60,7 +60,7 @@ public class SharedPrefs {
     }
 
     public boolean isFirstRun() {
-        return sharedPreferences.getBoolean("FIRST_RUN", true);
+        return sharedPreferences.getBoolean(Consts.SharedPrefs.KEY_FIRST_RUN, true);
     }
 
     public String getAddress() {
@@ -70,6 +70,11 @@ public class SharedPrefs {
 
     public String getToken() {
         return sharedPreferences.getString(mContext.getString(R.string.pref_key_account_token), "");
+    }
+
+    public String getBranch() {
+        boolean isDev = sharedPreferences.getBoolean(mContext.getString(R.string.pref_key_updates_unstable), false);
+        return isDev ? "develop" : "master";
     }
 
     /**

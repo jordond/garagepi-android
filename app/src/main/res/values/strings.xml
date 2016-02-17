@@ -29,8 +29,17 @@
     <string name="title_activity_settings">Settings</string>
     <string name="never_updated">Never</string>
 
+    <string name="dialog_no_user_title">Login needed</string>
+    <string name="dialog_no_user_content">Either this is your first run, or you have not entered any login credentials.  Press okay to login.</string>
+    <string name="dialog_okay">Okay</string>
+    <string name="dialog_cancel">Cancel</string>
+
     <string name="dialog_authenticate_title">Authenticating</string>
     <string name="dialog_wait">Please wait…</string>
+
+    <string name="dialog_sure">Are you sure?</string>
+    <string name="dialog_logout_content">This will log you out and disable functionality.</string>
+
 
     <!-- Strings related to Settings -->
 
@@ -71,5 +80,8 @@
     <string name="pref_title_updates_unstable">Use developer build</string>
     <string name="pref_key_updates_unstable">pref_key_updates_unstable</string>
     <string name="pref_key_updates_auto">pref_key_misc_auto_update</string>
+    <string name="pref_key_account_logout">pref_key_account_logout</string>
+    <string name="pref_summary_account_logout">This will delete all authentication information.</string>
+    <string name="pref_title_account_logout">Logout</string>
 
 </resources>

@@ -66,11 +66,20 @@ public class UserManager {
         return user;
     }
 
-    public void save() {
+    public void save(User user) {
         SharedPrefs prefs = SharedPrefs.getInstance();
-        prefs.putString(mContext.getString(R.string.pref_key_account_email), mUser.getEmail());
-        prefs.putString(mContext.getString(R.string.pref_key_account_password), mUser.getPassword());
-        prefs.putString(mContext.getString(R.string.pref_key_account_token), mUser.getToken());
-        prefs.putLong(Consts.SharedPrefs.KEY_USER_LAST_UPDATED, mUser.getLastUpdated());
+        prefs.putString(mContext.getString(R.string.pref_key_account_email), user.getEmail());
+        prefs.putString(mContext.getString(R.string.pref_key_account_password), user.getPassword());
+        prefs.putString(mContext.getString(R.string.pref_key_account_token), user.getToken());
+        prefs.putLong(Consts.SharedPrefs.KEY_USER_LAST_UPDATED, user.getLastUpdated());
+        mUser = user;
+    }
+
+    public User clear() {
+        SharedPrefs prefs = SharedPrefs.getInstance();
+        prefs.get().edit().remove(mContext.getString(R.string.pref_key_account_email)).apply();
+        prefs.get().edit().remove(mContext.getString(R.string.pref_key_account_password)).apply();
+        prefs.get().edit().remove(mContext.getString(R.string.pref_key_account_token)).apply();
+        return mUser = this.user();
     }
 }
