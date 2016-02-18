@@ -46,14 +46,16 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import ca.hoogit.garagepi.Auth.AuthReceiver;
 import ca.hoogit.garagepi.Auth.AuthService;
+import ca.hoogit.garagepi.Auth.IAuthEvent;
 import ca.hoogit.garagepi.Auth.User;
 import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.Settings.SettingsActivity;
 import ca.hoogit.garagepi.Utils.Consts;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements IAuthEvent {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -65,18 +67,19 @@ public class MainActivity extends AppCompatActivity {
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
-    @Bind(R.id.toolbar)
-    Toolbar mToolbar;
-    @Bind(R.id.container)
-    ViewPager mViewPager;
-    @Bind(R.id.tabs)
-    TabLayout mTabLayout;
+    @Bind(R.id.toolbar) Toolbar mToolbar;
+    @Bind(R.id.container) ViewPager mViewPager;
+    @Bind(R.id.tabs) TabLayout mTabLayout;
+
+    private AuthReceiver mReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        mReceiver = new AuthReceiver(this, this);
 
         // Set up the toolbar and the placeholder viewpager. // TODO Replace
         setSupportActionBar(mToolbar);
@@ -94,6 +97,21 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         SharedPrefs.getInstance().setFirstRun(false);
+    }
+
+    @Override
+    public void onEvent(String action, boolean wasSuccess, String message) {
+        // TODO misc events? maybe delete?
+    }
+
+    @Override
+    public void onLogin(boolean wasSuccess, String message) {
+        // TODO Start the socket and fragment views
+    }
+
+    @Override
+    public void onLogout(boolean wasSuccess, String message) {
+        // TODO Handle logout by stopping all socket activity
     }
 
     @Override
@@ -116,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
                 .cancelable(false)
                 .onPositive((dialog, which) -> {
                     Intent settings = new Intent(this, SettingsActivity.class);
-                    startActivityForResult(settings, Consts.RESULT_SETTINGS); // TODO FIX
+                    startActivityForResult(settings, Consts.RESULT_SETTINGS);
                 }).build().show();
     }
 
@@ -138,6 +156,18 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mReceiver.register();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mReceiver.unRegister();
     }
 
     /**

@@ -29,8 +29,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -41,7 +39,9 @@ import android.widget.EditText;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import ca.hoogit.garagepi.Auth.AuthReceiver;
 import ca.hoogit.garagepi.Auth.AuthService;
+import ca.hoogit.garagepi.Auth.IAuthEvent;
 import ca.hoogit.garagepi.Auth.User;
 import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.R;
@@ -67,20 +67,7 @@ public class SettingsFragment extends PreferenceFragment {
         mListener = listener;
     }
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getStringExtra(Consts.KEY_MESSAGE_AUTH_ACTION);
-            boolean wasSuccess = intent.getBooleanExtra(Consts.KEY_MESSAGE_AUTH_SUCCESS, false);
-            String message = intent.getStringExtra(Consts.KEY_MESSAGE_AUTH_MESSAGE);
-            Log.d(TAG, "onReceive: Message received: " + action + " " + wasSuccess + " " + message);
-            if (wasSuccess) {
-                updateViews();
-            }
-            mDialog.dismiss();
-            Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
-        }
-    };
+    private AuthReceiver mReceiver;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -122,18 +109,36 @@ public class SettingsFragment extends PreferenceFragment {
             mDialog.show();
             return true;
         });
+
+        mReceiver = new AuthReceiver(getActivity(), new IAuthEvent() {
+            @Override
+            public void onEvent(String action, boolean wasSuccess, String message) {
+                if (wasSuccess) {
+                    updateViews();
+                }
+                mDialog.dismiss();
+                Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onLogin(boolean wasSuccess, String message) {
+            }
+
+            @Override
+            public void onLogout(boolean wasSuccess, String message) {
+            }
+        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver,
-                new IntentFilter(Consts.INTENT_MESSAGE_AUTH));
+        mReceiver.register();
     }
 
     @Override
     public void onPause() {
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mReceiver);
+        mReceiver.unRegister();
         super.onPause();
     }
 
