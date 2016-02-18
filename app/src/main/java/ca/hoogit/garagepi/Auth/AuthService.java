@@ -45,6 +45,10 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+/**
+ * Service for handling all of the server side authentication
+ * Called using the static helper functions
+ */
 public class AuthService extends IntentService {
 
     private static final String TAG = AuthService.class.getSimpleName();
@@ -55,20 +59,39 @@ public class AuthService extends IntentService {
         super("AuthService");
     }
 
+    /**
+     * Start the service with the intent to login
+     * @param context Calling activity reference
+     */
     public static void startLogin(Context context) {
         startAuthService(context, Consts.ACTION_AUTH_LOGIN);
     }
 
+    /**
+     * Start the service with the intent to logout
+     * @param context Calling activity reference
+     */
     public static void startLogout(Context context) {
         startAuthService(context, Consts.ACTION_AUTH_LOGOUT);
     }
 
+    /**
+     * Helper method to handle launching of the service
+     * @param context Calling activity reference
+     * @param action Service action
+     */
     private static void startAuthService(Context context, String action) {
         Intent intent = new Intent(context, AuthService.class);
         intent.setAction(action);
         context.startService(intent);
     }
 
+    /**
+     * Call the appropriate message based on the Intent action
+     * If login, check for network and user, then call login handler,
+     * for logout always call logout regardless
+     * @param intent Contains intended action
+     */
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
@@ -90,6 +113,13 @@ public class AuthService extends IntentService {
         }
     }
 
+    /**
+     * Attempt to log the user in with the stored credentials.
+     * If there is no user token then always try to authenticate.  If a token exists check to see
+     * if it is still a valid token, if so refresh that token, and if not then re-authenticate.
+     * Broadcast the success or failure
+     * @param user Credentials for server
+     */
     private void handleActionLogin(User user) {
         if (user.getToken().isEmpty() || "None".equals(user.getToken())) {
             authenticate(user);
@@ -110,6 +140,12 @@ public class AuthService extends IntentService {
         }
     }
 
+    /**
+     * Attempt to gracefully log the user out, if there is not network than it will fail, but that
+     * will not affect this application.  A successful attempt is preferred as it will correctly
+     * log the user out on the server.
+     * @param user Credentials for user
+     */
     private void handleActionLogout(User user) {
         try {
             OkHttpClient client = Client.authClient(user.getToken());
@@ -125,6 +161,10 @@ public class AuthService extends IntentService {
         }
     }
 
+    /**
+     * Authenticate the user by building form-encoded fields, broadcast the status of the attempt.
+     * @param user
+     */
     private void authenticate(User user) {
         try {
             OkHttpClient client = Client.get();
@@ -136,10 +176,10 @@ public class AuthService extends IntentService {
             if (request != null) {
                 request.post(formBody).build();
                 Response response = client.newCall(request.build()).execute();
-                String message = "Login failed, invalid email or password.";
+                String message = getString(R.string.error_auth_invalid);
                 if (response.isSuccessful()) {
                     TokenResponse t = mGson.fromJson(response.body().string(), TokenResponse.class);
-                    message = "Successfully logged in.";
+                    message = getString(R.string.success_auth);
                     user.setToken(t.token);
                     user.save();
                 }
@@ -151,6 +191,11 @@ public class AuthService extends IntentService {
         }
     }
 
+    /**
+     * Check to see if the token is still valid by sending it to the server.
+     * @param user Credentials for server
+     * @return boolean Token is valid or invalid
+     */
     private boolean validate(User user) {
         try {
             OkHttpClient client = Client.authClient(user.getToken());
@@ -166,6 +211,12 @@ public class AuthService extends IntentService {
         return false;
     }
 
+    /**
+     * Attempt to refresh the user token.
+     * If it is successful than edit the user object and save it.
+     * @param user Credentials for server
+     * @return boolean Status of token refresh
+     */
     private boolean refresh(User user) {
         try {
             OkHttpClient client = Client.authClient(user.getToken());
@@ -188,6 +239,12 @@ public class AuthService extends IntentService {
         return false;
     }
 
+    /**
+     * Helper method to parse the user entered server address, adding the action to the
+     * getApiRoute() builder function.  Catch any errors with a malformed URL.
+     * @param action Server action
+     * @return Request.Builder with the proper url
+     */
     private Request.Builder buildRequest(String action) {
         try {
             return new Request.Builder().url(Helpers.getApiRoute("auth", action));
@@ -198,11 +255,22 @@ public class AuthService extends IntentService {
         return null;
     }
 
+    /**
+     * Helper method to handle any IO exceptions
+     * @param action Action where the exception occurred
+     * @param e Caught exception
+     */
     private void handleException(String action, Exception e) {
         Log.e(TAG, "validate: Request failed " + e.getMessage(), e);
         broadcast(action, false, e.getMessage());
     }
 
+    /**
+     * Helper method to broadcast the outcome of the service
+     * @param action Calling action
+     * @param wasSuccess Whether or not action was successful
+     * @param message Outcome message
+     */
     private void broadcast(String action, boolean wasSuccess, String message) {
         Intent authResponse = new Intent(Consts.INTENT_MESSAGE_AUTH);
         authResponse.putExtra(Consts.KEY_MESSAGE_AUTH_ACTION, action);

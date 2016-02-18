@@ -40,6 +40,12 @@
     <string name="dialog_sure">Are you sure?</string>
     <string name="dialog_logout_content">This will log you out and disable functionality.</string>
 
+    <string name="success_token_refresh">Successfully refreshed authentication token</string>
+    <string name="success_login">Login was successful</string>
+    <string name="success_logout">Successfully logged out.</string>
+
+    <string name="error_invalid_address">Invalid server address</string>
+    <string name="error_token_refresh">Refreshing token failed.</string>
 
     <!-- Strings related to Settings -->
 
@@ -86,10 +92,7 @@
     <string name="auth_message_no_internet">No internet connection is available.</string>
     <string name="auth_message_invalid_credentials">Email or password is empty</string>
     <string name="not_implemented">Not yet implemented</string>
-    <string name="error_invalid_address">Invalid server address</string>
-    <string name="error_token_refresh">Refreshing token failed.</string>
-    <string name="success_token_refresh">Successfully refreshed authentication token</string>
-    <string name="success_login">Login was successful</string>
-    <string name="success_logout">Successfully logged out.</string>
+    <string name="error_auth_invalid">Login failed, invalid email or password.</string>
+    <string name="success_auth">Successfully logged in.</string>
 
 </resources>

@@ -51,6 +51,13 @@ public class Helpers {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
+    /**
+     * Parse the url path, and rebuild it with supplied paths
+     * @param oldUrl Original url
+     * @param paths Paths to add to the url
+     * @return String Built url
+     * @throws MalformedURLException
+     */
     public static String urlBuilder(String oldUrl, String... paths) throws MalformedURLException {
         URL url = new URL(oldUrl);
         Uri.Builder builder = new Uri.Builder();
@@ -63,6 +70,12 @@ public class Helpers {
         return builder.build().toString();
     }
 
+    /**
+     * Build an api route, based on the user entered server address.
+     * @param paths Paths to add to the server address
+     * @return String Built url
+     * @throws MalformedURLException
+     */
     public static String getApiRoute(String... paths) throws MalformedURLException {
         return urlBuilder(SharedPrefs.getInstance().getAddress(), paths);
     }
