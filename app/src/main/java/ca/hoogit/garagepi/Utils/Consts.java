@@ -37,11 +37,14 @@ public class Consts {
     public static final String ACTION_AUTH_TOKEN_REFRESH = "refresh";
     public static final String ACTION_AUTH_LOGOUT = "logout";
     public static final String ACTION_AUTH_LOGIN = "local";
+    public static final String ACTION_UPDATE_CHECK = "check_update";
+    public static final String ACTION_UPDATE_DOWNLOAD = "download_update";
     public static final String ERROR = "error";
     public static final String INTENT_MESSAGE_AUTH = "auth_message";
-    public static final String KEY_MESSAGE_AUTH_ACTION = "auth_action";
-    public static final String KEY_MESSAGE_AUTH_SUCCESS = "auth_success";
-    public static final String KEY_MESSAGE_AUTH_MESSAGE = "auth_message";
+    public static final String INTENT_MESSAGE_UPDATE = "update_message";
+    public static final String KEY_BROADCAST_ACTION = "action";
+    public static final String KEY_BROADCAST_SUCCESS = "success";
+    public static final String KEY_BROADCAST_MESSAGE = "message";
     public static final String FIELD_LOGIN = "email";
     public static final String FIELD_PASSWORD = "password";
 

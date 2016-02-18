@@ -101,9 +101,9 @@ public class AuthService extends IntentService {
 
             if (action.equals(Consts.ACTION_AUTH_LOGIN)) {
                 if (!hasInternet) {
-                    broadcast(Consts.ERROR, false, getString(R.string.auth_message_no_internet));
+                    Helpers.broadcast(this, Consts.ERROR, false, getString(R.string.auth_message_no_internet));
                 } else if (!user.canAuthenticate()) {
-                    broadcast(Consts.ERROR, false, getString(R.string.auth_message_invalid_credentials));
+                    Helpers.broadcast(this, Consts.ERROR, false, getString(R.string.auth_message_invalid_credentials));
                 } else {
                     handleActionLogin(user);
                 }
@@ -128,7 +128,7 @@ public class AuthService extends IntentService {
                 Log.d(TAG, "handleActionLogin: Token is valid, will try refreshing.");
                 if (refresh(user)) {
                     Log.d(TAG, "handleActionLogin: Refresh was successful");
-                    broadcast(Consts.ACTION_AUTH_LOGIN, true, getString(R.string.success_login));
+                    Helpers.broadcast(this, Consts.ACTION_AUTH_LOGIN, true, getString(R.string.success_login));
                 } else {
                     Log.d(TAG, "handleActionLogin: Refresh failed, attempting full authenticate");
                     authenticate(user);
@@ -154,7 +154,7 @@ public class AuthService extends IntentService {
                 Response response = client.newCall(request.build()).execute();
                 UserManager.getInstance().clear();
                 Log.d(TAG, "handleActionLogout: response: " + response.isSuccessful() + " " + response.message());
-                broadcast(Consts.ACTION_AUTH_LOGOUT, response.isSuccessful(), getString(R.string.success_logout));
+                Helpers.broadcast(this, Consts.ACTION_AUTH_LOGOUT, response.isSuccessful(), getString(R.string.success_logout));
             }
         } catch (IOException e) {
             handleException(Consts.ACTION_AUTH_LOGOUT, e);
@@ -184,7 +184,7 @@ public class AuthService extends IntentService {
                     user.save();
                 }
                 Log.d(TAG, "authenticate: status: " + response.isSuccessful() + " " + response.message());
-                broadcast(Consts.ACTION_AUTH_LOGIN, response.isSuccessful(), message);
+                Helpers.broadcast(this, Consts.ACTION_AUTH_LOGIN, response.isSuccessful(), message);
             }
         } catch (IOException e) {
             handleException(Consts.ACTION_AUTH_LOGIN, e);
@@ -250,7 +250,7 @@ public class AuthService extends IntentService {
             return new Request.Builder().url(Helpers.getApiRoute("auth", action));
         } catch (MalformedURLException e) {
             Log.e(TAG, "buildRequest: Invalid server address " + e.getMessage(), e);
-            broadcast(Consts.ERROR, false, getString(R.string.error_invalid_address));
+            Helpers.broadcast(this, Consts.ERROR, false, getString(R.string.error_invalid_address));
         }
         return null;
     }
@@ -262,21 +262,6 @@ public class AuthService extends IntentService {
      */
     private void handleException(String action, Exception e) {
         Log.e(TAG, "validate: Request failed " + e.getMessage(), e);
-        broadcast(action, false, e.getMessage());
-    }
-
-    /**
-     * Helper method to broadcast the outcome of the service
-     * @param action Calling action
-     * @param wasSuccess Whether or not action was successful
-     * @param message Outcome message
-     */
-    private void broadcast(String action, boolean wasSuccess, String message) {
-        Intent authResponse = new Intent(Consts.INTENT_MESSAGE_AUTH);
-        authResponse.putExtra(Consts.KEY_MESSAGE_AUTH_ACTION, action);
-        authResponse.putExtra(Consts.KEY_MESSAGE_AUTH_SUCCESS, wasSuccess);
-        authResponse.putExtra(Consts.KEY_MESSAGE_AUTH_MESSAGE, message);
-        LocalBroadcastManager.getInstance(getApplication()).sendBroadcast(authResponse);
-        Log.i(TAG, "broadcast: Auth status: " + wasSuccess + " - " + message);
+        Helpers.broadcast(this, action, false, e.getMessage());
     }
 }

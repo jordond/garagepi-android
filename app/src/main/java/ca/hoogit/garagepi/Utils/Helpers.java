@@ -25,9 +25,12 @@
 package ca.hoogit.garagepi.Utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -37,6 +40,8 @@ import java.net.URL;
  * Some helper functions
  */
 public class Helpers {
+
+    private static final String TAG = Helpers.class.getSimpleName();
 
     /**
      * Check if internet access is available.
@@ -78,5 +83,20 @@ public class Helpers {
      */
     public static String getApiRoute(String... paths) throws MalformedURLException {
         return urlBuilder(SharedPrefs.getInstance().getAddress(), paths);
+    }
+
+    /**
+     * Helper method to broadcast the outcome of the service
+     * @param action Calling action
+     * @param wasSuccess Whether or not action was successful
+     * @param message Outcome message
+     */
+    public static void broadcast(Context context, String action, boolean wasSuccess, String message) {
+        Intent broadcast = new Intent(Consts.INTENT_MESSAGE_AUTH);
+        broadcast.putExtra(Consts.KEY_BROADCAST_ACTION, action);
+        broadcast.putExtra(Consts.KEY_BROADCAST_SUCCESS, wasSuccess);
+        broadcast.putExtra(Consts.KEY_BROADCAST_MESSAGE, message);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(broadcast);
+        Log.i(TAG, "broadcast: Auth status: " + wasSuccess + " - " + message);
     }
 }

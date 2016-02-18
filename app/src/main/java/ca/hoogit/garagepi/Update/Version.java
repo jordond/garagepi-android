@@ -82,6 +82,13 @@ public class Version {
         return TextUtils.join("\n", new String[]{name, hash, branch});
     }
 
+    public boolean isNewer(String hash) {
+        if (hash.length() > 7) {
+            hash = hash.substring(0, 7);
+        }
+        return !this.hash.equals(hash);
+    }
+
     public static String output() {
         String currentVersion = "Name: " + BuildConfig.VERSION_NAME;
         String hash = "Hash: " + BuildConfig.GitHash;

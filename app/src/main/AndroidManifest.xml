@@ -56,7 +56,11 @@
         <receiver
             android:name=".Auth.AuthReceiver"
             android:enabled="false"
-            android:exported="false"></receiver>
+            android:exported="false" />
+
+        <service
+            android:name=".Update.UpdateService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

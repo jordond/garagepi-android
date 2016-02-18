@@ -65,9 +65,9 @@ public class AuthReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String action = intent.getStringExtra(Consts.KEY_MESSAGE_AUTH_ACTION);
-        boolean wasSuccess = intent.getBooleanExtra(Consts.KEY_MESSAGE_AUTH_SUCCESS, false);
-        String message = intent.getStringExtra(Consts.KEY_MESSAGE_AUTH_MESSAGE);
+        String action = intent.getStringExtra(Consts.KEY_BROADCAST_ACTION);
+        boolean wasSuccess = intent.getBooleanExtra(Consts.KEY_BROADCAST_SUCCESS, false);
+        String message = intent.getStringExtra(Consts.KEY_BROADCAST_MESSAGE);
 
         if (action.equals(Consts.ACTION_AUTH_LOGIN)) {
             mListener.onLogin(wasSuccess, message);

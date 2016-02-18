@@ -28,4 +28,7 @@
     <string name="server_address_port">80</string>
     <string name="github_author">https://github.com/jordond</string>
     <string name="github_source">https://github.com/jordond/garagepi-android</string>
+    <string name="github_repo">jordond/garagepi-android</string>
+    <string name="github_api_root">https://api.github.com/repos/</string>
+    <string name="github_api_path">/git/refs/heads/</string>
 </resources>
