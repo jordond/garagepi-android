@@ -80,6 +80,7 @@ public class UserManager {
         prefs.get().edit().remove(mContext.getString(R.string.pref_key_account_email)).apply();
         prefs.get().edit().remove(mContext.getString(R.string.pref_key_account_password)).apply();
         prefs.get().edit().remove(mContext.getString(R.string.pref_key_account_token)).apply();
+        prefs.get().edit().remove(Consts.SharedPrefs.KEY_USER_LAST_UPDATED).apply();
         return mUser = this.user();
     }
 }

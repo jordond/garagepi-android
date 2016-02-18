@@ -62,4 +62,8 @@ public class Helpers {
         }
         return builder.build().toString();
     }
+
+    public static String getApiRoute(String... paths) throws MalformedURLException {
+        return urlBuilder(SharedPrefs.getInstance().getAddress(), paths);
+    }
 }

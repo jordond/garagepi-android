@@ -22,28 +22,14 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi.Utils;
+package ca.hoogit.garagepi.Auth;
 
 /**
- * Created by jordon on 12/02/16.
- * Some global constants
+ * Created by jordon on 17/02/16.
+ * Response object for GSON for converting response
  */
-public class Consts {
-    public class SharedPrefs {
-        public static final String KEY_FIRST_RUN = "first_run";
-        public static final String KEY_USER_LAST_UPDATED = "user_last_updated";
-    }
-    public static final String ACTION_AUTH_TOKEN_VALIDATE = "valid";
-    public static final String ACTION_AUTH_TOKEN_REFRESH = "refresh";
-    public static final String ACTION_AUTH_LOGOUT = "logout";
-    public static final String ACTION_AUTH_LOGIN = "local";
-    public static final String ERROR = "error";
-    public static final String INTENT_MESSAGE_AUTH = "auth_message";
-    public static final String KEY_MESSAGE_AUTH_ACTION = "auth_action";
-    public static final String KEY_MESSAGE_AUTH_SUCCESS = "auth_success";
-    public static final String KEY_MESSAGE_AUTH_MESSAGE = "auth_message";
-    public static final String FIELD_LOGIN = "email";
-    public static final String FIELD_PASSWORD = "password";
+public class TokenResponse {
 
-    public static final int TOKEN_DISPLAY_LENGTH = 30;
+    public String token = "";
+
 }

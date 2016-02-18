@@ -24,6 +24,10 @@
 
 package ca.hoogit.garagepi.Settings;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -31,17 +35,18 @@ import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.design.widget.Snackbar;
-import android.text.TextUtils;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.widget.EditText;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import ca.hoogit.garagepi.Auth.AuthManager;
+import ca.hoogit.garagepi.Auth.AuthService;
 import ca.hoogit.garagepi.Auth.User;
 import ca.hoogit.garagepi.Auth.UserManager;
-import ca.hoogit.garagepi.BuildConfig;
 import ca.hoogit.garagepi.R;
 import ca.hoogit.garagepi.Update.Version;
+import ca.hoogit.garagepi.Utils.Consts;
 
 /**
  * Created by jordon on 12/02/16.
@@ -49,7 +54,10 @@ import ca.hoogit.garagepi.Update.Version;
  */
 public class SettingsFragment extends PreferenceFragment {
 
+    private static final String TAG = SettingsFragment.class.getSimpleName();
+
     private IBindPreference mListener;
+    private MaterialDialog mDialog;
 
     public interface IBindPreference {
         void onBind(Preference preference);
@@ -58,6 +66,21 @@ public class SettingsFragment extends PreferenceFragment {
     public void setBindListener(IBindPreference listener) {
         mListener = listener;
     }
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getStringExtra(Consts.KEY_MESSAGE_AUTH_ACTION);
+            boolean wasSuccess = intent.getBooleanExtra(Consts.KEY_MESSAGE_AUTH_SUCCESS, false);
+            String message = intent.getStringExtra(Consts.KEY_MESSAGE_AUTH_MESSAGE);
+            Log.d(TAG, "onReceive: Message received: " + action + " " + wasSuccess + " " + message);
+            if (wasSuccess) {
+                updateViews();
+            }
+            mDialog.dismiss();
+            Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,37 +99,42 @@ public class SettingsFragment extends PreferenceFragment {
         // Handle the clicking of authenticate now field.
         Preference authPref = findPreference(getString(R.string.pref_key_account_authenticate));
         authPref.setOnPreferenceClickListener(preference -> {
-            AuthManager authManager = new AuthManager(getActivity());
-            MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
+            mDialog = new MaterialDialog.Builder(getActivity())
                     .title(R.string.dialog_authenticate_title)
                     .content(R.string.dialog_wait)
                     .progress(true, 0).build();
 
-            dialog.show();
-            authManager.login((wasSuccess, responseMessage) -> {
-                if (wasSuccess) {
-                    Handler mainHandler = new Handler(Looper.getMainLooper());
-                    mainHandler.post(this::updateViews);
-                }
-                dialog.dismiss();
-                Snackbar.make(getView(), responseMessage, Snackbar.LENGTH_SHORT).show();
-            });
+            mDialog.show();
+            AuthService.startLogin(getActivity());
             return true;
         });
 
         // Handle the clicking of the logout field
         Preference logoutPref = findPreference(getString(R.string.pref_key_account_logout));
         logoutPref.setOnPreferenceClickListener(preference -> {
-            AuthManager authManager = new AuthManager(getActivity());
-            new MaterialDialog.Builder(getActivity())
+            mDialog = new MaterialDialog.Builder(getActivity())
                     .title(R.string.dialog_sure)
                     .content(R.string.dialog_logout_content)
                     .positiveText(R.string.dialog_okay)
                     .negativeText(R.string.dialog_cancel)
-                    .onPositive((dialog, which) -> authManager.logout((wasSuccess, responseMessage) -> updateViews()))
-                    .build().show();
+                    .onPositive(((dialog, which) -> AuthService.startLogout(getActivity())))
+                    .build();
+            mDialog.show();
             return true;
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver,
+                new IntentFilter(Consts.INTENT_MESSAGE_AUTH));
+    }
+
+    @Override
+    public void onPause() {
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mReceiver);
+        super.onPause();
     }
 
     private void updateViews() {

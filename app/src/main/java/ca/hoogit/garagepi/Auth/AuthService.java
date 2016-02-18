@@ -27,89 +27,188 @@ package ca.hoogit.garagepi.Auth;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
-/**
- * An {@link IntentService} subclass for handling asynchronous task requests in
- * a service on a separate handler thread.
- * <p>
- * TODO: Customize class - update intent actions, extra parameters and static
- * helper methods.
- */
+import com.google.gson.Gson;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import ca.hoogit.garagepi.Networking.Client;
+import ca.hoogit.garagepi.R;
+import ca.hoogit.garagepi.Utils.Consts;
+import ca.hoogit.garagepi.Utils.Helpers;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 public class AuthService extends IntentService {
-    // TODO: Rename actions, choose action names that describe tasks that this
-    // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    private static final String ACTION_FOO = "ca.hoogit.garagepi.Auth.action.FOO";
-    private static final String ACTION_BAZ = "ca.hoogit.garagepi.Auth.action.BAZ";
 
-    // TODO: Rename parameters
-    private static final String EXTRA_PARAM1 = "ca.hoogit.garagepi.Auth.extra.PARAM1";
-    private static final String EXTRA_PARAM2 = "ca.hoogit.garagepi.Auth.extra.PARAM2";
+    private static final String TAG = AuthService.class.getSimpleName();
+
+    private final Gson mGson = new Gson();
 
     public AuthService() {
         super("AuthService");
     }
 
-    /**
-     * Starts this service to perform action Foo with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     *
-     * @see IntentService
-     */
-    // TODO: Customize helper method
-    public static void startActionFoo(Context context, String param1, String param2) {
-        Intent intent = new Intent(context, AuthService.class);
-        intent.setAction(ACTION_FOO);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
-        context.startService(intent);
+    public static void startLogin(Context context) {
+        startAuthService(context, Consts.ACTION_AUTH_LOGIN);
     }
 
-    /**
-     * Starts this service to perform action Baz with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     *
-     * @see IntentService
-     */
-    // TODO: Customize helper method
-    public static void startActionBaz(Context context, String param1, String param2) {
+    public static void startLogout(Context context) {
+        startAuthService(context, Consts.ACTION_AUTH_LOGOUT);
+    }
+
+    private static void startAuthService(Context context, String action) {
         Intent intent = new Intent(context, AuthService.class);
-        intent.setAction(ACTION_BAZ);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
+        intent.setAction(action);
         context.startService(intent);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
+            final boolean hasInternet = Helpers.isNetworkAvailable(getApplicationContext());
             final String action = intent.getAction();
-            if (ACTION_FOO.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionFoo(param1, param2);
-            } else if (ACTION_BAZ.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionBaz(param1, param2);
+            User user = UserManager.getInstance().user();
+
+            if (action.equals(Consts.ACTION_AUTH_LOGIN)) {
+                if (!hasInternet) {
+                    broadcast(Consts.ERROR, false, getString(R.string.auth_message_no_internet));
+                } else if (!user.canAuthenticate()) {
+                    broadcast(Consts.ERROR, false, getString(R.string.auth_message_invalid_credentials));
+                } else {
+                    handleActionLogin(user);
+                }
+            } else if (action.equals(Consts.ACTION_AUTH_LOGOUT)) {
+                handleActionLogout(user);
             }
         }
     }
 
-    /**
-     * Handle action Foo in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionFoo(String param1, String param2) {
-        // TODO: Handle action Foo
-        throw new UnsupportedOperationException("Not yet implemented");
+    private void handleActionLogin(User user) {
+        if (user.getToken().isEmpty() || "None".equals(user.getToken())) {
+            authenticate(user);
+        } else {
+            if (validate(user)) {
+                Log.d(TAG, "handleActionLogin: Token is valid, will try refreshing.");
+                if (refresh(user)) {
+                    Log.d(TAG, "handleActionLogin: Refresh was successful");
+                    broadcast(Consts.ACTION_AUTH_LOGIN, true, getString(R.string.success_login));
+                } else {
+                    Log.d(TAG, "handleActionLogin: Refresh failed, attempting full authenticate");
+                    authenticate(user);
+                }
+            } else {
+                Log.d(TAG, "handleActionLogin: Token was invalid, trying to log in.");
+                authenticate(user);
+            }
+        }
     }
 
-    /**
-     * Handle action Baz in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionBaz(String param1, String param2) {
-        // TODO: Handle action Baz
-        throw new UnsupportedOperationException("Not yet implemented");
+    private void handleActionLogout(User user) {
+        try {
+            OkHttpClient client = Client.authClient(user.getToken());
+            Request.Builder request = buildRequest(Consts.ACTION_AUTH_LOGOUT);
+            if (request != null) {
+                Response response = client.newCall(request.build()).execute();
+                UserManager.getInstance().clear();
+                Log.d(TAG, "handleActionLogout: response: " + response.isSuccessful() + " " + response.message());
+                broadcast(Consts.ACTION_AUTH_LOGOUT, response.isSuccessful(), getString(R.string.success_logout));
+            }
+        } catch (IOException e) {
+            handleException(Consts.ACTION_AUTH_LOGOUT, e);
+        }
+    }
+
+    private void authenticate(User user) {
+        try {
+            OkHttpClient client = Client.get();
+            RequestBody formBody = new FormBody.Builder()
+                    .add(Consts.FIELD_LOGIN, user.getEmail())
+                    .add(Consts.FIELD_PASSWORD, user.getPassword())
+                    .build();
+            Request.Builder request = buildRequest(Consts.ACTION_AUTH_LOGIN);
+            if (request != null) {
+                request.post(formBody).build();
+                Response response = client.newCall(request.build()).execute();
+                String message = "Login failed, invalid email or password.";
+                if (response.isSuccessful()) {
+                    TokenResponse t = mGson.fromJson(response.body().string(), TokenResponse.class);
+                    message = "Successfully logged in.";
+                    user.setToken(t.token);
+                    user.save();
+                }
+                Log.d(TAG, "authenticate: status: " + response.isSuccessful() + " " + response.message());
+                broadcast(Consts.ACTION_AUTH_LOGIN, response.isSuccessful(), message);
+            }
+        } catch (IOException e) {
+            handleException(Consts.ACTION_AUTH_LOGIN, e);
+        }
+    }
+
+    private boolean validate(User user) {
+        try {
+            OkHttpClient client = Client.authClient(user.getToken());
+            Request.Builder request = buildRequest(Consts.ACTION_AUTH_TOKEN_VALIDATE);
+            if (request != null) {
+                Response response = client.newCall(request.build()).execute();
+                Log.d(TAG, "validate: response: " + response.isSuccessful() + " " + response.message());
+                return response.isSuccessful();
+            }
+        } catch (IOException e) {
+            handleException(Consts.ACTION_AUTH_TOKEN_VALIDATE, e);
+        }
+        return false;
+    }
+
+    private boolean refresh(User user) {
+        try {
+            OkHttpClient client = Client.authClient(user.getToken());
+            Request.Builder request = buildRequest(Consts.ACTION_AUTH_TOKEN_REFRESH);
+            if (request != null) {
+                Response response = client.newCall(request.build()).execute();
+                String message = getString(R.string.error_token_refresh);
+                if (response.isSuccessful()) {
+                    TokenResponse t = mGson.fromJson(response.body().string(), TokenResponse.class);
+                    message = getString(R.string.success_token_refresh);
+                    user.setToken(t.token);
+                    user.save();
+                }
+                Log.d(TAG, "refresh: " + message + " - " + response.message());
+                return response.isSuccessful();
+            }
+        } catch (IOException e) {
+            handleException(Consts.ACTION_AUTH_TOKEN_REFRESH, e);
+        }
+        return false;
+    }
+
+    private Request.Builder buildRequest(String action) {
+        try {
+            return new Request.Builder().url(Helpers.getApiRoute("auth", action));
+        } catch (MalformedURLException e) {
+            Log.e(TAG, "buildRequest: Invalid server address " + e.getMessage(), e);
+            broadcast(Consts.ERROR, false, getString(R.string.error_invalid_address));
+        }
+        return null;
+    }
+
+    private void handleException(String action, Exception e) {
+        Log.e(TAG, "validate: Request failed " + e.getMessage(), e);
+        broadcast(action, false, e.getMessage());
+    }
+
+    private void broadcast(String action, boolean wasSuccess, String message) {
+        Intent authResponse = new Intent(Consts.INTENT_MESSAGE_AUTH);
+        authResponse.putExtra(Consts.KEY_MESSAGE_AUTH_ACTION, action);
+        authResponse.putExtra(Consts.KEY_MESSAGE_AUTH_SUCCESS, wasSuccess);
+        authResponse.putExtra(Consts.KEY_MESSAGE_AUTH_MESSAGE, message);
+        LocalBroadcastManager.getInstance(getApplication()).sendBroadcast(authResponse);
+        Log.i(TAG, "broadcast: Auth status: " + wasSuccess + " - " + message);
     }
 }

@@ -83,5 +83,13 @@
     <string name="pref_key_account_logout">pref_key_account_logout</string>
     <string name="pref_summary_account_logout">This will delete all authentication information.</string>
     <string name="pref_title_account_logout">Logout</string>
+    <string name="auth_message_no_internet">No internet connection is available.</string>
+    <string name="auth_message_invalid_credentials">Email or password is empty</string>
+    <string name="not_implemented">Not yet implemented</string>
+    <string name="error_invalid_address">Invalid server address</string>
+    <string name="error_token_refresh">Refreshing token failed.</string>
+    <string name="success_token_refresh">Successfully refreshed authentication token</string>
+    <string name="success_login">Login was successful</string>
+    <string name="success_logout">Successfully logged out.</string>
 
 </resources>
