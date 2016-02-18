@@ -45,5 +45,6 @@ public class Consts {
     public static final String FIELD_LOGIN = "email";
     public static final String FIELD_PASSWORD = "password";
 
+    public static final int RESULT_SETTINGS = 2232;
     public static final int TOKEN_DISPLAY_LENGTH = 30;
 }

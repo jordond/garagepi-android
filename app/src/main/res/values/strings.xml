@@ -94,5 +94,7 @@
     <string name="not_implemented">Not yet implemented</string>
     <string name="error_auth_invalid">Login failed, invalid email or password.</string>
     <string name="success_auth">Successfully logged in.</string>
+    <string name="dialog_missing_cred">Missing Credentials</string>
+    <string name="dialog_missing_cred_content">You have not entered valid credentials, press okay to go back to settings.</string>
 
 </resources>

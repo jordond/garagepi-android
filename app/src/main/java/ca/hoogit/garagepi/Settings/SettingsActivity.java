@@ -49,7 +49,9 @@ import android.widget.EditText;
 
 import java.util.List;
 
+import ca.hoogit.garagepi.MainActivity;
 import ca.hoogit.garagepi.R;
+import ca.hoogit.garagepi.Utils.Consts;
 
 public class SettingsActivity extends AppCompatPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -106,7 +108,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish(); // TODO add finish result
+                setResult(RESULT_OK, new Intent(this, MainActivity.class));
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);

@@ -25,11 +25,7 @@
 package ca.hoogit.garagepi;
 
 import android.content.Intent;
-import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -38,7 +34,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,16 +41,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import ca.hoogit.garagepi.Auth.AuthService;
 import ca.hoogit.garagepi.Auth.User;
 import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.Settings.SettingsActivity;
+import ca.hoogit.garagepi.Utils.Consts;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
 
 public class MainActivity extends AppCompatActivity {
@@ -70,9 +65,12 @@ public class MainActivity extends AppCompatActivity {
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
-    @Bind(R.id.toolbar) Toolbar mToolbar;
-    @Bind(R.id.container) ViewPager mViewPager;
-    @Bind(R.id.tabs) TabLayout mTabLayout;
+    @Bind(R.id.toolbar)
+    Toolbar mToolbar;
+    @Bind(R.id.container)
+    ViewPager mViewPager;
+    @Bind(R.id.tabs)
+    TabLayout mTabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,22 +87,38 @@ public class MainActivity extends AppCompatActivity {
         // Check to make sure the user is authenticated
         User user = UserManager.getInstance().user();
         if (!user.canAuthenticate() || SharedPrefs.getInstance().isFirstRun()) {
-            // TODO Display dialog and launch settings activity
-            new MaterialDialog.Builder(this)
-                    .title(R.string.dialog_no_user_title)
-                    .content(R.string.dialog_no_user_content)
-                    .positiveText(R.string.dialog_okay)
-                    .cancelable(false)
-                    .onPositive((dialog, which) -> {
-                        startActivity(new Intent(this, SettingsActivity.class));
-                    }).build().show();
+            showCredentialsDialog(R.string.dialog_no_user_title, R.string.dialog_no_user_content);
         } else {
-            // TODO Start the auth service
+            if (savedInstanceState == null) {
+                AuthService.startLogin(this); // TODO implement broadcast receiver
+            }
         }
-
         SharedPrefs.getInstance().setFirstRun(false);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Consts.RESULT_SETTINGS) {
+            User user = UserManager.getInstance().user();
+            if (user.canAuthenticate()) {
+                AuthService.startLogin(this);
+            } else {
+                showCredentialsDialog(R.string.dialog_missing_cred, R.string.dialog_missing_cred_content);
+            }
+        }
+    }
+
+    private void showCredentialsDialog(int titleId, int contentID) {
+        new MaterialDialog.Builder(this)
+                .title(titleId)
+                .content(contentID)
+                .positiveText(R.string.dialog_okay)
+                .cancelable(false)
+                .onPositive((dialog, which) -> {
+                    Intent settings = new Intent(this, SettingsActivity.class);
+                    startActivityForResult(settings, Consts.RESULT_SETTINGS); // TODO FIX
+                }).build().show();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -119,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent settings = new Intent(this, SettingsActivity.class);
-            startActivity(settings);
+            startActivityForResult(settings, Consts.RESULT_SETTINGS);
             return true;
         }
 
