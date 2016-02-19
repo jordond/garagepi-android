@@ -22,14 +22,19 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi.Auth;
+package ca.hoogit.garagepi.Update;
 
 /**
  * Created by jordon on 18/02/16.
- * Interface for auth service events
+ * Response object for parsing with GSON
  */
-public interface IAuthEvent {
-    void onLogin(boolean wasSuccess, String message);
+public class GitApiResponse {
+    public String ref;
+    public String url;
+    public Commit object;
 
-    void onLogout(boolean wasSuccess, String message);
+    public class Commit {
+        public String sha;
+        public String url;
+    }
 }

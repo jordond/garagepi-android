@@ -31,21 +31,23 @@ import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import ca.hoogit.garagepi.Utils.BaseReceiver;
 import ca.hoogit.garagepi.Utils.Consts;
 
-public class AuthReceiver extends BroadcastReceiver {
+/**
+ * Created by jordon on 18/02/16.
+ * Receiver class for auth broadcasts
+ */
+public class AuthReceiver extends BaseReceiver {
 
-    private static final String TAG = AuthService.class.getSimpleName();
-
-    private Context mContext;
     private IAuthEvent mListener;
 
     public AuthReceiver(Context context) {
-        this.mContext = context;
+        super(context);
     }
 
     public AuthReceiver(Context context, IAuthEvent listener) {
-        this.mContext = context;
+        super(context);
         this.mListener = listener;
     }
 
@@ -53,30 +55,19 @@ public class AuthReceiver extends BroadcastReceiver {
         this.mListener = listener;
     }
 
-    public void register() {
-        LocalBroadcastManager
-                .getInstance(mContext)
-                .registerReceiver(this, new IntentFilter(Consts.INTENT_MESSAGE_AUTH));
-    }
-
-    public void unRegister() {
-        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(this);
+    @Override
+    public String getFilterName() {
+        return Consts.INTENT_MESSAGE_AUTH;
     }
 
     @Override
-    public void onReceive(Context context, Intent intent) {
-        String action = intent.getStringExtra(Consts.KEY_MESSAGE_AUTH_ACTION);
-        boolean wasSuccess = intent.getBooleanExtra(Consts.KEY_MESSAGE_AUTH_SUCCESS, false);
-        String message = intent.getStringExtra(Consts.KEY_MESSAGE_AUTH_MESSAGE);
-
-        if (action.equals(Consts.ACTION_AUTH_LOGIN)) {
-            mListener.onLogin(wasSuccess, message);
-        } else if (action.equals(Consts.ACTION_AUTH_LOGOUT)) {
-            mListener.onLogout(wasSuccess, message);
+    public void messageReceived(String action, boolean status, String message) {
+        if (mListener != null) {
+            if (action.equals(Consts.ACTION_AUTH_LOGIN)) {
+                mListener.onLogin(status, message);
+            } else if (action.equals(Consts.ACTION_AUTH_LOGOUT)) {
+                mListener.onLogout(status, message);
+            }
         }
-        mListener.onEvent(action, wasSuccess, message);
-        Log.d(TAG, "onReceive: Message received: Action:" + action + " Success: "
-                + wasSuccess + " Message: " + message);
     }
-
 }

@@ -22,14 +22,48 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi.Auth;
+package ca.hoogit.garagepi.Update;
+
+import android.content.Context;
+
+import ca.hoogit.garagepi.Auth.IAuthEvent;
+import ca.hoogit.garagepi.Utils.BaseReceiver;
+import ca.hoogit.garagepi.Utils.Consts;
 
 /**
  * Created by jordon on 18/02/16.
- * Interface for auth service events
+ * Receiver class for update broadcasts
  */
-public interface IAuthEvent {
-    void onLogin(boolean wasSuccess, String message);
+public class UpdateReceiver extends BaseReceiver {
 
-    void onLogout(boolean wasSuccess, String message);
+    private IUpdateEvent mListener;
+
+    public UpdateReceiver(Context context) {
+        super(context);
+    }
+
+    public UpdateReceiver(Context context, IUpdateEvent listener) {
+        super(context);
+        this.mListener = listener;
+    }
+
+    public void setListener(IUpdateEvent listener) {
+        this.mListener = listener;
+    }
+
+    @Override
+    public String getFilterName() {
+        return Consts.INTENT_MESSAGE_UPDATE;
+    }
+
+    @Override
+    public void messageReceived(String action, boolean status, String message) {
+        if (mListener != null) {
+            if (action.equals(Consts.ACTION_UPDATE_CHECK)) {
+                mListener.onUpdateResponse(status);
+            } else if (action.equals(Consts.ERROR)) {
+                mListener.onError(action, message);
+            }
+        }
+    }
 }

@@ -22,14 +22,12 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi.Auth;
+package ca.hoogit.garagepi.Utils;
 
 /**
  * Created by jordon on 18/02/16.
- * Interface for auth service events
+ * Basic interface for base receiver
  */
-public interface IAuthEvent {
-    void onLogin(boolean wasSuccess, String message);
-
-    void onLogout(boolean wasSuccess, String message);
+public interface IBaseReceiver {
+    void onMessage(String action, boolean status, String message);
 }

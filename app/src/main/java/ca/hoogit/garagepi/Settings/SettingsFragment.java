@@ -24,35 +24,32 @@
 
 package ca.hoogit.garagepi.Settings;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.widget.EditText;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import ca.hoogit.garagepi.Auth.AuthReceiver;
 import ca.hoogit.garagepi.Auth.AuthService;
-import ca.hoogit.garagepi.Auth.IAuthEvent;
 import ca.hoogit.garagepi.Auth.User;
 import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.R;
+import ca.hoogit.garagepi.Update.UpdateReceiver;
+import ca.hoogit.garagepi.Update.UpdateService;
 import ca.hoogit.garagepi.Update.Version;
 import ca.hoogit.garagepi.Utils.Consts;
+import ca.hoogit.garagepi.Utils.Helpers;
+import ca.hoogit.garagepi.Utils.IBaseReceiver;
 
 /**
  * Created by jordon on 12/02/16.
  * Handle the updating of the settings views
  */
-public class SettingsFragment extends PreferenceFragment {
+public class SettingsFragment extends PreferenceFragment implements IBaseReceiver {
 
     private static final String TAG = SettingsFragment.class.getSimpleName();
 
@@ -67,7 +64,8 @@ public class SettingsFragment extends PreferenceFragment {
         mListener = listener;
     }
 
-    private AuthReceiver mReceiver;
+    private AuthReceiver mAuthReceiver;
+    private UpdateReceiver mUpdateReceiver;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,11 +84,7 @@ public class SettingsFragment extends PreferenceFragment {
         // Handle the clicking of authenticate now field.
         Preference authPref = findPreference(getString(R.string.pref_key_account_authenticate));
         authPref.setOnPreferenceClickListener(preference -> {
-            mDialog = new MaterialDialog.Builder(getActivity())
-                    .title(R.string.dialog_authenticate_title)
-                    .content(R.string.dialog_wait)
-                    .progress(true, 0).build();
-
+            mDialog = Helpers.buildProgressDialog(getActivity());
             mDialog.show();
             AuthService.startLogin(getActivity());
             return true;
@@ -110,35 +104,39 @@ public class SettingsFragment extends PreferenceFragment {
             return true;
         });
 
-        mReceiver = new AuthReceiver(getActivity(), new IAuthEvent() {
-            @Override
-            public void onEvent(String action, boolean wasSuccess, String message) {
-                if (wasSuccess) {
-                    updateViews();
-                }
-                mDialog.dismiss();
-                Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onLogin(boolean wasSuccess, String message) {
-            }
-
-            @Override
-            public void onLogout(boolean wasSuccess, String message) {
-            }
+        Preference checkNowPref = findPreference(getString(R.string.pref_key_updates_check));
+        checkNowPref.setOnPreferenceClickListener(preference -> {
+            mDialog = Helpers.buildProgressDialog(getActivity());
+            mDialog.show();
+            UpdateService.startUpdateCheck(getActivity());
+            return true;
         });
+
+        mAuthReceiver = new AuthReceiver(getActivity());
+        mAuthReceiver.setOnMessage(this);
+
+        mUpdateReceiver = new UpdateReceiver(getActivity());
+        mUpdateReceiver.setOnMessage(this);
+    }
+
+    @Override
+    public void onMessage(String action, boolean status, String message) {
+        if (status) {
+            updateViews();
+        }
+        mDialog.dismiss();
+        Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mReceiver.register();
+        mAuthReceiver.register();
     }
 
     @Override
     public void onPause() {
-        mReceiver.unRegister();
+        mAuthReceiver.unRegister();
         super.onPause();
     }
 

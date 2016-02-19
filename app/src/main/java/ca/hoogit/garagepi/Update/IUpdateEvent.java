@@ -22,14 +22,13 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi.Auth;
+package ca.hoogit.garagepi.Update;
 
 /**
  * Created by jordon on 18/02/16.
- * Interface for auth service events
+ * Callbacks for update service events
  */
-public interface IAuthEvent {
-    void onLogin(boolean wasSuccess, String message);
-
-    void onLogout(boolean wasSuccess, String message);
+public interface IUpdateEvent {
+    void onUpdateResponse(boolean hasUpdate);
+    void onError(String action, String message);
 }

@@ -76,10 +76,17 @@ public class Version {
     }
 
     public String toString() {
-        this.name = "Name: " + this.name;
-        this.hash = "Hash: " + this.hash;
-        this.branch = "Branch: " + this.branch;
+        String name = "Name: " + this.name;
+        String hash = "Hash: " + this.hash;
+        String branch = "Branch: " + this.branch;
         return TextUtils.join("\n", new String[]{name, hash, branch});
+    }
+
+    public boolean isNewer(String hash) {
+        if (hash.length() > 7) {
+            hash = hash.substring(0, 7);
+        }
+        return !this.hash.equals(hash);
     }
 
     public static String output() {

@@ -32,16 +32,20 @@ public class Consts {
     public class SharedPrefs {
         public static final String KEY_FIRST_RUN = "first_run";
         public static final String KEY_USER_LAST_UPDATED = "user_last_updated";
+        public static final String KEY_UPDATE_LAST_CHECK = "last_update_check";
     }
     public static final String ACTION_AUTH_TOKEN_VALIDATE = "valid";
     public static final String ACTION_AUTH_TOKEN_REFRESH = "refresh";
     public static final String ACTION_AUTH_LOGOUT = "logout";
     public static final String ACTION_AUTH_LOGIN = "local";
+    public static final String ACTION_UPDATE_CHECK = "update_check";
+    public static final String ACTION_UPDATE_DOWNLOAD = "update_download";
     public static final String ERROR = "error";
     public static final String INTENT_MESSAGE_AUTH = "auth_message";
-    public static final String KEY_MESSAGE_AUTH_ACTION = "auth_action";
-    public static final String KEY_MESSAGE_AUTH_SUCCESS = "auth_success";
-    public static final String KEY_MESSAGE_AUTH_MESSAGE = "auth_message";
+    public static final String INTENT_MESSAGE_UPDATE = "update_message";
+    public static final String KEY_BROADCAST_ACTION = "action";
+    public static final String KEY_BROADCAST_SUCCESS = "success";
+    public static final String KEY_BROADCAST_MESSAGE = "message";
     public static final String FIELD_LOGIN = "email";
     public static final String FIELD_PASSWORD = "password";
 
