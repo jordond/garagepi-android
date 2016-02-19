@@ -121,11 +121,15 @@ public class SettingsFragment extends PreferenceFragment implements IBaseReceive
 
     @Override
     public void onMessage(String action, boolean status, String message) {
-        if (status) {
-            updateViews();
+        if (action.equals(Consts.ACTION_UPDATE_CHECK)) {
+            if (status) {
+                Helpers.buildUpdateAvailableDialog(getActivity()).show();
+            }
+        } else {
+            Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
         }
+        updateViews();
         mDialog.dismiss();
-        Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

@@ -32,6 +32,7 @@ import android.support.v7.widget.Toolbar;
 
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -47,7 +48,9 @@ import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.Settings.SettingsActivity;
 import ca.hoogit.garagepi.Update.UpdateReceiver;
 import ca.hoogit.garagepi.Update.UpdateService;
+import ca.hoogit.garagepi.Update.Version;
 import ca.hoogit.garagepi.Utils.Consts;
+import ca.hoogit.garagepi.Utils.Helpers;
 import ca.hoogit.garagepi.Utils.IBaseReceiver;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
 
@@ -82,8 +85,12 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, IBase
             showCredentialsDialog(R.string.dialog_no_user_title, R.string.dialog_no_user_content);
         } else {
             if (savedInstanceState == null) {
-                AuthService.startLogin(this);
-                // TODO Check for new update, if more than a day has passed.
+                if (UserManager.shouldAuthenticate()) {
+                    AuthService.startLogin(this);
+                }
+                if (Version.shouldCheckForUpdate()) {
+                    UpdateService.startUpdateCheck(this);
+                }
             }
         }
         SharedPrefs.getInstance().setFirstRun(false);
@@ -91,7 +98,13 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, IBase
 
     @Override
     public void onMessage(String action, boolean status, String message) {
-        Snackbar.make(mViewPager, message, Snackbar.LENGTH_SHORT).show();
+        if (action.equals(Consts.ACTION_UPDATE_CHECK)) {
+            if (status) {
+                Helpers.buildUpdateAvailableDialog(this).show();
+            }
+        } else {
+            Snackbar.make(mViewPager, message, Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -109,8 +122,9 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, IBase
         if (requestCode == Consts.RESULT_SETTINGS) {
             User user = UserManager.getInstance().user();
             if (user.canAuthenticate()) {
-                // TODO if last auth was less than an hour then reauth
-                AuthService.startLogin(this);
+                if (UserManager.shouldAuthenticate()) {
+                    AuthService.startLogin(this);
+                }
             } else {
                 showCredentialsDialog(R.string.dialog_missing_cred, R.string.dialog_missing_cred_content);
             }

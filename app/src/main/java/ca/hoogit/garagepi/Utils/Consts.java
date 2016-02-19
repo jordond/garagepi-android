@@ -49,6 +49,10 @@ public class Consts {
     public static final String FIELD_LOGIN = "email";
     public static final String FIELD_PASSWORD = "password";
 
+    public static final long HOUR_IN_MILLIS = 3600000;
+    public static final long MINIMUM_AUTH_DEBOUNCE_MILLIS = HOUR_IN_MILLIS;
+    public static final long MINIMUM_UPDATE_DEBOUNCE_MILLIS = HOUR_IN_MILLIS * 12;
+
     public static final int RESULT_SETTINGS = 2232;
     public static final int TOKEN_DISPLAY_LENGTH = 30;
 }

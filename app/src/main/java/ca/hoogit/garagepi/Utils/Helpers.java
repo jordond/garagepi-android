@@ -38,6 +38,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import ca.hoogit.garagepi.R;
+import ca.hoogit.garagepi.Update.UpdateService;
 
 /**
  * Created by jordon on 15/02/16.
@@ -115,5 +116,15 @@ public class Helpers {
                 .content(R.string.magic_is_happening)
                 .cancelable(false)
                 .progress(true, 0).build();
+    }
+
+    public static MaterialDialog buildUpdateAvailableDialog(Context context) {
+        return new MaterialDialog.Builder(context)
+                .title(R.string.update_available_title)
+                .content(R.string.update_available_content)
+                .positiveText(R.string.update_available_positive)
+                .neutralText(R.string.cancel)
+                .onPositive((dialog, which) -> UpdateService.startDownload(context))
+                .build();
     }
 }

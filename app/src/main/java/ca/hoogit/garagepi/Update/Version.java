@@ -28,6 +28,7 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import ca.hoogit.garagepi.BuildConfig;
+import ca.hoogit.garagepi.Utils.Consts;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
 
 /**
@@ -78,6 +79,10 @@ public class Version {
         this.branch = branch;
     }
 
+    public long getLastChecked() {
+        return lastChecked;
+    }
+
     public String toString() {
         String name = "Name: " + this.name;
         String hash = "Hash: " + this.hash;
@@ -112,5 +117,14 @@ public class Version {
         String hash = "Hash: " + BuildConfig.GitHash;
         String branch = "Branch: " + SharedPrefs.getInstance().getBranch();
         return TextUtils.join("\n", new String[]{currentVersion, hash, branch});
+    }
+
+    public static boolean shouldCheckForUpdate() {
+        if (SharedPrefs.getInstance().getAutoUpdatesEnabled()) {
+            long lastChecked = SharedPrefs.getInstance().getLastUpdateCheck();
+            long diff = System.currentTimeMillis() - lastChecked;
+            return lastChecked == 0 || diff >= Consts.MINIMUM_UPDATE_DEBOUNCE_MILLIS;
+        }
+        return false;
     }
 }

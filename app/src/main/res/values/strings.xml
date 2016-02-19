@@ -102,5 +102,9 @@
     <string name="github_api_path">/git/refs/heads/</string>
     <string name="github_api_root">https://api.github.com/repos/</string>
     <string name="magic_is_happening">Magic is happening!</string>
+    <string name="update_available_title">Update Available</string>
+    <string name="update_available_content">A new update is available, press update to continue.</string>
+    <string name="update_available_positive">Update</string>
+    <string name="cancel">Cancel</string>
 
 </resources>
