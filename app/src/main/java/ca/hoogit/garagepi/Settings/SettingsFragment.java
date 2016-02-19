@@ -166,7 +166,7 @@ public class SettingsFragment extends PreferenceFragment implements IBaseReceive
         // Update the last checked
         Preference checkNowPref = findPreference(getString(R.string.pref_key_updates_check));
         String checkNowSummary = getString(R.string.pref_summary_updates_check);
-        String lastChecked = "Never"; // TODO implement;
+        String lastChecked = Version.getPrettyLastChecked();
         checkNowPref.setSummary(checkNowSummary + " " + lastChecked);
     }
 }

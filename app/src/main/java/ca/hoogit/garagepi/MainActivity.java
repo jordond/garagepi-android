@@ -82,7 +82,8 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, IBase
             showCredentialsDialog(R.string.dialog_no_user_title, R.string.dialog_no_user_content);
         } else {
             if (savedInstanceState == null) {
-                AuthService.startLogin(this); // TODO implement broadcast receiver
+                AuthService.startLogin(this);
+                // TODO Check for new update, if more than a day has passed.
             }
         }
         SharedPrefs.getInstance().setFirstRun(false);
@@ -108,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, IBase
         if (requestCode == Consts.RESULT_SETTINGS) {
             User user = UserManager.getInstance().user();
             if (user.canAuthenticate()) {
+                // TODO if last auth was less than an hour then reauth
                 AuthService.startLogin(this);
             } else {
                 showCredentialsDialog(R.string.dialog_missing_cred, R.string.dialog_missing_cred_content);

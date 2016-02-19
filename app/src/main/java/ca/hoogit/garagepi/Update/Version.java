@@ -25,6 +25,7 @@
 package ca.hoogit.garagepi.Update;
 
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 
 import ca.hoogit.garagepi.BuildConfig;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
@@ -38,11 +39,13 @@ public class Version {
     private String name;
     private String hash;
     private String branch;
+    private long lastChecked;
 
     public Version() {
         this.name = BuildConfig.VERSION_NAME;
         this.hash = BuildConfig.GitHash;
         this.branch = SharedPrefs.getInstance().getBranch();
+        this.lastChecked = SharedPrefs.getInstance().getLastUpdateCheck();
     }
 
     public Version(String name, String hash, String branch) {
@@ -82,10 +85,25 @@ public class Version {
         return TextUtils.join("\n", new String[]{name, hash, branch});
     }
 
+    public static String getPrettyLastChecked() {
+        long lastChecked = SharedPrefs.getInstance().getLastUpdateCheck();
+        if (lastChecked == 0) {
+            return "Never";
+        } else {
+            return DateUtils
+                    .getRelativeTimeSpanString(
+                            lastChecked,
+                            System.currentTimeMillis(),
+                            DateUtils.MINUTE_IN_MILLIS)
+                    .toString();
+        }
+    }
+
     public boolean isNewer(String hash) {
         if (hash.length() > 7) {
             hash = hash.substring(0, 7);
         }
+        SharedPrefs.getInstance().setLastUpdateCheck();
         return !this.hash.equals(hash);
     }
 

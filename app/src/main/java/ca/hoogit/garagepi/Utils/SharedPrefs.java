@@ -77,6 +77,14 @@ public class SharedPrefs {
         return isDev ? "develop" : "master";
     }
 
+    public Long getLastUpdateCheck() {
+        return sharedPreferences.getLong(Consts.SharedPrefs.KEY_UPDATE_LAST_CHECK, 0);
+    }
+
+    public void setLastUpdateCheck() {
+        sharedPreferences.edit().putLong(Consts.SharedPrefs.KEY_UPDATE_LAST_CHECK, System.currentTimeMillis()).apply();
+    }
+
     /**
      * Shared Preferences accessors
      */
