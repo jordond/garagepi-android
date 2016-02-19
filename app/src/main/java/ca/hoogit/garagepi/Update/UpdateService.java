@@ -99,6 +99,7 @@ public class UpdateService extends IntentService {
                 throw new IOException("Update check failed");
             }
             GitApiResponse result = mGson.fromJson(response.body().string(), GitApiResponse.class);
+            response.body().close();
             String message = getString(R.string.no_update);
             boolean hasNewerVersion = currentVersion.isNewer(result.object.sha);
             if (hasNewerVersion) {

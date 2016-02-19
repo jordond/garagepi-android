@@ -155,6 +155,7 @@ public class AuthService extends IntentService {
                 UserManager.getInstance().clear();
                 Log.d(TAG, "handleActionLogout: response: " + response.isSuccessful() + " " + response.message());
                 Helpers.broadcast(this, Consts.ACTION_AUTH_LOGOUT, response.isSuccessful(), getString(R.string.success_logout));
+                response.body().close();
             }
         } catch (IOException e) {
             handleException(Consts.ACTION_AUTH_LOGOUT, e);
@@ -185,6 +186,7 @@ public class AuthService extends IntentService {
                 }
                 Log.d(TAG, "authenticate: status: " + response.isSuccessful() + " " + response.message());
                 Helpers.broadcast(this, Consts.ACTION_AUTH_LOGIN, response.isSuccessful(), message);
+                response.body().close();
             }
         } catch (IOException e) {
             handleException(Consts.ACTION_AUTH_LOGIN, e);
@@ -202,8 +204,10 @@ public class AuthService extends IntentService {
             Request.Builder request = buildRequest(Consts.ACTION_AUTH_TOKEN_VALIDATE);
             if (request != null) {
                 Response response = client.newCall(request.build()).execute();
-                Log.d(TAG, "validate: response: " + response.isSuccessful() + " " + response.message());
-                return response.isSuccessful();
+                boolean success = response.isSuccessful();
+                Log.d(TAG, "validate: response: " + success + " " + response.message());
+                response.body().close();
+                return success;
             }
         } catch (IOException e) {
             handleException(Consts.ACTION_AUTH_TOKEN_VALIDATE, e);
@@ -223,6 +227,7 @@ public class AuthService extends IntentService {
             Request.Builder request = buildRequest(Consts.ACTION_AUTH_TOKEN_REFRESH);
             if (request != null) {
                 Response response = client.newCall(request.build()).execute();
+                boolean success = response.isSuccessful();
                 String message = getString(R.string.error_token_refresh);
                 if (response.isSuccessful()) {
                     TokenResponse t = mGson.fromJson(response.body().string(), TokenResponse.class);
@@ -231,7 +236,8 @@ public class AuthService extends IntentService {
                     user.save();
                 }
                 Log.d(TAG, "refresh: " + message + " - " + response.message());
-                return response.isSuccessful();
+                response.body().close();
+                return success;
             }
         } catch (IOException e) {
             handleException(Consts.ACTION_AUTH_TOKEN_REFRESH, e);
