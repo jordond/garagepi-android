@@ -47,15 +47,9 @@
         <activity
             android:name=".Settings.SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".Update.UpdateActivity" />
 
         <service
             android:name=".Auth.AuthService"
-            android:exported="false" />
-
-        <receiver
-            android:name=".Auth.AuthReceiver"
-            android:enabled="false"
             android:exported="false" />
 
         <service
