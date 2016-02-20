@@ -127,4 +127,8 @@ public class Version {
         }
         return false;
     }
+
+    public static String getBuildBranch() {
+        return SharedPrefs.getInstance().getBranch();
+    }
 }

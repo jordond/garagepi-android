@@ -27,19 +27,30 @@ package ca.hoogit.garagepi.Update;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
 import com.google.gson.Gson;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 
 import ca.hoogit.garagepi.Networking.Client;
 import ca.hoogit.garagepi.R;
 import ca.hoogit.garagepi.Utils.Consts;
 import ca.hoogit.garagepi.Utils.Helpers;
+import ca.hoogit.garagepi.Utils.SharedPrefs;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okio.BufferedSink;
+import okio.Okio;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -114,6 +125,35 @@ public class UpdateService extends IntentService {
     }
 
     private void handleActionDownload() {
-        throw new UnsupportedOperationException("Not implemented");
+        // TODO store a list of downloaded git hash's, that way the same one isn't always downloaded, say if the CI build fails
+        try {
+            OkHttpClient client = Client.get();
+            String url = getString(R.string.download_root) + Version.getBuildBranch() + getString(R.string.download_paths);
+            Request request = new Request.Builder().url("https://ci.hoogit.ca/job/GaragePi.android.develop/lastSuccessfulBuild/artifact/app/build/outputs/apk/app-release.apk").build();
+
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                throw new IOException("Download failed" + response.message());
+            }
+            Helpers.broadcast(this, Consts.ACTION_UPDATE_DOWNLOAD_STARTED, true, "Update download has started");
+
+            File downloadedFile = new File(getFilesDir(), getString(R.string.download_filename));
+            BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
+            sink.writeAll(response.body().source());
+            sink.close();
+            response.body().close();
+            Helpers.broadcast(this, Consts.ACTION_UPDATE_DOWNLOAD_FINISHED, true, "Update download has finished");
+
+
+            throw new IOException(getFilesDir().toString());
+
+//            Intent install = new Intent(Intent.ACTION_VIEW);
+//            install.setDataAndType(Uri.fromFile(downloadedFile), "application/vnd.android.package-archive");
+//            install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            startActivity(install);
+        } catch (IOException e) {
+            Log.e(TAG, "handleActionCheck: Error has occurred", e);
+            Helpers.broadcast(this, Consts.ACTION_UPDATE_DOWNLOAD_FINISHED, false, e.getMessage());
+        }
     }
 }

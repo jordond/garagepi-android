@@ -28,4 +28,8 @@
     <string name="server_address_port">80</string>
     <string name="github_author">https://github.com/jordond</string>
     <string name="github_source">https://github.com/jordond/garagepi-android</string>
+    <string name="download_root">https://ci.hoogit.ca/job/GaragePi.android.</string>
+    <string name="download_paths">/lastSuccessfulBuild/artifact/app/build/outputs/apk/app-release.apk</string>
+    <string name="download_dir">/garagepi/</string>
+    <string name="download_filename">garagepi-update.apk</string>
 </resources>

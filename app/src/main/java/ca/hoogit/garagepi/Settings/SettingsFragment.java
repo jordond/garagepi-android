@@ -38,6 +38,7 @@ import ca.hoogit.garagepi.Auth.AuthService;
 import ca.hoogit.garagepi.Auth.User;
 import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.R;
+import ca.hoogit.garagepi.Update.IUpdateEvent;
 import ca.hoogit.garagepi.Update.UpdateReceiver;
 import ca.hoogit.garagepi.Update.UpdateService;
 import ca.hoogit.garagepi.Update.Version;
@@ -117,6 +118,23 @@ public class SettingsFragment extends PreferenceFragment implements IBaseReceive
 
         mUpdateReceiver = new UpdateReceiver(getActivity());
         mUpdateReceiver.setOnMessage(this);
+        mUpdateReceiver.setListener(new IUpdateEvent() {
+            @Override
+            public void onUpdateResponse(boolean hasUpdate) {
+
+            }
+
+            @Override
+            public void onDownloadStarted() {
+                mDialog = Helpers.buildProgressDialog(getActivity());
+                mDialog.show();
+            }
+
+            @Override
+            public void onDownloadFinished(boolean wasSuccess, String message) {
+                mDialog.dismiss();
+            }
+        });
     }
 
     @Override

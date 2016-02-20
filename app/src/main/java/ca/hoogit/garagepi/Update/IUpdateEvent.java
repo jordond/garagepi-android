@@ -30,5 +30,8 @@ package ca.hoogit.garagepi.Update;
  */
 public interface IUpdateEvent {
     void onUpdateResponse(boolean hasUpdate);
-    void onError(String action, String message);
+
+    void onDownloadStarted();
+
+    void onDownloadFinished(boolean wasSuccess, String message);
 }

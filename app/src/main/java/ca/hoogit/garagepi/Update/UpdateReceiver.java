@@ -59,10 +59,16 @@ public class UpdateReceiver extends BaseReceiver {
     @Override
     public void messageReceived(String action, boolean status, String message) {
         if (mListener != null) {
-            if (action.equals(Consts.ACTION_UPDATE_CHECK)) {
-                mListener.onUpdateResponse(status);
-            } else if (action.equals(Consts.ERROR)) {
-                mListener.onError(action, message);
+            switch (action) {
+                case Consts.ACTION_UPDATE_CHECK:
+                    mListener.onUpdateResponse(status);
+                    break;
+                case Consts.ACTION_UPDATE_DOWNLOAD_STARTED:
+                    mListener.onDownloadStarted();
+                    break;
+                case Consts.ACTION_UPDATE_DOWNLOAD_FINISHED:
+                    mListener.onDownloadFinished(status, message);
+                    break;
             }
         }
     }

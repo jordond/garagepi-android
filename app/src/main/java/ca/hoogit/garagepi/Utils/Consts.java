@@ -40,6 +40,9 @@ public class Consts {
     public static final String ACTION_AUTH_LOGIN = "local";
     public static final String ACTION_UPDATE_CHECK = "update_check";
     public static final String ACTION_UPDATE_DOWNLOAD = "update_download";
+    public static final String ACTION_UPDATE_DOWNLOAD_STARTED = "update_started";
+    public static final String ACTION_UPDATE_DOWNLOAD_FINISHED = "update_finished";
+    public static final String ACTION_UPDATE_DOWNLOAD_FAILED = "update_failed";
     public static final String ERROR = "error";
     public static final String INTENT_MESSAGE_AUTH = "auth_message";
     public static final String INTENT_MESSAGE_UPDATE = "update_message";
