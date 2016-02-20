@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -40,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.IOException;
 
 import ca.hoogit.garagepi.Networking.Client;
 import ca.hoogit.garagepi.R;
@@ -51,6 +53,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okio.BufferedSink;
 import okio.Okio;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in

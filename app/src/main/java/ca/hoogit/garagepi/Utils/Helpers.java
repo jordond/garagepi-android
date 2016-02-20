@@ -51,6 +51,7 @@ public class Helpers {
     /**
      * Check if internet access is available.
      * Grabbed from http://stackoverflow.com/questions/4238921/detect-whether-there-is-an-internet-connection-available-on-android
+     *
      * @param context Application context
      * @return State of internet connection
      */
@@ -63,8 +64,9 @@ public class Helpers {
 
     /**
      * Parse the url path, and rebuild it with supplied paths
+     *
      * @param oldUrl Original url
-     * @param paths Paths to add to the url
+     * @param paths  Paths to add to the url
      * @return String Built url
      * @throws MalformedURLException
      */
@@ -82,6 +84,7 @@ public class Helpers {
 
     /**
      * Build an api route, based on the user entered server address.
+     *
      * @param paths Paths to add to the server address
      * @return String Built url
      * @throws MalformedURLException
@@ -92,9 +95,10 @@ public class Helpers {
 
     /**
      * Helper method to broadcast the outcome of the service
-     * @param action Calling action
+     *
+     * @param action     Calling action
      * @param wasSuccess Whether or not action was successful
-     * @param message Outcome message
+     * @param message    Outcome message
      */
     public static void broadcast(Context context, String action, boolean wasSuccess, String message) {
         Intent broadcast = new Intent(Consts.INTENT_MESSAGE_AUTH);
@@ -107,6 +111,7 @@ public class Helpers {
 
     /**
      * Create a progress dialog
+     *
      * @param context Reference to calling activity
      * @return MaterialDialog Built progress dialog
      */
