@@ -27,17 +27,32 @@ package ca.hoogit.garagepi.Update;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.IOException;
 
 import ca.hoogit.garagepi.Networking.Client;
 import ca.hoogit.garagepi.R;
 import ca.hoogit.garagepi.Utils.Consts;
 import ca.hoogit.garagepi.Utils.Helpers;
+import ca.hoogit.garagepi.Utils.SharedPrefs;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okio.BufferedSink;
+import okio.Okio;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -99,9 +114,10 @@ public class UpdateService extends IntentService {
             if (!response.isSuccessful()) {
                 throw new IOException("Update check failed");
             }
-            GitApiResponse result = mGson.fromJson(response.body().toString(), GitApiResponse.class);
+            GitApiResponse result = mGson.fromJson(response.body().string(), GitApiResponse.class);
+            response.body().close();
             String message = getString(R.string.no_update);
-            boolean hasNewerVersion = currentVersion.isNewer(result.commit.sha);
+            boolean hasNewerVersion = currentVersion.isNewer(result.object.sha);
             if (hasNewerVersion) {
                 message = getString(R.string.update_available);
             }
@@ -114,6 +130,37 @@ public class UpdateService extends IntentService {
     }
 
     private void handleActionDownload() {
-        throw new UnsupportedOperationException("Not implemented");
+        // TODO store a list of downloaded git hash's, that way the same one isn't always downloaded, say if the CI build fails
+        try {
+            OkHttpClient client = Client.get();
+            String url = getString(R.string.download_root) + Version.getBuildBranch() + getString(R.string.download_paths);
+            Request request = new Request.Builder().url(url).build();
+
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                throw new IOException("Download failed" + response.message());
+            }
+            Helpers.broadcast(this, Consts.ACTION_UPDATE_DOWNLOAD_STARTED, true, "Update download has started");
+
+            File cacheDir = getExternalCacheDir();
+            if (cacheDir == null) {
+                throw new IOException("Could not get cache directory");
+            }
+            File downloadedFile = new File(cacheDir.getAbsolutePath(), getString(R.string.download_filename));
+            BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
+            sink.writeAll(response.body().source());
+            sink.close();
+
+            Intent install = new Intent(Intent.ACTION_VIEW);
+            install.setDataAndType(Uri.fromFile(downloadedFile), "application/vnd.android.package-archive");
+            install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(install);
+
+            Helpers.broadcast(this, Consts.ACTION_UPDATE_DOWNLOAD_FINISHED, true, "Update download has finished");
+            response.body().close();
+        } catch (IOException e) {
+            Log.e(TAG, "handleActionCheck: Error has occurred", e);
+            Helpers.broadcast(this, Consts.ACTION_UPDATE_DOWNLOAD_FINISHED, false, e.getMessage());
+        }
     }
 }

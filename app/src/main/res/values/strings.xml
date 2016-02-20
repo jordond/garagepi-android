@@ -98,5 +98,10 @@
     <string name="dialog_missing_cred_content">You have not entered valid credentials, press okay to go back to settings.</string>
     <string name="no_update">No update needed</string>
     <string name="update_available">A newer version is available!</string>
+    <string name="magic_is_happening">Magic is happening!</string>
+    <string name="update_available_title">Update Available</string>
+    <string name="update_available_content">A new update is available, press update to continue.</string>
+    <string name="update_available_positive">Update</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

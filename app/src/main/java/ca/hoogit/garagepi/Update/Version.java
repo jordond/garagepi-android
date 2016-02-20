@@ -25,8 +25,10 @@
 package ca.hoogit.garagepi.Update;
 
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 
 import ca.hoogit.garagepi.BuildConfig;
+import ca.hoogit.garagepi.Utils.Consts;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
 
 /**
@@ -38,11 +40,13 @@ public class Version {
     private String name;
     private String hash;
     private String branch;
+    private long lastChecked;
 
     public Version() {
         this.name = BuildConfig.VERSION_NAME;
         this.hash = BuildConfig.GitHash;
         this.branch = SharedPrefs.getInstance().getBranch();
+        this.lastChecked = SharedPrefs.getInstance().getLastUpdateCheck();
     }
 
     public Version(String name, String hash, String branch) {
@@ -75,17 +79,36 @@ public class Version {
         this.branch = branch;
     }
 
+    public long getLastChecked() {
+        return lastChecked;
+    }
+
     public String toString() {
-        this.name = "Name: " + this.name;
-        this.hash = "Hash: " + this.hash;
-        this.branch = "Branch: " + this.branch;
+        String name = "Name: " + this.name;
+        String hash = "Hash: " + this.hash;
+        String branch = "Branch: " + this.branch;
         return TextUtils.join("\n", new String[]{name, hash, branch});
+    }
+
+    public static String getPrettyLastChecked() {
+        long lastChecked = SharedPrefs.getInstance().getLastUpdateCheck();
+        if (lastChecked == 0) {
+            return "Never";
+        } else {
+            return DateUtils
+                    .getRelativeTimeSpanString(
+                            lastChecked,
+                            System.currentTimeMillis(),
+                            DateUtils.MINUTE_IN_MILLIS)
+                    .toString();
+        }
     }
 
     public boolean isNewer(String hash) {
         if (hash.length() > 7) {
             hash = hash.substring(0, 7);
         }
+        SharedPrefs.getInstance().setLastUpdateCheck();
         return !this.hash.equals(hash);
     }
 
@@ -94,5 +117,18 @@ public class Version {
         String hash = "Hash: " + BuildConfig.GitHash;
         String branch = "Branch: " + SharedPrefs.getInstance().getBranch();
         return TextUtils.join("\n", new String[]{currentVersion, hash, branch});
+    }
+
+    public static boolean shouldCheckForUpdate() {
+        if (SharedPrefs.getInstance().getAutoUpdatesEnabled()) {
+            long lastChecked = SharedPrefs.getInstance().getLastUpdateCheck();
+            long diff = System.currentTimeMillis() - lastChecked;
+            return lastChecked == 0 || diff >= Consts.MINIMUM_UPDATE_DEBOUNCE_MILLIS;
+        }
+        return false;
+    }
+
+    public static String getBuildBranch() {
+        return SharedPrefs.getInstance().getBranch();
     }
 }

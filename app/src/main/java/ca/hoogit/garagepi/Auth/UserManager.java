@@ -25,6 +25,7 @@
 package ca.hoogit.garagepi.Auth;
 
 import android.content.Context;
+import android.provider.Settings;
 import android.util.Log;
 
 import ca.hoogit.garagepi.R;
@@ -82,5 +83,11 @@ public class UserManager {
         prefs.get().edit().remove(mContext.getString(R.string.pref_key_account_token)).apply();
         prefs.get().edit().remove(Consts.SharedPrefs.KEY_USER_LAST_UPDATED).apply();
         return mUser = this.user();
+    }
+
+    public static boolean shouldAuthenticate() {
+        long lastAuth = SharedPrefs.getInstance().getLong(Consts.SharedPrefs.KEY_USER_LAST_UPDATED, 0);
+        long diff = System.currentTimeMillis() - lastAuth;
+        return lastAuth == 0 || diff >= Consts.MINIMUM_AUTH_DEBOUNCE_MILLIS;
     }
 }

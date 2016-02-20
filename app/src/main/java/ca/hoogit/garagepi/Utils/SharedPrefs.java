@@ -77,6 +77,18 @@ public class SharedPrefs {
         return isDev ? "develop" : "master";
     }
 
+    public boolean getAutoUpdatesEnabled() {
+        return sharedPreferences.getBoolean(mContext.getString(R.string.pref_key_updates_auto), false);
+    }
+
+    public Long getLastUpdateCheck() {
+        return sharedPreferences.getLong(Consts.SharedPrefs.KEY_UPDATE_LAST_CHECK, 0);
+    }
+
+    public void setLastUpdateCheck() {
+        sharedPreferences.edit().putLong(Consts.SharedPrefs.KEY_UPDATE_LAST_CHECK, System.currentTimeMillis()).apply();
+    }
+
     /**
      * Shared Preferences accessors
      */

@@ -22,51 +22,53 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi.Auth;
+package ca.hoogit.garagepi.Update;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
+import ca.hoogit.garagepi.Auth.IAuthEvent;
 import ca.hoogit.garagepi.Utils.BaseReceiver;
 import ca.hoogit.garagepi.Utils.Consts;
 
 /**
  * Created by jordon on 18/02/16.
- * Receiver class for auth broadcasts
+ * Receiver class for update broadcasts
  */
-public class AuthReceiver extends BaseReceiver {
+public class UpdateReceiver extends BaseReceiver {
 
-    private IAuthEvent mListener;
+    private IUpdateEvent mListener;
 
-    public AuthReceiver(Context context) {
+    public UpdateReceiver(Context context) {
         super(context);
     }
 
-    public AuthReceiver(Context context, IAuthEvent listener) {
+    public UpdateReceiver(Context context, IUpdateEvent listener) {
         super(context);
         this.mListener = listener;
     }
 
-    public void setListener(IAuthEvent listener) {
+    public void setListener(IUpdateEvent listener) {
         this.mListener = listener;
     }
 
     @Override
     public String getFilterName() {
-        return Consts.INTENT_MESSAGE_AUTH;
+        return Consts.INTENT_MESSAGE_UPDATE;
     }
 
     @Override
     public void messageReceived(String action, boolean status, String message) {
         if (mListener != null) {
-            if (action.equals(Consts.ACTION_AUTH_LOGIN)) {
-                mListener.onLogin(status, message);
-            } else if (action.equals(Consts.ACTION_AUTH_LOGOUT)) {
-                mListener.onLogout(status, message);
+            switch (action) {
+                case Consts.ACTION_UPDATE_CHECK:
+                    mListener.onUpdateResponse(status);
+                    break;
+                case Consts.ACTION_UPDATE_DOWNLOAD_STARTED:
+                    mListener.onDownloadStarted();
+                    break;
+                case Consts.ACTION_UPDATE_DOWNLOAD_FINISHED:
+                    mListener.onDownloadFinished(status, message);
+                    break;
             }
         }
     }

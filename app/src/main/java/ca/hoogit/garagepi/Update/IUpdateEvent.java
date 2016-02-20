@@ -26,15 +26,12 @@ package ca.hoogit.garagepi.Update;
 
 /**
  * Created by jordon on 18/02/16.
- * Response object for parsing with GSON
+ * Callbacks for update service events
  */
-public class GitApiResponse {
-    public String ref;
-    public String url;
-    public Commit object;
+public interface IUpdateEvent {
+    void onUpdateResponse(boolean hasUpdate);
 
-    public class Commit {
-        public String sha;
-        public String url;
-    }
+    void onDownloadStarted();
+
+    void onDownloadFinished(boolean wasSuccess, String message);
 }

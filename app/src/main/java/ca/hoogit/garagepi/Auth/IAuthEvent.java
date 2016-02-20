@@ -29,8 +29,6 @@ package ca.hoogit.garagepi.Auth;
  * Interface for auth service events
  */
 public interface IAuthEvent {
-    void onEvent(String action, boolean wasSuccess, String message);
-
     void onLogin(boolean wasSuccess, String message);
 
     void onLogout(boolean wasSuccess, String message);

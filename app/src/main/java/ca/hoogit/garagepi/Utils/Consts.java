@@ -32,13 +32,17 @@ public class Consts {
     public class SharedPrefs {
         public static final String KEY_FIRST_RUN = "first_run";
         public static final String KEY_USER_LAST_UPDATED = "user_last_updated";
+        public static final String KEY_UPDATE_LAST_CHECK = "last_update_check";
     }
     public static final String ACTION_AUTH_TOKEN_VALIDATE = "valid";
     public static final String ACTION_AUTH_TOKEN_REFRESH = "refresh";
     public static final String ACTION_AUTH_LOGOUT = "logout";
     public static final String ACTION_AUTH_LOGIN = "local";
-    public static final String ACTION_UPDATE_CHECK = "check_update";
-    public static final String ACTION_UPDATE_DOWNLOAD = "download_update";
+    public static final String ACTION_UPDATE_CHECK = "update_check";
+    public static final String ACTION_UPDATE_DOWNLOAD = "update_download";
+    public static final String ACTION_UPDATE_DOWNLOAD_STARTED = "update_started";
+    public static final String ACTION_UPDATE_DOWNLOAD_FINISHED = "update_finished";
+    public static final String ACTION_UPDATE_DOWNLOAD_FAILED = "update_failed";
     public static final String ERROR = "error";
     public static final String INTENT_MESSAGE_AUTH = "auth_message";
     public static final String INTENT_MESSAGE_UPDATE = "update_message";
@@ -47,6 +51,10 @@ public class Consts {
     public static final String KEY_BROADCAST_MESSAGE = "message";
     public static final String FIELD_LOGIN = "email";
     public static final String FIELD_PASSWORD = "password";
+
+    public static final long HOUR_IN_MILLIS = 3600000;
+    public static final long MINIMUM_AUTH_DEBOUNCE_MILLIS = HOUR_IN_MILLIS;
+    public static final long MINIMUM_UPDATE_DEBOUNCE_MILLIS = HOUR_IN_MILLIS * 12;
 
     public static final int RESULT_SETTINGS = 2232;
     public static final int TOKEN_DISPLAY_LENGTH = 30;

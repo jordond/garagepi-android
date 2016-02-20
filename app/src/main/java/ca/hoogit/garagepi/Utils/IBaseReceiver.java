@@ -22,19 +22,12 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi.Update;
+package ca.hoogit.garagepi.Utils;
 
 /**
  * Created by jordon on 18/02/16.
- * Response object for parsing with GSON
+ * Basic interface for base receiver
  */
-public class GitApiResponse {
-    public String ref;
-    public String url;
-    public Commit object;
-
-    public class Commit {
-        public String sha;
-        public String url;
-    }
+public interface IBaseReceiver {
+    void onMessage(String action, boolean status, String message);
 }

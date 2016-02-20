@@ -30,18 +30,11 @@ import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-
-import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -53,16 +46,22 @@ import ca.hoogit.garagepi.Auth.IAuthEvent;
 import ca.hoogit.garagepi.Auth.User;
 import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.Settings.SettingsActivity;
+import ca.hoogit.garagepi.Update.UpdateReceiver;
+import ca.hoogit.garagepi.Update.UpdateService;
+import ca.hoogit.garagepi.Update.Version;
 import ca.hoogit.garagepi.Utils.Consts;
+import ca.hoogit.garagepi.Utils.Helpers;
+import ca.hoogit.garagepi.Utils.IBaseReceiver;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
 
-public class MainActivity extends AppCompatActivity implements IAuthEvent {
+public class MainActivity extends AppCompatActivity implements IAuthEvent, IBaseReceiver {
 
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.container) ViewPager mViewPager;
     @Bind(R.id.tabs) TabLayout mTabLayout;
 
-    private AuthReceiver mReceiver;
+    private AuthReceiver mAuthReceiver;
+    private UpdateReceiver mUpdateReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +69,12 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        mReceiver = new AuthReceiver(this, this);
+        mAuthReceiver = new AuthReceiver(this);
+        mAuthReceiver.setListener(this);
+        mAuthReceiver.setOnMessage(this);
+
+        mUpdateReceiver = new UpdateReceiver(this);
+        mUpdateReceiver.setOnMessage(this);
 
         // Set up the toolbar and the placeholder viewpager. // TODO Replace
         setSupportActionBar(mToolbar);
@@ -81,15 +85,26 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
             showCredentialsDialog(R.string.dialog_no_user_title, R.string.dialog_no_user_content);
         } else {
             if (savedInstanceState == null) {
-                AuthService.startLogin(this); // TODO implement broadcast receiver
+                if (UserManager.shouldAuthenticate()) {
+                    AuthService.startLogin(this);
+                }
+                if (Version.shouldCheckForUpdate()) {
+                    UpdateService.startUpdateCheck(this);
+                }
             }
         }
         SharedPrefs.getInstance().setFirstRun(false);
     }
 
     @Override
-    public void onEvent(String action, boolean wasSuccess, String message) {
-        Snackbar.make(mViewPager, message, Snackbar.LENGTH_SHORT).show();
+    public void onMessage(String action, boolean status, String message) {
+        if (action.equals(Consts.ACTION_UPDATE_CHECK)) {
+            if (status) {
+                Helpers.buildUpdateAvailableDialog(this).show();
+            }
+        } else {
+            Snackbar.make(mViewPager, message, Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -107,7 +122,9 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
         if (requestCode == Consts.RESULT_SETTINGS) {
             User user = UserManager.getInstance().user();
             if (user.canAuthenticate()) {
-                AuthService.startLogin(this);
+                if (UserManager.shouldAuthenticate()) {
+                    AuthService.startLogin(this);
+                }
             } else {
                 showCredentialsDialog(R.string.dialog_missing_cred, R.string.dialog_missing_cred_content);
             }
@@ -148,12 +165,14 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
     @Override
     protected void onResume() {
         super.onResume();
-        mReceiver.register();
+        mAuthReceiver.register();
+        mUpdateReceiver.register();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mReceiver.unRegister();
+        mAuthReceiver.unRegister();
+        mUpdateReceiver.register();
     }
 }
