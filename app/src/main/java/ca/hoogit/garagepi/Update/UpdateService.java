@@ -129,7 +129,7 @@ public class UpdateService extends IntentService {
         try {
             OkHttpClient client = Client.get();
             String url = getString(R.string.download_root) + Version.getBuildBranch() + getString(R.string.download_paths);
-            Request request = new Request.Builder().url("https://ci.hoogit.ca/job/GaragePi.android.develop/lastSuccessfulBuild/artifact/app/build/outputs/apk/app-release.apk").build();
+            Request request = new Request.Builder().url(url).build();
 
             Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) {
@@ -137,20 +137,22 @@ public class UpdateService extends IntentService {
             }
             Helpers.broadcast(this, Consts.ACTION_UPDATE_DOWNLOAD_STARTED, true, "Update download has started");
 
-            File downloadedFile = new File(getFilesDir(), getString(R.string.download_filename));
+            File cacheDir = getExternalCacheDir();
+            if (cacheDir == null) {
+                throw new IOException("Could not get cache directory");
+            }
+            File downloadedFile = new File(cacheDir.getAbsolutePath(), getString(R.string.download_filename));
             BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
             sink.writeAll(response.body().source());
             sink.close();
-            response.body().close();
+
+            Intent install = new Intent(Intent.ACTION_VIEW);
+            install.setDataAndType(Uri.fromFile(downloadedFile), "application/vnd.android.package-archive");
+            install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(install);
+
             Helpers.broadcast(this, Consts.ACTION_UPDATE_DOWNLOAD_FINISHED, true, "Update download has finished");
-
-
-            throw new IOException(getFilesDir().toString());
-
-//            Intent install = new Intent(Intent.ACTION_VIEW);
-//            install.setDataAndType(Uri.fromFile(downloadedFile), "application/vnd.android.package-archive");
-//            install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            startActivity(install);
+            response.body().close();
         } catch (IOException e) {
             Log.e(TAG, "handleActionCheck: Error has occurred", e);
             Helpers.broadcast(this, Consts.ACTION_UPDATE_DOWNLOAD_FINISHED, false, e.getMessage());
