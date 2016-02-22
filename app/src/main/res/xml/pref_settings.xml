@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ The MIT License (MIT)
+  ~
+  ~ Copyright (c) 2016 Jordon de Hoog
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:key="@string/pref_category_key_server"
+        android:title="@string/pref_category_title_server">
+
+        <EditTextPreference
+            android:capitalize="none"
+            android:defaultValue="@string/server_address"
+            android:inputType="textUri"
+            android:key="@string/pref_key_server_address"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_title_server_address" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="pref_category_key_account"
+        android:title="Account">
+
+        <EditTextPreference
+            android:capitalize="none"
+            android:inputType="textEmailAddress"
+            android:key="@string/pref_key_account_email"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_title_account_email" />
+
+        <EditTextPreference
+            android:capitalize="none"
+            android:inputType="textPassword"
+            android:key="@string/pref_key_account_password"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_title_account_password" />
+
+        <Preference
+            android:defaultValue="none"
+            android:key="@string/pref_key_account_token"
+            android:summary="@string/pref_summary_account_token"
+            android:title="@string/pref_title_account_token" />
+
+        <Preference
+            android:key="@string/pref_key_account_authenticate"
+            android:summary="@string/pref_summary_account_authenticate"
+            android:title="@string/pref_summary_title_authenticate" />
+
+        <Preference
+            android:key="@string/pref_key_account_logout"
+            android:summary="@string/pref_summary_account_logout"
+            android:title="@string/pref_title_account_logout" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="@string/pref_category_key_updates"
+        android:title="@string/pref_category_title_updates">
+
+        <Preference
+            android:key="@string/pref_key_updates_version"
+            android:title="@string/pref_title_updates_version" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_key_updates_auto"
+            android:title="@string/pref_title_updates_auto" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/pref_key_updates_unstable"
+            android:summary="@string/pref_summary_updates_unstable"
+            android:title="@string/pref_title_updates_unstable" />
+
+        <Preference
+            android:key="@string/pref_key_updates_check"
+            android:summary="@string/pref_summary_updates_check"
+            android:title="@string/pref_title_updates_check" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="@string/pref_category_key_about"
+        android:title="@string/pref_category_title_about">
+
+        <Preference
+            android:key="@string/pref_key_about_author"
+            android:summary="@string/pref_summary_about_author"
+            android:title="@string/pref_title_about_author">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="@string/github_author" />
+        </Preference>
+
+        <Preference
+            android:key="@string/pref_key_about_source"
+            android:title="@string/pref_title_about_source">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="@string/github_source" />
+        </Preference>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

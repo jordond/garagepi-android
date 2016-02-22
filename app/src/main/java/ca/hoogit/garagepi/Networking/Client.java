@@ -22,18 +22,40 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi;
+package ca.hoogit.garagepi.Networking;
 
-import org.junit.Test;
+import android.util.Log;
 
-import static org.junit.Assert.*;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 /**
- * To work on unit tests, switch the Test Artifact in the Build Variants view.
+ * Created by jordon on 15/02/16.
+ * OkHttp client manager
  */
-public class ExampleUnitTest {
-    @Test
-    public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
+public class Client {
+
+    private static final String TAG = Client.class.getSimpleName();
+
+    public static OkHttpClient get() {
+        return new OkHttpClient.Builder().addInterceptor(chain -> {
+            Request request = chain.request();
+            Log.d(TAG, "get: " + request.method() + " " + request.url().toString());
+            return chain.proceed(request);
+        }).build();
+    }
+
+    public static OkHttpClient authClient(String token) {
+        return new OkHttpClient.Builder().addInterceptor(chain -> {
+            Request request = chain.request();
+            Request newRequest;
+
+            Log.d(TAG, "authClient: " + request.method() + " " + request.url().toString());
+
+            newRequest = request.newBuilder()
+                    .addHeader("Authorization", "Bearer " + token)
+                    .build();
+            return chain.proceed(newRequest);
+        }).build();
     }
 }

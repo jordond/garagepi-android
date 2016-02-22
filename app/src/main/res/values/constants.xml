@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ The MIT License (MIT)
   ~
   ~ Copyright (c) 2016 Jordon de Hoog
@@ -24,7 +23,18 @@
   -->
 
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <string name="server_address">https://hoogit.ca/garage</string>
+    <string name="server_address_port">80</string>
+
+    <string name="github_author">https://github.com/jordond</string>
+    <string name="github_source">https://github.com/jordond/garagepi-android</string>
+
+    <string name="download_root">https://ci.hoogit.ca/job/GaragePi.android.</string>
+    <string name="download_paths">/lastSuccessfulBuild/artifact/app/build/outputs/apk/app-release.apk</string>
+    <string name="download_dir">/garagepi/</string>
+    <string name="download_filename">garagepi-update.apk</string>
+
+    <string name="github_repo">jordond/garagepi-android</string>
+    <string name="github_api_root">https://api.github.com/repos/</string>
+    <string name="github_api_path">/git/refs/heads/</string>
 </resources>

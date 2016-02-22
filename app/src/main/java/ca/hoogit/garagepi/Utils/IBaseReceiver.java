@@ -22,18 +22,12 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi;
-
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+package ca.hoogit.garagepi.Utils;
 
 /**
- * To work on unit tests, switch the Test Artifact in the Build Variants view.
+ * Created by jordon on 18/02/16.
+ * Basic interface for base receiver
  */
-public class ExampleUnitTest {
-    @Test
-    public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
-    }
+public interface IBaseReceiver {
+    void onMessage(String action, boolean status, String message);
 }

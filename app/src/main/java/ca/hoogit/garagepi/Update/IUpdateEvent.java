@@ -22,18 +22,16 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi;
-
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+package ca.hoogit.garagepi.Update;
 
 /**
- * To work on unit tests, switch the Test Artifact in the Build Variants view.
+ * Created by jordon on 18/02/16.
+ * Callbacks for update service events
  */
-public class ExampleUnitTest {
-    @Test
-    public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
-    }
+public interface IUpdateEvent {
+    void onUpdateResponse(boolean hasUpdate);
+
+    void onDownloadStarted();
+
+    void onDownloadFinished(boolean wasSuccess, String message);
 }

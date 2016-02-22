@@ -24,16 +24,22 @@
 
 package ca.hoogit.garagepi;
 
-import org.junit.Test;
+import android.app.Application;
+import android.preference.PreferenceManager;
 
-import static org.junit.Assert.*;
+import ca.hoogit.garagepi.Auth.UserManager;
+import ca.hoogit.garagepi.Utils.SharedPrefs;
 
 /**
- * To work on unit tests, switch the Test Artifact in the Build Variants view.
+ * Created by jordon on 12/02/16.
+ * Entry-point for application
  */
-public class ExampleUnitTest {
-    @Test
-    public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
+public class GaragePiApp extends Application {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        SharedPrefs.create(this);
+        PreferenceManager.setDefaultValues(this, R.xml.pref_settings, false);
+        UserManager.init(this);
     }
 }

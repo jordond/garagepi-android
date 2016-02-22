@@ -22,18 +22,47 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi;
+package ca.hoogit.garagepi.Auth;
 
-import org.junit.Test;
+import android.content.Context;
 
-import static org.junit.Assert.*;
+import ca.hoogit.garagepi.Utils.BaseReceiver;
+import ca.hoogit.garagepi.Utils.Consts;
 
 /**
- * To work on unit tests, switch the Test Artifact in the Build Variants view.
+ * Created by jordon on 18/02/16.
+ * Receiver class for auth broadcasts
  */
-public class ExampleUnitTest {
-    @Test
-    public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
+public class AuthReceiver extends BaseReceiver {
+
+    private IAuthEvent mListener;
+
+    public AuthReceiver(Context context) {
+        super(context);
+    }
+
+    public AuthReceiver(Context context, IAuthEvent listener) {
+        super(context);
+        this.mListener = listener;
+    }
+
+    public void setListener(IAuthEvent listener) {
+        this.mListener = listener;
+    }
+
+    @Override
+    public String getFilterName() {
+        return Consts.INTENT_MESSAGE_AUTH;
+    }
+
+    @Override
+    public void messageReceived(String action, boolean status, String message) {
+        if (mListener != null) {
+            if (action.equals(Consts.ACTION_AUTH_LOGIN)) {
+                mListener.onLogin(status, message);
+            } else if (action.equals(Consts.ACTION_AUTH_LOGOUT)) {
+                mListener.onLogout(status, message);
+            }
+        }
     }
 }
