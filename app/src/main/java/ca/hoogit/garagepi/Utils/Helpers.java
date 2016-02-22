@@ -100,8 +100,8 @@ public class Helpers {
      * @param wasSuccess Whether or not action was successful
      * @param message    Outcome message
      */
-    public static void broadcast(Context context, String action, boolean wasSuccess, String message) {
-        Intent broadcast = new Intent(Consts.INTENT_MESSAGE_AUTH);
+    public static void broadcast(Context context, String filter, String action, boolean wasSuccess, String message) {
+        Intent broadcast = new Intent(filter);
         broadcast.putExtra(Consts.KEY_BROADCAST_ACTION, action);
         broadcast.putExtra(Consts.KEY_BROADCAST_SUCCESS, wasSuccess);
         broadcast.putExtra(Consts.KEY_BROADCAST_MESSAGE, message);
