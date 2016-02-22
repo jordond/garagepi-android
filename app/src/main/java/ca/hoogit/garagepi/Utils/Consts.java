@@ -51,6 +51,7 @@ public class Consts {
     public static final String KEY_BROADCAST_MESSAGE = "message";
     public static final String FIELD_LOGIN = "email";
     public static final String FIELD_PASSWORD = "password";
+    public static final String MIME_APK = "application/vnd.android.package-archive";
 
     public static final long HOUR_IN_MILLIS = 3600000;
     public static final long MINIMUM_AUTH_DEBOUNCE_MILLIS = HOUR_IN_MILLIS;

@@ -58,11 +58,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 /**
- * An {@link IntentService} subclass for handling asynchronous task requests in
- * a service on a separate handler thread.
- * <p>
- * TODO: Customize class - update intent actions, extra parameters and static
- * helper methods.
+ * Handle the checking and downloading of updates
  */
 public class UpdateService extends IntentService {
 
@@ -112,7 +108,7 @@ public class UpdateService extends IntentService {
 
             Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) {
-                throw new IOException("Update check failed");
+                throw new IOException(getString(R.string.check_failed));
             }
             GitApiResponse result = mGson.fromJson(response.body().string(), GitApiResponse.class);
             response.body().close();
@@ -133,18 +129,19 @@ public class UpdateService extends IntentService {
         // TODO store a list of downloaded git hash's, that way the same one isn't always downloaded, say if the CI build fails
         try {
             OkHttpClient client = Client.get();
-            String url = getString(R.string.download_root) + Version.getBuildBranch() + getString(R.string.download_paths);
+            String url = getString(R.string.download_root) + Version.getBuildBranch()
+                    + getString(R.string.download_paths);
             Request request = new Request.Builder().url(url).build();
 
             Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) {
-                throw new IOException("Download failed" + response.message());
+                throw new IOException(getString(R.string.download_failed) + response.message());
             }
-            broadcast(Consts.ACTION_UPDATE_DOWNLOAD_STARTED, true, "Update download has started");
+            broadcast(Consts.ACTION_UPDATE_DOWNLOAD_STARTED, true, getString(R.string.update_started));
 
             File cacheDir = getExternalCacheDir();
             if (cacheDir == null) {
-                throw new IOException("Could not get cache directory");
+                throw new IOException(getString(R.string.error_cache_directory));
             }
             File downloadedFile = new File(cacheDir.getAbsolutePath(), getString(R.string.download_filename));
             BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
@@ -152,11 +149,11 @@ public class UpdateService extends IntentService {
             sink.close();
 
             Intent install = new Intent(Intent.ACTION_VIEW);
-            install.setDataAndType(Uri.fromFile(downloadedFile), "application/vnd.android.package-archive");
+            install.setDataAndType(Uri.fromFile(downloadedFile), Consts.MIME_APK);
             install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(install);
 
-            broadcast(Consts.ACTION_UPDATE_DOWNLOAD_FINISHED, true, "Update download has finished");
+            broadcast(Consts.ACTION_UPDATE_DOWNLOAD_FINISHED, true, getString(R.string.update_finished));
             response.body().close();
         } catch (IOException e) {
             Log.e(TAG, "handleActionCheck: Error has occurred", e);

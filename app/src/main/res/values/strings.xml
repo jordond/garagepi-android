@@ -103,5 +103,10 @@
     <string name="update_available_content">A new update is available, press update to continue.</string>
     <string name="update_available_positive">Update</string>
     <string name="cancel">Cancel</string>
+    <string name="update_started">Update download has started</string>
+    <string name="download_failed">"Download failed "</string>
+    <string name="error_cache_directory">Could not get cache directory</string>
+    <string name="update_finished">Update download has finished</string>
+    <string name="check_failed">Update check failed</string>
 
 </resources>
