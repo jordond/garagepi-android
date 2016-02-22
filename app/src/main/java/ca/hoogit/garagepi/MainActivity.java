@@ -159,11 +159,13 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, IBase
     protected void onResume() {
         super.onResume();
         mAuthReceiver.register();
+        mUpdater.register();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mAuthReceiver.unRegister();
+        mUpdater.stop();
     }
 }

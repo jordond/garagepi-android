@@ -50,6 +50,14 @@ public class UpdateManager implements IUpdateEvent {
         mReceiver = new UpdateReceiver(context, this);
     }
 
+    public void register() {
+        this.mReceiver.register();
+    }
+
+    public void stop() {
+        this.mReceiver.unRegister();
+    }
+
     public void check() {
         check(false);
     }
@@ -60,7 +68,6 @@ public class UpdateManager implements IUpdateEvent {
 
     public void check(boolean force) {
         if (Version.shouldCheckForUpdate() || force) {
-            mReceiver.register();
             this.mDialog = Helpers.buildProgressDialog(mContext);
             mDialog.show();
             UpdateService.startUpdateCheck(mContext);
@@ -87,7 +94,6 @@ public class UpdateManager implements IUpdateEvent {
     @Override
     public void onDownloadFinished(boolean wasSuccess, String message) {
         mDialog.dismiss();
-        mReceiver.unRegister();
     }
 
     public static MaterialDialog buildUpdateAvailableDialog(Context context) {

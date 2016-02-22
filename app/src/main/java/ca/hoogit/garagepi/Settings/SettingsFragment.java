@@ -76,8 +76,8 @@ public class SettingsFragment extends PreferenceFragment {
             mListener.onBind(findPreference(getString(R.string.pref_key_account_password)));
         }
 
-
         mUpdater = new UpdateManager(getActivity());
+
         updateViews();
 
         // Handle the clicking of authenticate now field.
@@ -123,11 +123,13 @@ public class SettingsFragment extends PreferenceFragment {
     public void onResume() {
         super.onResume();
         mAuthReceiver.register();
+        mUpdater.register();
     }
 
     @Override
     public void onPause() {
         mAuthReceiver.unRegister();
+        mUpdater.stop();
         super.onPause();
     }
 
