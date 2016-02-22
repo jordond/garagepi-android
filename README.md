@@ -1,6 +1,8 @@
 # Garage Pi for Android
 Android client for garage pi control system.  To be paired with the [jordond/garagepi](http://github.com/jordond/garagepi) project.
 
+Checkout the develop branch for a more up-to-date version.
+
 [![Build Status](https://ci.hoogit.ca/buildStatus/icon?job=GaragePi.android.master)](https://ci.hoogit.ca/job/GaragePi.android.master/)
 
 # Installing
