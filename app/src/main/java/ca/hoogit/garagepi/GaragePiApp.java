@@ -26,7 +26,6 @@ package ca.hoogit.garagepi;
 
 import android.app.Application;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.Utils.SharedPrefs;

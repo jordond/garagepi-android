@@ -25,37 +25,25 @@
 package ca.hoogit.garagepi.Update;
 
 import android.app.IntentService;
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
-import android.os.Environment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.IOException;
 
 import ca.hoogit.garagepi.Networking.Client;
 import ca.hoogit.garagepi.R;
 import ca.hoogit.garagepi.Utils.Consts;
 import ca.hoogit.garagepi.Utils.Helpers;
-import ca.hoogit.garagepi.Utils.SharedPrefs;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okio.BufferedSink;
 import okio.Okio;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 /**
  * Handle the checking and downloading of updates

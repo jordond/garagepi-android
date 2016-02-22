@@ -26,12 +26,8 @@ package ca.hoogit.garagepi.Networking;
 
 import android.util.Log;
 
-import java.io.IOException;
-
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
 
 /**
  * Created by jordon on 15/02/16.

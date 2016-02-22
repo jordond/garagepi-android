@@ -24,12 +24,7 @@
 
 package ca.hoogit.garagepi.Auth;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import ca.hoogit.garagepi.Utils.BaseReceiver;
 import ca.hoogit.garagepi.Utils.Consts;

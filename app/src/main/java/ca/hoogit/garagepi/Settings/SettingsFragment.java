@@ -38,14 +38,9 @@ import ca.hoogit.garagepi.Auth.AuthService;
 import ca.hoogit.garagepi.Auth.User;
 import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.R;
-import ca.hoogit.garagepi.Update.IUpdateEvent;
 import ca.hoogit.garagepi.Update.UpdateManager;
-import ca.hoogit.garagepi.Update.UpdateReceiver;
-import ca.hoogit.garagepi.Update.UpdateService;
 import ca.hoogit.garagepi.Update.Version;
-import ca.hoogit.garagepi.Utils.Consts;
 import ca.hoogit.garagepi.Utils.Helpers;
-import ca.hoogit.garagepi.Utils.IBaseReceiver;
 
 /**
  * Created by jordon on 12/02/16.

@@ -25,9 +25,8 @@
 package ca.hoogit.garagepi.Auth;
 
 import android.app.IntentService;
-import android.content.Intent;
 import android.content.Context;
-import android.support.v4.content.LocalBroadcastManager;
+import android.content.Intent;
 import android.util.Log;
 
 import com.google.gson.Gson;

@@ -25,8 +25,6 @@
 package ca.hoogit.garagepi.Auth;
 
 import android.content.Context;
-import android.provider.Settings;
-import android.util.Log;
 
 import ca.hoogit.garagepi.R;
 import ca.hoogit.garagepi.Utils.Consts;

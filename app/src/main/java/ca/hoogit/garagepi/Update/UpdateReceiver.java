@@ -26,7 +26,6 @@ package ca.hoogit.garagepi.Update;
 
 import android.content.Context;
 
-import ca.hoogit.garagepi.Auth.IAuthEvent;
 import ca.hoogit.garagepi.Utils.BaseReceiver;
 import ca.hoogit.garagepi.Utils.Consts;
 

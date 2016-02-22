@@ -24,15 +24,11 @@
 
 package ca.hoogit.garagepi.Auth;
 
-import android.content.Context;
 import android.text.format.DateUtils;
-import android.util.Log;
 
 import java.io.Serializable;
 
-import ca.hoogit.garagepi.R;
 import ca.hoogit.garagepi.Utils.Consts;
-import ca.hoogit.garagepi.Utils.SharedPrefs;
 
 /**
  * Created by jordon on 15/02/16.
