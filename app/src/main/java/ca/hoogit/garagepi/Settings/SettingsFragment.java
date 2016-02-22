@@ -39,6 +39,7 @@ import ca.hoogit.garagepi.Auth.User;
 import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.R;
 import ca.hoogit.garagepi.Update.IUpdateEvent;
+import ca.hoogit.garagepi.Update.UpdateManager;
 import ca.hoogit.garagepi.Update.UpdateReceiver;
 import ca.hoogit.garagepi.Update.UpdateService;
 import ca.hoogit.garagepi.Update.Version;
@@ -50,12 +51,13 @@ import ca.hoogit.garagepi.Utils.IBaseReceiver;
  * Created by jordon on 12/02/16.
  * Handle the updating of the settings views
  */
-public class SettingsFragment extends PreferenceFragment implements IBaseReceiver {
+public class SettingsFragment extends PreferenceFragment {
 
     private static final String TAG = SettingsFragment.class.getSimpleName();
 
     private IBindPreference mListener;
     private MaterialDialog mDialog;
+    private UpdateManager mUpdater;
 
     public interface IBindPreference {
         void onBind(Preference preference);
@@ -66,7 +68,6 @@ public class SettingsFragment extends PreferenceFragment implements IBaseReceive
     }
 
     private AuthReceiver mAuthReceiver;
-    private UpdateReceiver mUpdateReceiver;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -80,6 +81,8 @@ public class SettingsFragment extends PreferenceFragment implements IBaseReceive
             mListener.onBind(findPreference(getString(R.string.pref_key_account_password)));
         }
 
+
+        mUpdater = new UpdateManager(getActivity());
         updateViews();
 
         // Handle the clicking of authenticate now field.
@@ -107,47 +110,18 @@ public class SettingsFragment extends PreferenceFragment implements IBaseReceive
 
         Preference checkNowPref = findPreference(getString(R.string.pref_key_updates_check));
         checkNowPref.setOnPreferenceClickListener(preference -> {
-            mDialog = Helpers.buildProgressDialog(getActivity());
-            mDialog.show();
-            UpdateService.startUpdateCheck(getActivity());
+            mUpdater.forceCheck();
             return true;
         });
 
         mAuthReceiver = new AuthReceiver(getActivity());
-        mAuthReceiver.setOnMessage(this);
-
-        mUpdateReceiver = new UpdateReceiver(getActivity());
-        mUpdateReceiver.setOnMessage(this);
-        mUpdateReceiver.setListener(new IUpdateEvent() {
-            @Override
-            public void onUpdateResponse(boolean hasUpdate) {
-
-            }
-
-            @Override
-            public void onDownloadStarted() {
-                mDialog = Helpers.buildProgressDialog(getActivity());
-                mDialog.show();
-            }
-
-            @Override
-            public void onDownloadFinished(boolean wasSuccess, String message) {
+        mAuthReceiver.setOnMessage((action, status, message) -> {
+            Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+            updateViews();
+            if (mDialog != null) {
                 mDialog.dismiss();
             }
         });
-    }
-
-    @Override
-    public void onMessage(String action, boolean status, String message) {
-        if (action.equals(Consts.ACTION_UPDATE_CHECK)) {
-            if (status) {
-                Helpers.buildUpdateAvailableDialog(getActivity()).show();
-            }
-        } else {
-            Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
-        }
-        updateViews();
-        mDialog.dismiss();
     }
 
     @Override

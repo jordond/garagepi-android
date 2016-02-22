@@ -46,6 +46,7 @@ import ca.hoogit.garagepi.Auth.IAuthEvent;
 import ca.hoogit.garagepi.Auth.User;
 import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.Settings.SettingsActivity;
+import ca.hoogit.garagepi.Update.UpdateManager;
 import ca.hoogit.garagepi.Update.UpdateReceiver;
 import ca.hoogit.garagepi.Update.UpdateService;
 import ca.hoogit.garagepi.Update.Version;
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, IBase
     @Bind(R.id.tabs) TabLayout mTabLayout;
 
     private AuthReceiver mAuthReceiver;
-    private UpdateReceiver mUpdateReceiver;
+    private UpdateManager mUpdater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +74,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, IBase
         mAuthReceiver.setListener(this);
         mAuthReceiver.setOnMessage(this);
 
-        mUpdateReceiver = new UpdateReceiver(this);
-        mUpdateReceiver.setOnMessage(this);
+        mUpdater = new UpdateManager(this);
 
         // Set up the toolbar and the placeholder viewpager. // TODO Replace
         setSupportActionBar(mToolbar);
@@ -88,9 +88,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, IBase
                 if (UserManager.shouldAuthenticate()) {
                     AuthService.startLogin(this);
                 }
-                if (Version.shouldCheckForUpdate()) {
-                    UpdateService.startUpdateCheck(this);
-                }
+                mUpdater.check();
             }
         }
         SharedPrefs.getInstance().setFirstRun(false);
@@ -166,13 +164,11 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, IBase
     protected void onResume() {
         super.onResume();
         mAuthReceiver.register();
-        mUpdateReceiver.register();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mAuthReceiver.unRegister();
-        mUpdateReceiver.register();
     }
 }

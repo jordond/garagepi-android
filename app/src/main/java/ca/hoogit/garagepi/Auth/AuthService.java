@@ -101,9 +101,9 @@ public class AuthService extends IntentService {
 
             if (action.equals(Consts.ACTION_AUTH_LOGIN)) {
                 if (!hasInternet) {
-                    Helpers.broadcast(this, Consts.ERROR, false, getString(R.string.auth_message_no_internet));
+                    broadcast(Consts.ERROR, false, getString(R.string.auth_message_no_internet));
                 } else if (!user.canAuthenticate()) {
-                    Helpers.broadcast(this, Consts.ERROR, false, getString(R.string.auth_message_invalid_credentials));
+                    broadcast(Consts.ERROR, false, getString(R.string.auth_message_invalid_credentials));
                 } else {
                     handleActionLogin(user);
                 }
@@ -128,7 +128,7 @@ public class AuthService extends IntentService {
                 Log.d(TAG, "handleActionLogin: Token is valid, will try refreshing.");
                 if (refresh(user)) {
                     Log.d(TAG, "handleActionLogin: Refresh was successful");
-                    Helpers.broadcast(this, Consts.ACTION_AUTH_LOGIN, true, getString(R.string.success_login));
+                    broadcast(Consts.ACTION_AUTH_LOGIN, true, getString(R.string.success_login));
                 } else {
                     Log.d(TAG, "handleActionLogin: Refresh failed, attempting full authenticate");
                     authenticate(user);
@@ -154,7 +154,7 @@ public class AuthService extends IntentService {
                 Response response = client.newCall(request.build()).execute();
                 UserManager.getInstance().clear();
                 Log.d(TAG, "handleActionLogout: response: " + response.isSuccessful() + " " + response.message());
-                Helpers.broadcast(this, Consts.ACTION_AUTH_LOGOUT, response.isSuccessful(), getString(R.string.success_logout));
+                broadcast(Consts.ACTION_AUTH_LOGOUT, response.isSuccessful(), getString(R.string.success_logout));
                 response.body().close();
             }
         } catch (IOException e) {
@@ -185,7 +185,7 @@ public class AuthService extends IntentService {
                     user.save();
                 }
                 Log.d(TAG, "authenticate: status: " + response.isSuccessful() + " " + response.message());
-                Helpers.broadcast(this, Consts.ACTION_AUTH_LOGIN, response.isSuccessful(), message);
+                broadcast(Consts.ACTION_AUTH_LOGIN, response.isSuccessful(), message);
                 response.body().close();
             }
         } catch (IOException e) {
@@ -256,7 +256,7 @@ public class AuthService extends IntentService {
             return new Request.Builder().url(Helpers.getApiRoute("auth", action));
         } catch (MalformedURLException e) {
             Log.e(TAG, "buildRequest: Invalid server address " + e.getMessage(), e);
-            Helpers.broadcast(this, Consts.ERROR, false, getString(R.string.error_invalid_address));
+            broadcast(Consts.ERROR, false, getString(R.string.error_invalid_address));
         }
         return null;
     }
@@ -268,6 +268,11 @@ public class AuthService extends IntentService {
      */
     private void handleException(String action, Exception e) {
         Log.e(TAG, "validate: Request failed " + e.getMessage(), e);
-        Helpers.broadcast(this, action, false, e.getMessage());
+        broadcast(action, false, e.getMessage());
     }
+
+    public void broadcast(String action, boolean wasSuccess, String message) {
+        Helpers.broadcast(this, Consts.INTENT_MESSAGE_AUTH, action, wasSuccess, message);
+    }
+
 }

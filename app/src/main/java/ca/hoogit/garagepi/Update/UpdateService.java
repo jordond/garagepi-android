@@ -122,10 +122,10 @@ public class UpdateService extends IntentService {
                 message = getString(R.string.update_available);
             }
             Log.i(TAG, "handleActionCheck: " + message);
-            Helpers.broadcast(this, Consts.ACTION_UPDATE_CHECK, hasNewerVersion, message);
+            broadcast(Consts.ACTION_UPDATE_CHECK, hasNewerVersion, message);
         } catch (IOException e) {
             Log.e(TAG, "handleActionCheck: Error has occurred", e);
-            Helpers.broadcast(this, Consts.ERROR, false, e.getMessage());
+            broadcast(Consts.ERROR, false, e.getMessage());
         }
     }
 
@@ -140,7 +140,7 @@ public class UpdateService extends IntentService {
             if (!response.isSuccessful()) {
                 throw new IOException("Download failed" + response.message());
             }
-            Helpers.broadcast(this, Consts.ACTION_UPDATE_DOWNLOAD_STARTED, true, "Update download has started");
+            broadcast(Consts.ACTION_UPDATE_DOWNLOAD_STARTED, true, "Update download has started");
 
             File cacheDir = getExternalCacheDir();
             if (cacheDir == null) {
@@ -156,11 +156,15 @@ public class UpdateService extends IntentService {
             install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(install);
 
-            Helpers.broadcast(this, Consts.ACTION_UPDATE_DOWNLOAD_FINISHED, true, "Update download has finished");
+            broadcast(Consts.ACTION_UPDATE_DOWNLOAD_FINISHED, true, "Update download has finished");
             response.body().close();
         } catch (IOException e) {
             Log.e(TAG, "handleActionCheck: Error has occurred", e);
-            Helpers.broadcast(this, Consts.ACTION_UPDATE_DOWNLOAD_FINISHED, false, e.getMessage());
+            broadcast(Consts.ACTION_UPDATE_DOWNLOAD_FINISHED, false, e.getMessage());
         }
+    }
+
+    public void broadcast(String action, boolean wasSuccess, String message) {
+        Helpers.broadcast(this, Consts.INTENT_MESSAGE_UPDATE, action, wasSuccess, message);
     }
 }
