@@ -91,7 +91,7 @@ public class UpdateService extends IntentService {
                     .url(getString(R.string.github_api_root) +
                             getString(R.string.github_repo) +
                             getString(R.string.github_api_path) +
-                            currentVersion.getBranch())
+                            Version.getBuildBranch())
                     .build();
 
             Response response = client.newCall(request).execute();

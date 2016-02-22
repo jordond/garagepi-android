@@ -61,6 +61,8 @@ android {
         versionCode 1
         versionName "1.0"
         buildConfigField "String", "GitHash", "\"${getGitHash()}\""
+        buildConfigField "String", "GitBranch", "\"${getGitBranch()}\""
+        buildConfigField "long", "BuildDate", System.currentTimeMillis() + "L"
     }
     buildTypes {
         release {
