@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi;
+package ca.hoogit.garagepi.Main;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -44,6 +44,8 @@ import ca.hoogit.garagepi.Auth.AuthService;
 import ca.hoogit.garagepi.Auth.IAuthEvent;
 import ca.hoogit.garagepi.Auth.User;
 import ca.hoogit.garagepi.Auth.UserManager;
+import ca.hoogit.garagepi.Controls.DoorsFragment;
+import ca.hoogit.garagepi.R;
 import ca.hoogit.garagepi.Settings.SettingsActivity;
 import ca.hoogit.garagepi.Update.UpdateManager;
 import ca.hoogit.garagepi.Utils.Consts;
@@ -60,6 +62,9 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
     private AuthManager mAuthManager;
     private UpdateManager mUpdateManager;
 
+    private SectionsPagingAdapter mAdapter;
+    private DoorsFragment mDoorsFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +77,10 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
 
         // Set up the toolbar and the placeholder viewpager. // TODO Replace
         setSupportActionBar(mToolbar);
+        mDoorsFragment = DoorsFragment.newInstance();
+        mAdapter = new SectionsPagingAdapter(getSupportFragmentManager(), mDoorsFragment);
+        mViewPager.setAdapter(mAdapter);
+        mTabLayout.setupWithViewPager(mViewPager);
 
         // Check to make sure the user is authenticated
         User user = UserManager.getInstance().user();
@@ -89,6 +98,9 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
     @Override
     public void onLogin(boolean wasSuccess, String message) {
         // TODO Start the socket and fragment views
+        // Initialize the doors fragment, i.e. get pin data
+        // mDoorsFragment.init()
+        // If already init'd, mDoorFragment.refresh()
     }
 
     @Override

@@ -24,11 +24,19 @@
 
 package ca.hoogit.garagepi.Utils;
 
+import android.content.IntentFilter;
+
 /**
  * Created by jordon on 12/02/16.
  * Some global constants
  */
 public class Consts {
+    public static final String ACTION_DOORS_QUERY = "doors_query";
+    public static final String ACTION_DOORS_TOGGLE = "doors_toggle";
+    public static final String KEY_DOOR_ID = "doors_id";
+    public static final String KEY_DOORS = "doors_array";
+    public static final String INTENT_MESSAGE_DOORS = "doors_message";
+
     public class SharedPrefs {
         public static final String KEY_FIRST_RUN = "first_run";
         public static final String KEY_USER_LAST_UPDATED = "user_last_updated";

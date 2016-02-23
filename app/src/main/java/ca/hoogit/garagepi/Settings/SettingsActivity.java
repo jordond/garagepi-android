@@ -35,7 +35,7 @@ import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 import android.widget.EditText;
 
-import ca.hoogit.garagepi.MainActivity;
+import ca.hoogit.garagepi.Main.MainActivity;
 import ca.hoogit.garagepi.R;
 
 public class SettingsActivity extends AppCompatPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {

@@ -25,17 +25,26 @@
 package ca.hoogit.garagepi.Controls;
 
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import ca.hoogit.garagepi.R;
+import ca.hoogit.garagepi.Utils.Consts;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -50,6 +59,23 @@ public class DoorsFragment extends Fragment {
 
     public DoorsFragment() {}
 
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getStringExtra(Consts.KEY_BROADCAST_ACTION);
+            if (Consts.ERROR.equals(action)) {
+                Toast.makeText(getActivity(), "Placeholder error", Toast.LENGTH_LONG).show();
+            } else if (Consts.ACTION_DOORS_QUERY.equals(action)) {
+                Door[] doors = (Door[]) intent.getSerializableExtra(Consts.KEY_DOORS);
+                if (doors != null) {
+                    Toast.makeText(getActivity(), "Success: " + doors.length, Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getActivity(), "Doors is null", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    };
+
     public static DoorsFragment newInstance() {
         return new DoorsFragment();
     }
@@ -57,6 +83,7 @@ public class DoorsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        DoorControlService.startActionQuery(getActivity());
     }
 
     @Override
@@ -72,4 +99,21 @@ public class DoorsFragment extends Fragment {
         return view;
     }
 
+    public void init() {
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mReceiver,
+                new IntentFilter(Consts.INTENT_MESSAGE_DOORS));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mReceiver);
+    }
 }

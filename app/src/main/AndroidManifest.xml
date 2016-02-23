@@ -36,7 +36,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".Main.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -52,13 +52,17 @@
         <service
             android:name=".Auth.AuthService"
             android:exported="false" />
-
         <service
             android:name=".Update.UpdateService"
             android:exported="false" />
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="894d182b0e0c98734be894889a1e2b0bf7e4a957" />
+
+        <service
+            android:name=".Controls.DoorControlService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

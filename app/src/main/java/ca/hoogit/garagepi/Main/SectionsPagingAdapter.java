@@ -22,23 +22,49 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi.Controls;
+package ca.hoogit.garagepi.Main;
 
-import java.io.Serializable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+
+import ca.hoogit.garagepi.Controls.DoorsFragment;
 
 /**
  * Created by jordon on 23/02/16.
- * Door model object
+ * PagerAdapter for {@link MainActivity}
  */
-public class Door implements Serializable {
+public class SectionsPagingAdapter extends FragmentPagerAdapter {
 
-    private String name;
-    private Pin input;
-    private Pin output;
+    private DoorsFragment mDoorsFragment;
 
-    public class Pin {
-        private int pin;
-        private boolean value;
+    public SectionsPagingAdapter(FragmentManager fm, DoorsFragment doorsFragment) {
+        super(fm);
+        this.mDoorsFragment = doorsFragment;
     }
 
+    @Override
+    public Fragment getItem(int position) {
+        switch (position) {
+            case 0:
+                return mDoorsFragment;
+        }
+        return null;
+    }
+
+    @Override
+    public int getCount() {
+        return 1; // TODO add other fragment
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        switch (position) {
+            case 0:
+                return "Controls";
+            case 1:
+                return "View";
+        }
+        return null;
+    }
 }
