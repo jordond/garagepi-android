@@ -25,7 +25,10 @@
 package ca.hoogit.garagepi.Update;
 
 import android.content.Context;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -35,7 +38,6 @@ import ca.hoogit.garagepi.Utils.Helpers;
 /**
  * Created by jordon on 22/02/16.
  * Handle all update related tasks
- * TODO Store list of hashes that have already been downloaded, to avoid re-downloading the same version
  */
 public class UpdateManager implements IUpdateEvent {
 
@@ -44,23 +46,62 @@ public class UpdateManager implements IUpdateEvent {
     private Context mContext;
     private MaterialDialog mDialog;
     private UpdateReceiver mReceiver;
+    private View mView;
 
+    /**
+     * Create the Manager object and set the Broadcast receiver's listener to this object
+     * @param context Calling activity
+     */
     public UpdateManager(Context context) {
         this.mContext = context;
         mReceiver = new UpdateReceiver(context, this);
     }
 
+    /**
+     * Create the manager and set the broadcast receivers listener to this object
+     * @param context Calling activity
+     * @param snackbarView View to attach SnackBar notifications to
+     */
+    public UpdateManager(Context context, View snackbarView) {
+        this.mContext = context;
+        this.mView = snackbarView;
+        mReceiver = new UpdateReceiver(context, this);
+    }
+
+    /**
+     * Register the UpdateReceiver with the local broadcast instance
+     */
+    public void register() {
+        this.mReceiver.register();
+    }
+
+    /**
+     * Unregister the UpdateReceiver with the local broadcast instance
+     */
+    public void stop() {
+        this.mReceiver.unRegister();
+    }
+
+    /**
+     * Check for an update only if a check hasn't happened within debounce limit
+     */
     public void check() {
         check(false);
     }
 
+    /**
+     * Check for an update regardless of when the last check took place
+     */
     public void forceCheck() {
         check(true);
     }
 
+    /**
+     * Call the update service and check for a new update
+     * @param force Ignore the last checked limit
+     */
     public void check(boolean force) {
         if (Version.shouldCheckForUpdate() || force) {
-            mReceiver.register();
             this.mDialog = Helpers.buildProgressDialog(mContext);
             mDialog.show();
             UpdateService.startUpdateCheck(mContext);
@@ -68,6 +109,18 @@ public class UpdateManager implements IUpdateEvent {
             Log.d(TAG, "check: Not checking for update");
         }
     }
+
+    /**
+     * Enable SnackBar notifications
+     * @param view View to attach the SnackBar too
+     */
+    public void enableNotifications(View view) {
+        this.mView = view;
+    }
+
+    /**
+     * IUpdateEvents
+     */
 
     @Override
     public void onUpdateResponse(boolean hasUpdate) {
@@ -87,9 +140,23 @@ public class UpdateManager implements IUpdateEvent {
     @Override
     public void onDownloadFinished(boolean wasSuccess, String message) {
         mDialog.dismiss();
-        mReceiver.unRegister();
     }
 
+    @Override
+    public void onError(String message) {
+        mDialog.dismiss();
+        if (mView != null) {
+            Snackbar.make(mView, message, Snackbar.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Build a dialog informing the user that an update is available
+     * @param context Calling activity
+     * @return Built MaterialDialog
+     */
     public static MaterialDialog buildUpdateAvailableDialog(Context context) {
         return new MaterialDialog.Builder(context)
                 .title(R.string.update_available_title)

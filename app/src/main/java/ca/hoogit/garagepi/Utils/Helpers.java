@@ -30,6 +30,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.format.DateUtils;
 import android.util.Log;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -47,6 +48,15 @@ import ca.hoogit.garagepi.Update.UpdateService;
 public class Helpers {
 
     private static final String TAG = Helpers.class.getSimpleName();
+
+    public static String epochToFromNow(long timestamp) {
+        return DateUtils
+                .getRelativeTimeSpanString(
+                        timestamp,
+                        System.currentTimeMillis(),
+                        DateUtils.MINUTE_IN_MILLIS)
+                .toString();
+    }
 
     /**
      * Check if internet access is available.

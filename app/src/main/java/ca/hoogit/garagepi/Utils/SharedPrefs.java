@@ -72,7 +72,7 @@ public class SharedPrefs {
         return sharedPreferences.getString(mContext.getString(R.string.pref_key_account_token), "");
     }
 
-    public String getBranch() {
+    public String getUpdateBranch() {
         boolean isDev = sharedPreferences.getBoolean(mContext.getString(R.string.pref_key_updates_unstable), false);
         return isDev ? "develop" : "master";
     }

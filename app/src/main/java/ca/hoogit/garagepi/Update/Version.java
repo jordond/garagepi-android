@@ -29,6 +29,7 @@ import android.text.format.DateUtils;
 
 import ca.hoogit.garagepi.BuildConfig;
 import ca.hoogit.garagepi.Utils.Consts;
+import ca.hoogit.garagepi.Utils.Helpers;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
 
 /**
@@ -45,7 +46,7 @@ public class Version {
     public Version() {
         this.name = BuildConfig.VERSION_NAME;
         this.hash = BuildConfig.GitHash;
-        this.branch = SharedPrefs.getInstance().getBranch();
+        this.branch = BuildConfig.GitBranch;
         this.lastChecked = SharedPrefs.getInstance().getLastUpdateCheck();
     }
 
@@ -86,8 +87,9 @@ public class Version {
     public String toString() {
         String name = "Name: " + this.name;
         String hash = "Hash: " + this.hash;
+        String built = "Built: " + Helpers.epochToFromNow(BuildConfig.BuildDate);
         String branch = "Branch: " + this.branch;
-        return TextUtils.join("\n", new String[]{name, hash, branch});
+        return TextUtils.join("\n", new String[]{name, hash, built, branch});
     }
 
     public static String getPrettyLastChecked() {
@@ -95,12 +97,7 @@ public class Version {
         if (lastChecked == 0) {
             return "Never";
         } else {
-            return DateUtils
-                    .getRelativeTimeSpanString(
-                            lastChecked,
-                            System.currentTimeMillis(),
-                            DateUtils.MINUTE_IN_MILLIS)
-                    .toString();
+            return Helpers.epochToFromNow(lastChecked);
         }
     }
 
@@ -115,8 +112,9 @@ public class Version {
     public static String output() {
         String currentVersion = "Name: " + BuildConfig.VERSION_NAME;
         String hash = "Hash: " + BuildConfig.GitHash;
-        String branch = "Branch: " + SharedPrefs.getInstance().getBranch();
-        return TextUtils.join("\n", new String[]{currentVersion, hash, branch});
+        String built = "Built: " + Helpers.epochToFromNow(BuildConfig.BuildDate);
+        String branch = "Branch: " + BuildConfig.GitBranch;
+        return TextUtils.join("\n", new String[]{currentVersion, hash, built, branch});
     }
 
     public static boolean shouldCheckForUpdate() {
@@ -129,6 +127,6 @@ public class Version {
     }
 
     public static String getBuildBranch() {
-        return SharedPrefs.getInstance().getBranch();
+        return SharedPrefs.getInstance().getUpdateBranch();
     }
 }

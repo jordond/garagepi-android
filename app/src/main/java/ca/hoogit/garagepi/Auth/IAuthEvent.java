@@ -32,4 +32,6 @@ public interface IAuthEvent {
     void onLogin(boolean wasSuccess, String message);
 
     void onLogout(boolean wasSuccess, String message);
+
+    void onError(String message);
 }
