@@ -114,7 +114,6 @@ public class UpdateService extends IntentService {
     }
 
     private void handleActionDownload() {
-        // TODO store a list of downloaded git hash's, that way the same one isn't always downloaded, say if the CI build fails
         try {
             OkHttpClient client = Client.get();
             String url = getString(R.string.download_root) + Version.getBuildBranch()
@@ -131,11 +130,14 @@ public class UpdateService extends IntentService {
             if (cacheDir == null) {
                 throw new IOException(getString(R.string.error_cache_directory));
             }
+
+            // Download the apk stream
             File downloadedFile = new File(cacheDir.getAbsolutePath(), getString(R.string.download_filename));
             BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));
             sink.writeAll(response.body().source());
             sink.close();
 
+            // Launch the Install view intent
             Intent install = new Intent(Intent.ACTION_VIEW);
             install.setDataAndType(Uri.fromFile(downloadedFile), Consts.MIME_APK);
             install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

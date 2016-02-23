@@ -38,7 +38,6 @@ import ca.hoogit.garagepi.Utils.Helpers;
 /**
  * Created by jordon on 22/02/16.
  * Handle all update related tasks
- * TODO Store list of hashes that have already been downloaded, to avoid re-downloading the same version
  */
 public class UpdateManager implements IUpdateEvent {
 
