@@ -34,4 +34,6 @@ public interface IUpdateEvent {
     void onDownloadStarted();
 
     void onDownloadFinished(boolean wasSuccess, String message);
+
+    void onError(String message);
 }

@@ -68,6 +68,9 @@ public class UpdateReceiver extends BaseReceiver {
                 case Consts.ACTION_UPDATE_DOWNLOAD_FINISHED:
                     mListener.onDownloadFinished(status, message);
                     break;
+                case Consts.ERROR:
+                    mListener.onError(message);
+                    break;
             }
         }
     }

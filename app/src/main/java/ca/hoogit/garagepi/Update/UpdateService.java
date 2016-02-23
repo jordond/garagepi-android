@@ -145,7 +145,7 @@ public class UpdateService extends IntentService {
             response.body().close();
         } catch (IOException e) {
             Log.e(TAG, "handleActionCheck: Error has occurred", e);
-            broadcast(Consts.ACTION_UPDATE_DOWNLOAD_FINISHED, false, e.getMessage());
+            broadcast(Consts.ERROR, false, e.getMessage());
         }
     }
 

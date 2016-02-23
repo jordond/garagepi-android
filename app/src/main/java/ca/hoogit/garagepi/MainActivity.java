@@ -38,6 +38,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import ca.hoogit.garagepi.Auth.AuthManager;
 import ca.hoogit.garagepi.Auth.AuthReceiver;
 import ca.hoogit.garagepi.Auth.AuthService;
 import ca.hoogit.garagepi.Auth.IAuthEvent;
@@ -50,14 +51,14 @@ import ca.hoogit.garagepi.Utils.Helpers;
 import ca.hoogit.garagepi.Utils.IBaseReceiver;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
 
-public class MainActivity extends AppCompatActivity implements IAuthEvent, IBaseReceiver {
+public class MainActivity extends AppCompatActivity implements IAuthEvent {
 
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.container) ViewPager mViewPager;
     @Bind(R.id.tabs) TabLayout mTabLayout;
 
-    private AuthReceiver mAuthReceiver;
-    private UpdateManager mUpdater;
+    private AuthManager mAuthManager;
+    private UpdateManager mUpdateManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,11 +66,9 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, IBase
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        mAuthReceiver = new AuthReceiver(this);
-        mAuthReceiver.setListener(this);
-        mAuthReceiver.setOnMessage(this);
-
-        mUpdater = new UpdateManager(this);
+        mAuthManager = new AuthManager(this, this);
+        mAuthManager.enableNotifications(mViewPager);
+        mUpdateManager = new UpdateManager(this);
 
         // Set up the toolbar and the placeholder viewpager. // TODO Replace
         setSupportActionBar(mToolbar);
@@ -80,24 +79,11 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, IBase
             showCredentialsDialog(R.string.dialog_no_user_title, R.string.dialog_no_user_content);
         } else {
             if (savedInstanceState == null) {
-                if (UserManager.shouldAuthenticate()) {
-                    AuthService.startLogin(this);
-                }
-                mUpdater.check();
+                mAuthManager.authenticate();
+                mUpdateManager.check();
             }
         }
         SharedPrefs.getInstance().setFirstRun(false);
-    }
-
-    @Override
-    public void onMessage(String action, boolean status, String message) {
-        if (action.equals(Consts.ACTION_UPDATE_CHECK)) {
-            if (status) {
-                Helpers.buildUpdateAvailableDialog(this).show();
-            }
-        } else {
-            Snackbar.make(mViewPager, message, Snackbar.LENGTH_SHORT).show();
-        }
     }
 
     @Override
@@ -111,13 +97,16 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, IBase
     }
 
     @Override
+    public void onError(String message) {
+
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Consts.RESULT_SETTINGS) {
             User user = UserManager.getInstance().user();
             if (user.canAuthenticate()) {
-                if (UserManager.shouldAuthenticate()) {
-                    AuthService.startLogin(this);
-                }
+                mAuthManager.authenticate();
             } else {
                 showCredentialsDialog(R.string.dialog_missing_cred, R.string.dialog_missing_cred_content);
             }
@@ -158,14 +147,14 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, IBase
     @Override
     protected void onResume() {
         super.onResume();
-        mAuthReceiver.register();
-        mUpdater.register();
+        mAuthManager.register();
+        mUpdateManager.register();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mAuthReceiver.unRegister();
-        mUpdater.stop();
+        mAuthManager.stop();
+        mUpdateManager.stop();
     }
 }

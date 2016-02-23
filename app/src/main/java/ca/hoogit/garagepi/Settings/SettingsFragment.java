@@ -29,10 +29,14 @@ import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.design.widget.Snackbar;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import ca.hoogit.garagepi.Auth.AuthManager;
 import ca.hoogit.garagepi.Auth.AuthReceiver;
 import ca.hoogit.garagepi.Auth.AuthService;
 import ca.hoogit.garagepi.Auth.User;
@@ -51,8 +55,9 @@ public class SettingsFragment extends PreferenceFragment {
     private static final String TAG = SettingsFragment.class.getSimpleName();
 
     private IBindPreference mListener;
-    private MaterialDialog mDialog;
-    private UpdateManager mUpdater;
+
+    private AuthManager mAuthManager;
+    private UpdateManager mUpdateManager;
 
     public interface IBindPreference {
         void onBind(Preference preference);
@@ -61,8 +66,6 @@ public class SettingsFragment extends PreferenceFragment {
     public void setBindListener(IBindPreference listener) {
         mListener = listener;
     }
-
-    private AuthReceiver mAuthReceiver;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,60 +79,52 @@ public class SettingsFragment extends PreferenceFragment {
             mListener.onBind(findPreference(getString(R.string.pref_key_account_password)));
         }
 
-        mUpdater = new UpdateManager(getActivity());
+        mAuthManager = new AuthManager(getActivity());
+        mUpdateManager = new UpdateManager(getActivity());
 
         updateViews();
 
         // Handle the clicking of authenticate now field.
         Preference authPref = findPreference(getString(R.string.pref_key_account_authenticate));
         authPref.setOnPreferenceClickListener(preference -> {
-            mDialog = Helpers.buildProgressDialog(getActivity());
-            mDialog.show();
-            AuthService.startLogin(getActivity());
+            mAuthManager.forceAuthWithDialog();
             return true;
         });
 
         // Handle the clicking of the logout field
         Preference logoutPref = findPreference(getString(R.string.pref_key_account_logout));
         logoutPref.setOnPreferenceClickListener(preference -> {
-            mDialog = new MaterialDialog.Builder(getActivity())
-                    .title(R.string.dialog_sure)
-                    .content(R.string.dialog_logout_content)
-                    .positiveText(R.string.dialog_okay)
-                    .negativeText(R.string.dialog_cancel)
-                    .onPositive(((dialog, which) -> AuthService.startLogout(getActivity())))
-                    .build();
-            mDialog.show();
+            mAuthManager.logout();
             return true;
         });
 
         Preference checkNowPref = findPreference(getString(R.string.pref_key_updates_check));
         checkNowPref.setOnPreferenceClickListener(preference -> {
-            mUpdater.forceCheck();
+            mUpdateManager.forceCheck();
             return true;
         });
 
-        mAuthReceiver = new AuthReceiver(getActivity());
-        mAuthReceiver.setOnMessage((action, status, message) -> {
-            Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
-            updateViews();
-            if (mDialog != null) {
-                mDialog.dismiss();
-            }
-        });
+        mAuthManager.onMessage((action, status, message) -> updateViews());
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        mAuthManager.enableNotifications(view);
+        return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mAuthReceiver.register();
-        mUpdater.register();
+        mAuthManager.register();
+        mUpdateManager.register();
     }
 
     @Override
     public void onPause() {
-        mAuthReceiver.unRegister();
-        mUpdater.stop();
+        mAuthManager.stop();
+        mUpdateManager.stop();
         super.onPause();
     }
 

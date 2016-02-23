@@ -25,7 +25,10 @@
 package ca.hoogit.garagepi.Update;
 
 import android.content.Context;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -44,9 +47,16 @@ public class UpdateManager implements IUpdateEvent {
     private Context mContext;
     private MaterialDialog mDialog;
     private UpdateReceiver mReceiver;
+    private View mView;
 
     public UpdateManager(Context context) {
         this.mContext = context;
+        mReceiver = new UpdateReceiver(context, this);
+    }
+
+    public UpdateManager(Context context, View snackbarView) {
+        this.mContext = context;
+        this.mView = snackbarView;
         mReceiver = new UpdateReceiver(context, this);
     }
 
@@ -76,6 +86,10 @@ public class UpdateManager implements IUpdateEvent {
         }
     }
 
+    public void enableNotifications(View view) {
+        this.mView = view;
+    }
+
     @Override
     public void onUpdateResponse(boolean hasUpdate) {
         this.mDialog.dismiss();
@@ -94,6 +108,16 @@ public class UpdateManager implements IUpdateEvent {
     @Override
     public void onDownloadFinished(boolean wasSuccess, String message) {
         mDialog.dismiss();
+    }
+
+    @Override
+    public void onError(String message) {
+        mDialog.dismiss();
+        if (mView != null) {
+            Snackbar.make(mView, message, Snackbar.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
+        }
     }
 
     public static MaterialDialog buildUpdateAvailableDialog(Context context) {

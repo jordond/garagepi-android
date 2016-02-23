@@ -58,10 +58,16 @@ public class AuthReceiver extends BaseReceiver {
     @Override
     public void messageReceived(String action, boolean status, String message) {
         if (mListener != null) {
-            if (action.equals(Consts.ACTION_AUTH_LOGIN)) {
-                mListener.onLogin(status, message);
-            } else if (action.equals(Consts.ACTION_AUTH_LOGOUT)) {
-                mListener.onLogout(status, message);
+            switch (action) {
+                case Consts.ACTION_AUTH_LOGIN:
+                    mListener.onLogin(status, message);
+                    break;
+                case Consts.ACTION_AUTH_LOGOUT:
+                    mListener.onLogout(status, message);
+                    break;
+                case Consts.ERROR:
+                    mListener.onError(message);
+                    break;
             }
         }
     }
