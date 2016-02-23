@@ -50,12 +50,22 @@ public class AuthManager implements IAuthEvent {
     private AuthReceiver mReceiver;
     private IAuthEvent mAuthEventListener;
 
+    /**
+     * Create the Manager object and set the Broadcast receiver's listener to this object
+     * @param context Calling activity
+     */
     public AuthManager(Context context) {
         this.mContext = context;
         this.mDialog = new MaterialDialog.Builder(context).build();
         this.mReceiver = new AuthReceiver(context, this);
     }
 
+    /**
+     * In addition to this class listening for IAuthEvents, allow an additional listener to be
+     * attached.
+     * @param context Calling activity
+     * @param listener Additional IAuthEvent listener
+     */
     public AuthManager(Context context, IAuthEvent listener) {
         this.mContext = context;
         this.mAuthEventListener = listener;
@@ -63,34 +73,65 @@ public class AuthManager implements IAuthEvent {
         this.mReceiver = new AuthReceiver(context, this);
     }
 
+    /**
+     * Show snackbar notifications upon errors, or IAuthEvents
+     * @param view View to attach snackbar too
+     */
     public void enableNotifications(View view) {
         this.mView = view;
     }
 
+    /**
+     * Accessor method to add an additional IAuthEvent listener
+     * @param listener Additional IAuthEvent listener
+     */
     public void onAuthEvent(IAuthEvent listener) {
         this.mAuthEventListener = listener;
     }
 
+    /**
+     * Set a listener for when the receiver sends any message
+     * @param listener BaseReceiver listener
+     */
     public void onMessage(IBaseReceiver listener) {
         this.mReceiver.setOnMessage(listener);
     }
 
+    /**
+     * Register the AuthReceiver with the local broadcast instance
+     */
     public void register() {
         this.mReceiver.register();
     }
 
+    /**
+     * Unregister the AuthReceiver with the local broadcast instance
+     */
     public void stop() {
         this.mReceiver.unRegister();
     }
 
+    /**
+     * Silently authenticate the User with the server, and only if an authentication is needed
+     * i.e. No progress dialogs, and if it's been too soon since the last auth
+     */
     public void authenticate() {
         authenticate(false, false);
     }
 
+    /**
+     * Force an authentication regardless of when the last auth was, as well as showing a progress
+     * dialog.
+     */
     public void forceAuthWithDialog() {
         authenticate(true, true);
     }
 
+    /**
+     * Call the authentication service to attempt to authenticate the user with the server
+     * @param showDialog Whether or not to show a progress dialog
+     * @param force Ignore the debounce check for authenticating
+     */
     public void authenticate(boolean showDialog, boolean force) {
         mDialog.dismiss();
         if (showDialog) {
@@ -102,11 +143,18 @@ public class AuthManager implements IAuthEvent {
         }
     }
 
+    /**
+     * Call the logout method of the authentication service
+     */
     public void logout() {
         mDialog.dismiss();
         mDialog = buildLogoutDialog(mContext);
         mDialog.show();
     }
+
+    /**
+     * IAuthEvents
+     */
 
     @Override
     public void onLogin(boolean wasSuccess, String message) {
@@ -137,6 +185,11 @@ public class AuthManager implements IAuthEvent {
         }
     }
 
+    /**
+     * Helper method to determine whether or not to display a Snackbar notification
+     * @param message Desired output message
+     * @return Whether or not a notification was displayed
+     */
     private boolean showNotification(String message) {
         if (mView != null) {
             Snackbar.make(mView, message, Snackbar.LENGTH_LONG).show();
@@ -145,6 +198,11 @@ public class AuthManager implements IAuthEvent {
         return false;
     }
 
+    /**
+     * Build a dialog informing the user of the desire to logout
+     * @param context Calling activity
+     * @return Built MaterialDialog
+     */
     public static MaterialDialog buildLogoutDialog(Context context) {
         return new MaterialDialog.Builder(context)
                 .title(R.string.dialog_sure)
