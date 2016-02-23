@@ -29,6 +29,8 @@ import android.preference.PreferenceManager;
 
 import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by jordon on 12/02/16.
@@ -38,6 +40,7 @@ public class GaragePiApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
         SharedPrefs.create(this);
         PreferenceManager.setDefaultValues(this, R.xml.pref_settings, false);
         UserManager.init(this);

@@ -56,6 +56,9 @@
         <service
             android:name=".Update.UpdateService"
             android:exported="false" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="894d182b0e0c98734be894889a1e2b0bf7e4a957" />
     </application>
 
 </manifest>
