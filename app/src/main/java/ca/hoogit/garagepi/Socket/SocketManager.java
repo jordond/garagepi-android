@@ -58,17 +58,21 @@ public class SocketManager {
         setSyncUrl();
     }
 
+    public Socket socket() {
+        return mSocket == null ? get() : mSocket;
+    }
+
     public Socket get() {
-        if (mSocket == null) {
-            try {
-                IO.Options opts = new IO.Options();
-                opts.forceNew = true;
-                opts.query = "token=" + UserManager.getInstance().user().getToken();
-                mSocket = IO.socket(mSyncUrl, opts);
-                Log.d(TAG, "get: Creating new socket object");
-            } catch (URISyntaxException e) {
-                Log.e(TAG, "connect: Error", e);
-            }
+        try {
+            IO.Options opts = new IO.Options();
+            //opts.forceNew = true;
+            opts.reconnectionAttempts = 3;
+            opts.path = "/garage/sync";
+            opts.query = "token=" + UserManager.getInstance().user().getToken();
+            mSocket = IO.socket("https://hoogit.ca", opts);
+            Log.d(TAG, "get: Creating new socket URL: " + mSyncUrl + opts.path);
+        } catch (URISyntaxException e) {
+            Log.e(TAG, "connect: Error", e);
         }
         return mSocket;
     }
@@ -76,6 +80,10 @@ public class SocketManager {
     public void connect() {
         if (mSocket == null) {
             get();
+        } else {
+            if (mSocket.connected()) {
+                mSocket.disconnect();
+            }
         }
         mSocket.connect();
         Log.d(TAG, "connect: Attempting to connect to socket server");
@@ -90,7 +98,7 @@ public class SocketManager {
 
     public void setSyncUrl() {
         try {
-            this.mSyncUrl = Helpers.getApiRoute("sync");
+            this.mSyncUrl = Helpers.getApiRoute();
         } catch (MalformedURLException e) {
             Log.e(TAG, "setSyncUrl: URL Error", e);
         }

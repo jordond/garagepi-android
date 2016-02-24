@@ -45,14 +45,14 @@ public class SocketEvents {
     private static final String TAG = SocketEvents.class.getSimpleName();
 
     private Activity mActivity;
-    private ISocketEvent mListener;
+    private IConnectionEvent mListener;
     private IDoorEvent mDoorListener;
 
     public SocketEvents(Activity activity) {
         this.mActivity = activity;
     }
 
-    public SocketEvents(Activity activity, ISocketEvent listener) {
+    public SocketEvents(Activity activity, IConnectionEvent listener) {
         this.mActivity = activity;
         this.mListener = listener;
     }
@@ -62,13 +62,13 @@ public class SocketEvents {
         this.mDoorListener = listener;
     }
 
-    public SocketEvents(Activity activity, ISocketEvent connectionListener, IDoorEvent doorListener) {
+    public SocketEvents(Activity activity, IConnectionEvent connectionListener, IDoorEvent doorListener) {
         this.mActivity = activity;
         this.mListener = connectionListener;
         this.mDoorListener = doorListener;
     }
 
-    public void onConnectionEvent(ISocketEvent listener) {
+    public void onConnectionEvent(IConnectionEvent listener) {
         this.mListener = listener;
     }
 
@@ -77,9 +77,10 @@ public class SocketEvents {
     }
 
     public void on() {
-        Socket socket = SocketManager.getInstance().get();
+        Socket socket = SocketManager.getInstance().socket();
         if (socket != null) {
             Log.d(TAG, "on: Registering all listeners");
+            socket.on(Socket.EVENT_CONNECT, onConnected);
             socket.on(Socket.EVENT_CONNECT_ERROR, onConnectionError);
             socket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectionError);
             socket.on(Consts.EVENT_DOOR_CHANGE, onDoorChange);
@@ -87,8 +88,9 @@ public class SocketEvents {
     }
 
     public void off() {
-        Socket socket = SocketManager.getInstance().get();
+        Socket socket = SocketManager.getInstance().socket();
         if (socket != null) {
+            socket.off(Socket.EVENT_CONNECT, onConnected);
             socket.off(Socket.EVENT_CONNECT_ERROR, onConnectionError);
             socket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectionError);
             socket.off(Consts.EVENT_DOOR_CHANGE, onDoorChange);
@@ -96,7 +98,15 @@ public class SocketEvents {
         }
     }
 
+    private Emitter.Listener onConnected = args -> mActivity.runOnUiThread(() -> {
+        Log.d(TAG, "onConnected: Socket has successfully connected");
+        if (mListener != null) {
+            mListener.onConnected();
+        }
+    });
+
     private Emitter.Listener onConnectionError = args -> mActivity.runOnUiThread(() -> {
+        Object[] one = args;
         Log.e(TAG, "onConnectionError: SocketIO Failed to connect");
         if (mListener != null) {
             mListener.onConnectionError(mActivity.getString(R.string.socket_connect_failed));

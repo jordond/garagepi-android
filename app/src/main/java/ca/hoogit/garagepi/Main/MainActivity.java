@@ -33,6 +33,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -51,6 +52,10 @@ import ca.hoogit.garagepi.Controls.DoorManager;
 import ca.hoogit.garagepi.Controls.DoorsFragment;
 import ca.hoogit.garagepi.R;
 import ca.hoogit.garagepi.Settings.SettingsActivity;
+import ca.hoogit.garagepi.Socket.IConnectionEvent;
+import ca.hoogit.garagepi.Socket.IDoorEvent;
+import ca.hoogit.garagepi.Socket.SocketEvents;
+import ca.hoogit.garagepi.Socket.SocketManager;
 import ca.hoogit.garagepi.Update.UpdateManager;
 import ca.hoogit.garagepi.Utils.Consts;
 import ca.hoogit.garagepi.Utils.Helpers;
@@ -67,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
     private UpdateManager mUpdateManager;
     private DoorManager mDoorManager;
 
+    private SocketEvents mSocketEvents;
+
     private SectionsPagingAdapter mAdapter;
     private DoorsFragment mDoorsFragment;
 
@@ -80,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
         mAuthManager.enableNotifications(mViewPager);
         mUpdateManager = new UpdateManager(this);
         mDoorManager = new DoorManager(this, this);
+
 
         // Set up the toolbar and the placeholder viewpager. // TODO Replace
         setSupportActionBar(mToolbar);
@@ -100,12 +108,32 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
                 mUpdateManager.check();
             }
         }
+
+        mSocketEvents = new SocketEvents(this);
+        mSocketEvents.on();
+        mSocketEvents.onConnectionEvent(new IConnectionEvent() {
+            @Override
+            public void onConnected() {
+                // TODO handle connection?
+            }
+
+            @Override
+            public void onConnectionError(String message) {
+                Toast.makeText(getApplication(), "Socket: " + message, Toast.LENGTH_LONG).show();
+            }
+        });
+        mSocketEvents.onDoorEvent(changed -> {
+
+        });
+
+        SocketManager.getInstance().connect();
         SharedPrefs.getInstance().setFirstRun(false);
     }
 
     @Override
     public void onLogin(boolean wasSuccess, String message) {
         if (wasSuccess) {
+            SocketManager.getInstance().connect();
             mDoorManager.query();
         }
         // TODO Start the socket and fragment views
@@ -117,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
     @Override
     public void onLogout(boolean wasSuccess, String message) {
         // TODO Handle logout by stopping all socket activity
+        SocketManager.getInstance().disconnect();
     }
 
     @Override
@@ -188,5 +217,12 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
         mAuthManager.stop();
         mUpdateManager.stop();
         mDoorManager.stop();
+        mSocketEvents.off();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SocketManager.getInstance().disconnect();
     }
 }

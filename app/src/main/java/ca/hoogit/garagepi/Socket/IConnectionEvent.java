@@ -28,7 +28,7 @@ package ca.hoogit.garagepi.Socket;
  * Created by jordon on 23/02/16.
  * Socket Connection related events
  */
-public interface ISocketEvent {
+public interface IConnectionEvent {
     void onConnected();
 
     void onConnectionError(String message);
