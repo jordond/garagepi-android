@@ -22,56 +22,14 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi.Controls;
+package ca.hoogit.garagepi.Socket;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import java.io.Serializable;
+import ca.hoogit.garagepi.Controls.Door;
 
 /**
  * Created by jordon on 23/02/16.
- * Door model object
+ * Callback listener for Door events
  */
-public class Door implements Serializable, Parcelable {
-
-    public String name;
-    public Pin input;
-    public Pin output;
-
-    public class Pin {
-        public int pin;
-        public boolean value;
-    }
-
-    protected Door(Parcel in) {
-        name = in.readString();
-        input = (Pin) in.readValue(Pin.class.getClassLoader());
-        output = (Pin) in.readValue(Pin.class.getClassLoader());
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
-        dest.writeValue(input);
-        dest.writeValue(output);
-    }
-
-    @SuppressWarnings("unused")
-    public static final Parcelable.Creator<Door> CREATOR = new Parcelable.Creator<Door>() {
-        @Override
-        public Door createFromParcel(Parcel in) {
-            return new Door(in);
-        }
-
-        @Override
-        public Door[] newArray(int size) {
-            return new Door[size];
-        }
-    };
+public interface IDoorEvent {
+    void onStateChange(Door changed);
 }
