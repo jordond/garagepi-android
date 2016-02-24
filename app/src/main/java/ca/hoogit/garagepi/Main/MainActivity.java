@@ -36,6 +36,8 @@ import android.view.MenuItem;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.ArrayList;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import ca.hoogit.garagepi.Auth.AuthManager;
@@ -44,6 +46,8 @@ import ca.hoogit.garagepi.Auth.AuthService;
 import ca.hoogit.garagepi.Auth.IAuthEvent;
 import ca.hoogit.garagepi.Auth.User;
 import ca.hoogit.garagepi.Auth.UserManager;
+import ca.hoogit.garagepi.Controls.Door;
+import ca.hoogit.garagepi.Controls.DoorManager;
 import ca.hoogit.garagepi.Controls.DoorsFragment;
 import ca.hoogit.garagepi.R;
 import ca.hoogit.garagepi.Settings.SettingsActivity;
@@ -53,7 +57,7 @@ import ca.hoogit.garagepi.Utils.Helpers;
 import ca.hoogit.garagepi.Utils.IBaseReceiver;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
 
-public class MainActivity extends AppCompatActivity implements IAuthEvent {
+public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorManager.IQuery {
 
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.container) ViewPager mViewPager;
@@ -61,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
 
     private AuthManager mAuthManager;
     private UpdateManager mUpdateManager;
+    private DoorManager mDoorManager;
 
     private SectionsPagingAdapter mAdapter;
     private DoorsFragment mDoorsFragment;
@@ -74,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
         mAuthManager = new AuthManager(this, this);
         mAuthManager.enableNotifications(mViewPager);
         mUpdateManager = new UpdateManager(this);
+        mDoorManager = new DoorManager(this, this);
 
         // Set up the toolbar and the placeholder viewpager. // TODO Replace
         setSupportActionBar(mToolbar);
@@ -88,7 +94,9 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
             showCredentialsDialog(R.string.dialog_no_user_title, R.string.dialog_no_user_content);
         } else {
             if (savedInstanceState == null) {
-                mAuthManager.authenticate();
+                if (!mAuthManager.authenticate()) {
+                    mDoorManager.query();
+                }
                 mUpdateManager.check();
             }
         }
@@ -97,6 +105,9 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
 
     @Override
     public void onLogin(boolean wasSuccess, String message) {
+        if (wasSuccess) {
+            mDoorManager.query();
+        }
         // TODO Start the socket and fragment views
         // Initialize the doors fragment, i.e. get pin data
         // mDoorsFragment.init()
@@ -111,6 +122,13 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
     @Override
     public void onError(String message) {
 
+    }
+
+    @Override
+    public void onQuery(boolean wasSuccess, ArrayList<Door> response) {
+        if (wasSuccess) {
+            mDoorsFragment.setDoors(response);
+        }
     }
 
     @Override
@@ -161,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
         super.onResume();
         mAuthManager.register();
         mUpdateManager.register();
+        mDoorManager.register();
     }
 
     @Override
@@ -168,5 +187,6 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
         super.onPause();
         mAuthManager.stop();
         mUpdateManager.stop();
+        mDoorManager.stop();
     }
 }

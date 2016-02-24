@@ -31,6 +31,8 @@ import android.content.IntentFilter;
  * Some global constants
  */
 public class Consts {
+    public static final String DOOR_ID_CAR = "car";
+    public static final String DOOR_ID_VAN = "van";
     public static final String ACTION_DOORS_QUERY = "doors_query";
     public static final String ACTION_DOORS_TOGGLE = "doors_toggle";
     public static final String KEY_DOOR_ID = "doors_id";

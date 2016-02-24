@@ -24,13 +24,16 @@
 
 package ca.hoogit.garagepi.Controls;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
 /**
  * Created by jordon on 23/02/16.
  * Door model object
  */
-public class Door implements Serializable {
+public class Door implements Serializable, Parcelable {
 
     private String name;
     private Pin input;
@@ -41,4 +44,34 @@ public class Door implements Serializable {
         private boolean value;
     }
 
+    protected Door(Parcel in) {
+        name = in.readString();
+        input = (Pin) in.readValue(Pin.class.getClassLoader());
+        output = (Pin) in.readValue(Pin.class.getClassLoader());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeValue(input);
+        dest.writeValue(output);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Door> CREATOR = new Parcelable.Creator<Door>() {
+        @Override
+        public Door createFromParcel(Parcel in) {
+            return new Door(in);
+        }
+
+        @Override
+        public Door[] newArray(int size) {
+            return new Door[size];
+        }
+    };
 }

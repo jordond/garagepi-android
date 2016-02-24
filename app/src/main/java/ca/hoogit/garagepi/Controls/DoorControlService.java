@@ -35,6 +35,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import ca.hoogit.garagepi.Networking.Client;
@@ -62,7 +63,7 @@ public class DoorControlService extends IntentService {
         context.startService(intent);
     }
 
-    public static void startActionBaz(Context context, String id) {
+    public static void startActionToggle(Context context, String id) {
         Intent intent = new Intent(context, DoorControlService.class);
         intent.setAction(Consts.ACTION_DOORS_TOGGLE);
         intent.putExtra(Consts.KEY_DOOR_ID, id);
@@ -92,10 +93,12 @@ public class DoorControlService extends IntentService {
                 throw new IOException(getString(R.string.request_failed));
             }
             Door[] doors = mGson.fromJson(response.body().string(), Door[].class);
+            ArrayList<Door> doorsList = new ArrayList<>();
+            Collections.addAll(doorsList, doors);
 
             Intent intent = new Intent(Consts.INTENT_MESSAGE_DOORS);
             intent.putExtra(Consts.KEY_BROADCAST_ACTION, Consts.ACTION_DOORS_QUERY);
-            intent.putExtra(Consts.KEY_DOORS, doors);
+            intent.putExtra(Consts.KEY_DOORS, doorsList);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
             Log.d(TAG, "handleActionQuery: Broadcasting door information");
         } catch (IOException e) {
