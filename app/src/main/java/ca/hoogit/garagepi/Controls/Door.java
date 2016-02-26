@@ -39,7 +39,7 @@ public class Door implements Serializable, Parcelable {
     public Pin input;
     public Pin output;
 
-    public class Pin {
+    public class Pin implements Serializable {
         public int pin;
         public boolean value;
     }

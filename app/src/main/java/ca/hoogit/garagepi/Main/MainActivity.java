@@ -26,7 +26,6 @@ package ca.hoogit.garagepi.Main;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -42,8 +41,6 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import ca.hoogit.garagepi.Auth.AuthManager;
-import ca.hoogit.garagepi.Auth.AuthReceiver;
-import ca.hoogit.garagepi.Auth.AuthService;
 import ca.hoogit.garagepi.Auth.IAuthEvent;
 import ca.hoogit.garagepi.Auth.User;
 import ca.hoogit.garagepi.Auth.UserManager;
@@ -53,13 +50,10 @@ import ca.hoogit.garagepi.Controls.DoorsFragment;
 import ca.hoogit.garagepi.R;
 import ca.hoogit.garagepi.Settings.SettingsActivity;
 import ca.hoogit.garagepi.Socket.IConnectionEvent;
-import ca.hoogit.garagepi.Socket.IDoorEvent;
-import ca.hoogit.garagepi.Socket.SocketEvents;
 import ca.hoogit.garagepi.Socket.SocketManager;
+import ca.hoogit.garagepi.Socket.Socket;
 import ca.hoogit.garagepi.Update.UpdateManager;
 import ca.hoogit.garagepi.Utils.Consts;
-import ca.hoogit.garagepi.Utils.Helpers;
-import ca.hoogit.garagepi.Utils.IBaseReceiver;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
 
 public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorManager.IQuery {
@@ -72,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
     private UpdateManager mUpdateManager;
     private DoorManager mDoorManager;
 
-    private SocketEvents mSocketEvents;
+    private SocketManager mSocketEvents;
 
     private SectionsPagingAdapter mAdapter;
     private DoorsFragment mDoorsFragment;
@@ -109,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
             }
         }
 
-        mSocketEvents = new SocketEvents(this);
+        mSocketEvents = new SocketManager(this);
         mSocketEvents.on();
         mSocketEvents.onConnectionEvent(new IConnectionEvent() {
             @Override
@@ -126,14 +120,14 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
 
         });
 
-        SocketManager.getInstance().connect();
+        Socket.getInstance().connect();
         SharedPrefs.getInstance().setFirstRun(false);
     }
 
     @Override
     public void onLogin(boolean wasSuccess, String message) {
         if (wasSuccess) {
-            SocketManager.getInstance().connect();
+            Socket.getInstance().connect();
             mDoorManager.query();
         }
         // TODO Start the socket and fragment views
@@ -145,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
     @Override
     public void onLogout(boolean wasSuccess, String message) {
         // TODO Handle logout by stopping all socket activity
-        SocketManager.getInstance().disconnect();
+        Socket.getInstance().disconnect();
     }
 
     @Override
@@ -223,6 +217,6 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        SocketManager.getInstance().disconnect();
+        Socket.getInstance().disconnect();
     }
 }

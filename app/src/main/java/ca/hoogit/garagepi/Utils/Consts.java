@@ -39,6 +39,7 @@ public class Consts {
     public static final String KEY_DOORS = "doors_array";
     public static final String INTENT_MESSAGE_DOORS = "doors_message";
     public static final String EVENT_DOOR_CHANGE = "gpio:save";
+    public static final String SOCKET_PATH = "/sync";
 
     public class SharedPrefs {
         public static final String KEY_FIRST_RUN = "first_run";

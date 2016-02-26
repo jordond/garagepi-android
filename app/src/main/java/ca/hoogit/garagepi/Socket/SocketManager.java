@@ -24,83 +24,102 @@
 
 package ca.hoogit.garagepi.Socket;
 
-import android.content.Context;
+import android.app.Activity;
 import android.util.Log;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 
-import ca.hoogit.garagepi.Auth.UserManager;
-import ca.hoogit.garagepi.Utils.Helpers;
-import ca.hoogit.garagepi.Utils.SharedPrefs;
-import io.socket.client.IO;
-import io.socket.client.Socket;
+import ca.hoogit.garagepi.Controls.Door;
+import ca.hoogit.garagepi.R;
+import ca.hoogit.garagepi.Utils.Consts;
 import io.socket.emitter.Emitter;
 
 /**
  * Created by jordon on 23/02/16.
- * Manager for handling Socket object and connections
+ * Handle the events for the Socket Singleton
  */
 public class SocketManager {
 
     private static final String TAG = SocketManager.class.getSimpleName();
 
-    private static SocketManager mInstance = new SocketManager();
+    private Activity mActivity;
+    private IConnectionEvent mListener;
+    private IDoorEvent mDoorListener;
 
-    public static SocketManager getInstance() {
-        return mInstance;
+    public SocketManager(Activity activity) {
+        this.mActivity = activity;
     }
 
-    private Socket mSocket;
-    private String mSyncUrl;
-
-    private SocketManager() {
-        setSyncUrl();
+    public SocketManager(Activity activity, IConnectionEvent listener) {
+        this.mActivity = activity;
+        this.mListener = listener;
     }
 
-    public Socket socket() {
-        return mSocket == null ? get() : mSocket;
+    public SocketManager(Activity activity, IDoorEvent listener) {
+        this.mActivity = activity;
+        this.mDoorListener = listener;
     }
 
-    public Socket get() {
-        try {
-            IO.Options opts = new IO.Options();
-            //opts.forceNew = true;
-            opts.reconnectionAttempts = 3;
-            opts.path = "/garage/sync";
-            opts.query = "token=" + UserManager.getInstance().user().getToken();
-            mSocket = IO.socket("https://hoogit.ca", opts);
-            Log.d(TAG, "get: Creating new socket URL: " + mSyncUrl + opts.path);
-        } catch (URISyntaxException e) {
-            Log.e(TAG, "connect: Error", e);
+    public SocketManager(Activity activity, IConnectionEvent connectionListener, IDoorEvent doorListener) {
+        this.mActivity = activity;
+        this.mListener = connectionListener;
+        this.mDoorListener = doorListener;
+    }
+
+    public void onConnectionEvent(IConnectionEvent listener) {
+        this.mListener = listener;
+    }
+
+    public void onDoorEvent(IDoorEvent listener) {
+        this.mDoorListener = listener;
+    }
+
+    public void on() {
+        io.socket.client.Socket socket = Socket.getInstance().socket();
+        if (socket != null) {
+            Log.d(TAG, "on: Registering all listeners");
+            socket.on(io.socket.client.Socket.EVENT_CONNECT, onConnected);
+            socket.on(io.socket.client.Socket.EVENT_CONNECT_ERROR, onConnectionError);
+            socket.on(io.socket.client.Socket.EVENT_CONNECT_TIMEOUT, onConnectionError);
+            socket.on(Consts.EVENT_DOOR_CHANGE, onDoorChange);
         }
-        return mSocket;
     }
 
-    public void connect() {
-        if (mSocket == null) {
-            get();
-        } else {
-            if (mSocket.connected()) {
-                mSocket.disconnect();
+    public void off() {
+        io.socket.client.Socket socket = Socket.getInstance().socket();
+        if (socket != null) {
+            socket.off(io.socket.client.Socket.EVENT_CONNECT, onConnected);
+            socket.off(io.socket.client.Socket.EVENT_CONNECT_ERROR, onConnectionError);
+            socket.off(io.socket.client.Socket.EVENT_CONNECT_TIMEOUT, onConnectionError);
+            socket.off(Consts.EVENT_DOOR_CHANGE, onDoorChange);
+            Log.d(TAG, "off: Unregistered all listeners");
+        }
+    }
+
+    private Emitter.Listener onConnected = args -> mActivity.runOnUiThread(() -> {
+        Log.d(TAG, "onConnected: Socket has successfully connected");
+        if (mListener != null) {
+            mListener.onConnected();
+        }
+    });
+
+    private Emitter.Listener onConnectionError = args -> mActivity.runOnUiThread(() -> {
+        Log.e(TAG, "onConnectionError: SocketIO Failed to connect");
+        if (mListener != null) {
+            mListener.onConnectionError(mActivity.getString(R.string.socket_connect_failed));
+        }
+    });
+
+    private Emitter.Listener onDoorChange = args -> mActivity.runOnUiThread(() -> {
+        Door door = new Gson().fromJson((JsonElement) args[0], Door.class);
+        if (door != null) {
+            Log.d(TAG, "onDoorChange: " + door.name + " was changed to " + door.input.value);
+            if (mDoorListener != null) {
+                mDoorListener.onStateChange(door);
             }
+        } else {
+            Log.e(TAG, "onDoorChange: Door object received was null");
         }
-        mSocket.connect();
-        Log.d(TAG, "connect: Attempting to connect to socket server");
-    }
-
-    public void disconnect() {
-        if (mSocket != null) {
-            mSocket.disconnect();
-            Log.d(TAG, "disconnect: Disconnecting from socket server");
-        }
-    }
-
-    public void setSyncUrl() {
-        try {
-            this.mSyncUrl = Helpers.getApiRoute();
-        } catch (MalformedURLException e) {
-            Log.e(TAG, "setSyncUrl: URL Error", e);
-        }
-    }
+    });
 }
