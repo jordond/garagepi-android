@@ -113,5 +113,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="request_failed">Request failed</string>
     <string name="socket_connect_failed">SocketIO failed to connect</string>
+    <string name="door_status_text">Door is</string>
+    <string name="door_name_placeholder">Limo</string>
 
 </resources>

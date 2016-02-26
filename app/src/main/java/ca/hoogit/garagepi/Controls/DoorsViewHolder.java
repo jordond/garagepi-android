@@ -24,8 +24,17 @@
 
 package ca.hoogit.garagepi.Controls;
 
+import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import ca.hoogit.garagepi.R;
 
 /**
  * Created by jordon on 23/02/16.
@@ -35,7 +44,21 @@ public class DoorsViewHolder extends RecyclerView.ViewHolder {
 
     // TODO add the card views
 
-    public DoorsViewHolder(View itemView) {
+    @Bind(R.id.controls_card) CardView layout;
+    @Bind(R.id.card_door_name) TextView title;
+    @Bind(R.id.card_door_status) TextView status;
+    @Bind(R.id.card_door_toggle) Button toggle;
+
+    private Door mDoor;
+
+    public DoorsViewHolder(Context context, View itemView) {
         super(itemView);
+        ButterKnife.bind(context, itemView);
+
+    }
+
+    @OnClick(R.id.card_door_toggle)
+    public void toggleClicked(View view) {
+
     }
 }
