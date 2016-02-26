@@ -58,10 +58,10 @@ public class Socket {
     private Socket() {  }
 
     public io.socket.client.Socket socket() {
-        return mSocket == null ? get() : mSocket;
+        return mSocket == null ? newSocket() : mSocket;
     }
 
-    public io.socket.client.Socket get() {
+    public io.socket.client.Socket newSocket() {
         try {
             IO.Options opts = new IO.Options();
             opts.forceNew = true;
@@ -74,25 +74,6 @@ public class Socket {
             Log.e(TAG, "connect: Error", e);
         }
         return mSocket;
-    }
-
-    public void connect() {
-        if (mSocket == null) {
-            get();
-        } else {
-            if (mSocket.connected()) {
-                mSocket.disconnect();
-            }
-        }
-        mSocket.connect();
-        Log.d(TAG, "connect: Attempting to connect to socket server");
-    }
-
-    public void disconnect() {
-        if (mSocket != null) {
-            mSocket.disconnect();
-            Log.d(TAG, "disconnect: Disconnecting from socket server");
-        }
     }
 
     public void setSyncUrl() {

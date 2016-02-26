@@ -75,8 +75,33 @@ public class SocketManager {
         this.mDoorListener = listener;
     }
 
+    public io.socket.client.Socket getSocket() {
+        return Socket.getInstance().socket();
+    }
+
+    public void connect() {
+        io.socket.client.Socket socket = getSocket();
+        on();
+        socket.connect();
+        Log.d(TAG, "connect: Attempting to connect to socket server");
+    }
+
+    public void refresh() {
+        io.socket.client.Socket socket = Socket.getInstance().newSocket();
+        on();
+        socket.connect();
+        Log.d(TAG, "refresh: Recreated socket object");
+    }
+
+    public void disconnect() {
+        io.socket.client.Socket socket = getSocket();
+        off();
+        socket.disconnect();
+        Log.d(TAG, "disconnect: Disconnecting from socket server");
+    }
+
     public void on() {
-        io.socket.client.Socket socket = Socket.getInstance().socket();
+        io.socket.client.Socket socket = getSocket();
         if (socket != null) {
             Log.d(TAG, "on: Registering all listeners");
             socket.on(io.socket.client.Socket.EVENT_CONNECT, onConnected);
@@ -87,7 +112,7 @@ public class SocketManager {
     }
 
     public void off() {
-        io.socket.client.Socket socket = Socket.getInstance().socket();
+        io.socket.client.Socket socket = getSocket();
         if (socket != null) {
             socket.off(io.socket.client.Socket.EVENT_CONNECT, onConnected);
             socket.off(io.socket.client.Socket.EVENT_CONNECT_ERROR, onConnectionError);
@@ -112,7 +137,7 @@ public class SocketManager {
     });
 
     private Emitter.Listener onDoorChange = args -> mActivity.runOnUiThread(() -> {
-        Door door = new Gson().fromJson((JsonElement) args[0], Door.class);
+        Door door = new Gson().fromJson(args[0].toString(), Door.class);
         if (door != null) {
             Log.d(TAG, "onDoorChange: " + door.name + " was changed to " + door.input.value);
             if (mDoorListener != null) {

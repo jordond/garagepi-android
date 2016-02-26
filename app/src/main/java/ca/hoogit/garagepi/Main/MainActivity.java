@@ -30,6 +30,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -58,6 +59,8 @@ import ca.hoogit.garagepi.Utils.SharedPrefs;
 
 public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorManager.IQuery {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
+
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.container) ViewPager mViewPager;
     @Bind(R.id.tabs) TabLayout mTabLayout;
@@ -66,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
     private UpdateManager mUpdateManager;
     private DoorManager mDoorManager;
 
-    private SocketManager mSocketEvents;
+    private SocketManager mSocketManager;
 
     private SectionsPagingAdapter mAdapter;
     private DoorsFragment mDoorsFragment;
@@ -103,9 +106,8 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
             }
         }
 
-        mSocketEvents = new SocketManager(this);
-        mSocketEvents.on();
-        mSocketEvents.onConnectionEvent(new IConnectionEvent() {
+        mSocketManager = new SocketManager(this);
+        mSocketManager.onConnectionEvent(new IConnectionEvent() {
             @Override
             public void onConnected() {
                 // TODO handle connection?
@@ -116,18 +118,16 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
                 Toast.makeText(getApplication(), "Socket: " + message, Toast.LENGTH_LONG).show();
             }
         });
-        mSocketEvents.onDoorEvent(changed -> {
+        mSocketManager.onDoorEvent(changed -> Log.d(TAG, "onCreate: Door Changed: " + changed.name + " value: " + changed.input.value));
+        mSocketManager.connect();
 
-        });
-
-        Socket.getInstance().connect();
         SharedPrefs.getInstance().setFirstRun(false);
     }
 
     @Override
     public void onLogin(boolean wasSuccess, String message) {
         if (wasSuccess) {
-            Socket.getInstance().connect();
+            mSocketManager.refresh();
             mDoorManager.query();
         }
         // TODO Start the socket and fragment views
@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
     @Override
     public void onLogout(boolean wasSuccess, String message) {
         // TODO Handle logout by stopping all socket activity
-        Socket.getInstance().disconnect();
+        mSocketManager.disconnect();
     }
 
     @Override
@@ -211,12 +211,11 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
         mAuthManager.stop();
         mUpdateManager.stop();
         mDoorManager.stop();
-        mSocketEvents.off();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Socket.getInstance().disconnect();
+        mSocketManager.disconnect();
     }
 }
