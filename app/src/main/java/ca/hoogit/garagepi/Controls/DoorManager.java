@@ -29,6 +29,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -36,14 +37,15 @@ import ca.hoogit.garagepi.Utils.Consts;
 
 /**
  * Created by jordon on 23/02/16.
- *
+ * Manger object for handling all door related tasks
  */
 public class DoorManager extends BroadcastReceiver {
 
     private static final String TAG = DoorManager.class.getSimpleName();
 
     private Context mContext;
-    private IQuery mListener;
+    private IOnQuery mQueryListener;
+    private IOnToggle mToggleListener;
 
     private ArrayList<Door> mDoors;
 
@@ -52,9 +54,16 @@ public class DoorManager extends BroadcastReceiver {
         this.mDoors = new ArrayList<>();
     }
 
-    public DoorManager(Context context, IQuery listener) {
+    public DoorManager(Context context, IOnQuery listener) {
         this.mContext = context;
-        this.mListener = listener;
+        this.mQueryListener = listener;
+        this.mDoors = new ArrayList<>();
+    }
+
+    public DoorManager(Context context, IOnQuery onQuery, IOnToggle onToggle) {
+        this.mContext = context;
+        this.mQueryListener = onQuery;
+        this.mToggleListener = onToggle;
         this.mDoors = new ArrayList<>();
     }
 
@@ -67,8 +76,12 @@ public class DoorManager extends BroadcastReceiver {
         LocalBroadcastManager.getInstance(mContext).unregisterReceiver(this);
     }
 
-    public void setListener(IQuery listener) {
-        this.mListener = listener;
+    public void setOnQuery(IOnQuery listener) {
+        this.mQueryListener = listener;
+    }
+
+    public void setOnToggle(IOnToggle listener) {
+        this.mToggleListener = listener;
     }
 
     public void query() {
@@ -81,23 +94,37 @@ public class DoorManager extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (mListener != null) {
-            String action = intent.getStringExtra(Consts.KEY_BROADCAST_ACTION);
-            if (Consts.ERROR.equals(action)) {
-                mListener.onQuery(false, new ArrayList<>());
-            } else if (Consts.ACTION_DOORS_QUERY.equals(action)) {
-                ArrayList<Door> doors = intent.getParcelableArrayListExtra(Consts.KEY_DOORS);
-                if (doors != null && !doors.isEmpty()){
-                    mDoors = doors;
-                    mListener.onQuery(true, doors);
-                } else {
-                    mListener.onQuery(false, new ArrayList<>());
+        String action = intent.getAction();
+        Log.d(TAG, "onReceive: Message received - Action: " + action);
+        if (Consts.ACTION_DOORS_QUERY.equals(action)) {
+            if (mQueryListener != null) {
+                boolean wasSuccess = intent.getBooleanExtra(Consts.KEY_BROADCAST_SUCCESS, false);
+                if (!wasSuccess) {
+                    mQueryListener.onQuery(false, new ArrayList<>());
+                    return;
                 }
+                ArrayList<Door> doors = intent.getParcelableArrayListExtra(Consts.KEY_DOORS);
+                if (doors != null && !doors.isEmpty()) {
+                    mDoors = doors;
+                    mQueryListener.onQuery(true, doors);
+                } else {
+                    mQueryListener.onQuery(false, new ArrayList<>());
+                }
+            }
+        } else if (Consts.ACTION_DOORS_TOGGLE.equals(action)) {
+            if (mToggleListener != null) {
+                String doorName = intent.getStringExtra(Consts.KEY_DOOR_ID);
+                boolean wasSuccess = intent.getBooleanExtra(Consts.KEY_BROADCAST_SUCCESS, false);
+                mToggleListener.onToggle(doorName, wasSuccess);
             }
         }
     }
 
-    public interface IQuery {
+    public interface IOnQuery {
         void onQuery(boolean wasSuccess, ArrayList<Door> response);
+    }
+
+    public interface IOnToggle {
+        void onToggle(String doorName, boolean wasToggled);
     }
 }

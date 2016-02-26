@@ -52,12 +52,11 @@ import ca.hoogit.garagepi.R;
 import ca.hoogit.garagepi.Settings.SettingsActivity;
 import ca.hoogit.garagepi.Socket.IConnectionEvent;
 import ca.hoogit.garagepi.Socket.SocketManager;
-import ca.hoogit.garagepi.Socket.Socket;
 import ca.hoogit.garagepi.Update.UpdateManager;
 import ca.hoogit.garagepi.Utils.Consts;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
 
-public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorManager.IQuery {
+public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorManager.IOnQuery {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -83,8 +82,10 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
         mAuthManager = new AuthManager(this, this);
         mAuthManager.enableNotifications(mViewPager);
         mUpdateManager = new UpdateManager(this);
-        mDoorManager = new DoorManager(this, this);
-
+        mDoorManager = new DoorManager(this, this, (doorName, wasToggled) -> {
+            // TODO Is this needed?
+            Log.d(TAG, "onToggle: Door " + doorName + " toggled " + wasToggled);
+        });
 
         // Set up the toolbar and the placeholder viewpager. // TODO Replace
         setSupportActionBar(mToolbar);
@@ -118,7 +119,8 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
                 Toast.makeText(getApplication(), "Socket: " + message, Toast.LENGTH_LONG).show();
             }
         });
-        mSocketManager.onDoorEvent(changed -> Log.d(TAG, "onCreate: Door Changed: " + changed.name + " value: " + changed.input.value));
+        mSocketManager.onDoorEvent(changed ->
+                Log.d(TAG, "onCreate: Door Changed: " + changed.name + " value: " + changed.input.value));
         mSocketManager.connect();
 
         SharedPrefs.getInstance().setFirstRun(false);

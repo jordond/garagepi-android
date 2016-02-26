@@ -33,10 +33,8 @@ import android.util.Log;
 import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import ca.hoogit.garagepi.Networking.Client;
 import ca.hoogit.garagepi.R;
@@ -63,10 +61,10 @@ public class DoorControlService extends IntentService {
         context.startService(intent);
     }
 
-    public static void startActionToggle(Context context, String id) {
+    public static void startActionToggle(Context context, String name) {
         Intent intent = new Intent(context, DoorControlService.class);
         intent.setAction(Consts.ACTION_DOORS_TOGGLE);
-        intent.putExtra(Consts.KEY_DOOR_ID, id);
+        intent.putExtra(Consts.KEY_DOOR_ID, name);
         context.startService(intent);
     }
 
@@ -77,7 +75,8 @@ public class DoorControlService extends IntentService {
             if (Consts.ACTION_DOORS_QUERY.equals(action)) {
                 handleActionQuery();
             } else if (Consts.ACTION_DOORS_TOGGLE.equals(action)) {
-                handleActionToggle();
+                String name = intent.getStringExtra(Consts.KEY_DOOR_ID);
+                handleActionToggle(name);
             }
         }
     }
@@ -93,22 +92,46 @@ public class DoorControlService extends IntentService {
                 throw new IOException(getString(R.string.request_failed));
             }
             Door[] doors = mGson.fromJson(response.body().string(), Door[].class);
+            response.body().close();
             ArrayList<Door> doorsList = new ArrayList<>();
             Collections.addAll(doorsList, doors);
 
             Intent intent = new Intent(Consts.INTENT_MESSAGE_DOORS);
-            intent.putExtra(Consts.KEY_BROADCAST_ACTION, Consts.ACTION_DOORS_QUERY);
+            intent.setAction(Consts.ACTION_DOORS_QUERY);
             intent.putExtra(Consts.KEY_DOORS, doorsList);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
             Log.d(TAG, "handleActionQuery: Broadcasting door information");
         } catch (IOException e) {
             Log.e(TAG, "handleActionQuery: Request failed " + e.getMessage());
-            Helpers.broadcast(this, Consts.INTENT_MESSAGE_DOORS, Consts.ERROR, false, e.getMessage());
+            Helpers.broadcast(this, Consts.INTENT_MESSAGE_DOORS, Consts.ACTION_DOORS_QUERY, false, e.getMessage());
         }
     }
 
-    private void handleActionToggle() {
-        // TODO: Handle action Baz
-        throw new UnsupportedOperationException("Not yet implemented");
+    private void handleActionToggle(String name) {
+        try {
+            OkHttpClient client = Client.authClient(SharedPrefs.getInstance().getToken());
+            Request request = new Request.Builder()
+                    .url(Helpers.getApiRoute("api", "gpios", name.toLowerCase()))
+                    .build();
+            Response response = client.newCall(request).execute();
+            boolean success = response.isSuccessful();
+            if (!success) {
+                throw new IOException(getString(R.string.request_failed));
+            }
+            ToggleResponse toggled = mGson.fromJson(response.body().string(), ToggleResponse.class);
+            response.body().close();
+            Intent intent = new Intent(Consts.INTENT_MESSAGE_DOORS);
+            intent.setAction(Consts.ACTION_DOORS_TOGGLE);
+            intent.putExtra(Consts.KEY_BROADCAST_SUCCESS, toggled.toggled);
+            intent.putExtra(Consts.KEY_DOOR_ID, name);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        } catch (Exception e) {
+            Log.e(TAG, "handleActionToggle: Request failed " + e.getMessage());
+            Helpers.broadcast(this, Consts.INTENT_MESSAGE_DOORS, Consts.ACTION_DOORS_TOGGLE, false, e.getMessage());
+        }
+    }
+
+    private class ToggleResponse {
+        boolean toggled;
     }
 }
