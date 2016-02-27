@@ -82,6 +82,7 @@ public class DoorsFragment extends Fragment implements DoorManager.IOnQuery, Doo
         ButterKnife.bind(this, view);
 
         // Set up the recycle view
+        // TODO switch to Custom views instead of recycler
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(layoutManager);
 

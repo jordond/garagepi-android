@@ -68,18 +68,11 @@ public class Helpers {
      * @return proportional device height
      */
     public static int getProportionalHeight(Activity context) {
-        // TODO refactor
         DisplayMetrics dm = new DisplayMetrics();
         context.getWindowManager().getDefaultDisplay().getMetrics(dm);
-        Log.d(TAG, "getProportionalHeight: dm.Height: " + dm.heightPixels);
 
-        int height = dm.heightPixels - (context.getResources().getDimensionPixelSize(R.dimen.appbar_height) + 100);
-        Log.d(TAG, "getProportionalHeight: height: " + height);
-
+        int height = dm.heightPixels - (context.getResources().getDimensionPixelSize(R.dimen.appbar_height) + 100); // TODO magic number...
         double ratio = Consts.PROPORTIONAL_HEIGHT_RATIO;
-
-        int prop = (int) (height / ratio);
-        Log.d(TAG, "getProportionalHeight: prop: " + prop);
         return (int) (height / ratio);
     }
 
