@@ -44,21 +44,12 @@ public class DoorsViewHolder extends RecyclerView.ViewHolder {
 
     // TODO add the card views
 
-    @Bind(R.id.controls_card) CardView layout;
     @Bind(R.id.card_door_name) TextView title;
     @Bind(R.id.card_door_status) TextView status;
     @Bind(R.id.card_door_toggle) Button toggle;
 
-    private Door mDoor;
-
-    public DoorsViewHolder(Context context, View itemView) {
+    public DoorsViewHolder(View itemView) {
         super(itemView);
-        ButterKnife.bind(context, itemView);
-
-    }
-
-    @OnClick(R.id.card_door_toggle)
-    public void toggleClicked(View view) {
-
+        ButterKnife.bind(this, itemView);
     }
 }

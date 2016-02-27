@@ -44,6 +44,22 @@ public class Door implements Serializable, Parcelable {
         public boolean value;
     }
 
+    public String getStatus() {
+        return this.input.value ? "Opened" : "Closed";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        final Door other = (Door) o;
+        return !((this.name == null) ? (other.name != null) : !this.name.equals(other.name));
+    }
+
     protected Door(Parcel in) {
         name = in.readString();
         input = (Pin) in.readValue(Pin.class.getClassLoader());

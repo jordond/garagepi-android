@@ -26,6 +26,7 @@ package ca.hoogit.garagepi.Controls;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +50,23 @@ public class DoorsAdapter extends RecyclerView.Adapter<DoorsViewHolder> {
         this.mContext = context;
     }
 
+    public ArrayList<Door> getDoors() {
+        return this.mDoors;
+    }
+
+    public void setDoors(ArrayList<Door> doors) {
+        this.mDoors = doors;
+        notifyDataSetChanged();
+    }
+
+    public void update(Door door) {
+        int position = mDoors.indexOf(door);
+        if (position != -1) {
+            mDoors.set(position, door);
+            notifyItemChanged(position);
+        }
+    }
+
     @Override
     public DoorsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
@@ -58,7 +76,20 @@ public class DoorsAdapter extends RecyclerView.Adapter<DoorsViewHolder> {
 
     @Override
     public void onBindViewHolder(DoorsViewHolder holder, int position) {
+        if (mDoors.isEmpty()) {
+            return;
+        }
         Door door = mDoors.get(position);
+        String status = mContext.getString(R.string.door_status_text) + " " + door.getStatus();
+
+        holder.title.setText(door.name);
+        holder.status.setText(status);
+
+        // TODO Change the button color/image based on status
+        holder.toggle.setOnClickListener(v -> {
+            Log.i(TAG, "toggleOnClick: Toggling " + door.name);
+            DoorControlService.startActionToggle(mContext, door.name);
+        });
     }
 
     @Override

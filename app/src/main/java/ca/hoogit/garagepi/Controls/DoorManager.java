@@ -76,6 +76,14 @@ public class DoorManager extends BroadcastReceiver {
         LocalBroadcastManager.getInstance(mContext).unregisterReceiver(this);
     }
 
+    public ArrayList<Door> getDoors() {
+        return mDoors;
+    }
+
+    public void setDoors(ArrayList<Door> doors) {
+        this.mDoors = doors;
+    }
+
     public void setOnQuery(IOnQuery listener) {
         this.mQueryListener = listener;
     }
@@ -94,7 +102,7 @@ public class DoorManager extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String action = intent.getAction();
+        String action = intent.getStringExtra(Consts.KEY_BROADCAST_ACTION);
         Log.d(TAG, "onReceive: Message received - Action: " + action);
         if (Consts.ACTION_DOORS_QUERY.equals(action)) {
             if (mQueryListener != null) {

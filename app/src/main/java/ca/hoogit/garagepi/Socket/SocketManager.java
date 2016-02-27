@@ -123,15 +123,15 @@ public class SocketManager {
     }
 
     private Emitter.Listener onConnected = args -> mActivity.runOnUiThread(() -> {
-        Log.d(TAG, "onConnected: Socket has successfully connected");
         if (mListener != null) {
+            Log.d(TAG, "onConnected: Socket has successfully connected");
             mListener.onConnected();
         }
     });
 
     private Emitter.Listener onConnectionError = args -> mActivity.runOnUiThread(() -> {
-        Log.e(TAG, "onConnectionError: SocketIO Failed to connect");
         if (mListener != null) {
+            Log.e(TAG, "onConnectionError: SocketIO Failed to connect");
             mListener.onConnectionError(mActivity.getString(R.string.socket_connect_failed));
         }
     });
@@ -139,8 +139,8 @@ public class SocketManager {
     private Emitter.Listener onDoorChange = args -> mActivity.runOnUiThread(() -> {
         Door door = new Gson().fromJson(args[0].toString(), Door.class);
         if (door != null) {
-            Log.d(TAG, "onDoorChange: " + door.name + " was changed to " + door.input.value);
             if (mDoorListener != null) {
+                Log.d(TAG, "onDoorChange: " + door.name + " was changed to " + door.input.value);
                 mDoorListener.onStateChange(door);
             }
         } else {

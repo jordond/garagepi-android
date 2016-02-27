@@ -97,7 +97,8 @@ public class DoorControlService extends IntentService {
             Collections.addAll(doorsList, doors);
 
             Intent intent = new Intent(Consts.INTENT_MESSAGE_DOORS);
-            intent.setAction(Consts.ACTION_DOORS_QUERY);
+            intent.putExtra(Consts.KEY_BROADCAST_ACTION, Consts.ACTION_DOORS_QUERY);
+            intent.putExtra(Consts.KEY_BROADCAST_SUCCESS, true);
             intent.putExtra(Consts.KEY_DOORS, doorsList);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
             Log.d(TAG, "handleActionQuery: Broadcasting door information");
@@ -121,7 +122,7 @@ public class DoorControlService extends IntentService {
             ToggleResponse toggled = mGson.fromJson(response.body().string(), ToggleResponse.class);
             response.body().close();
             Intent intent = new Intent(Consts.INTENT_MESSAGE_DOORS);
-            intent.setAction(Consts.ACTION_DOORS_TOGGLE);
+            intent.putExtra(Consts.KEY_BROADCAST_ACTION, Consts.ACTION_DOORS_TOGGLE);
             intent.putExtra(Consts.KEY_BROADCAST_SUCCESS, toggled.toggled);
             intent.putExtra(Consts.KEY_DOOR_ID, name);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);

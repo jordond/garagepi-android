@@ -56,7 +56,7 @@ import ca.hoogit.garagepi.Update.UpdateManager;
 import ca.hoogit.garagepi.Utils.Consts;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
 
-public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorManager.IOnQuery {
+public class MainActivity extends AppCompatActivity implements IAuthEvent {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -82,14 +82,11 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
         mAuthManager = new AuthManager(this, this);
         mAuthManager.enableNotifications(mViewPager);
         mUpdateManager = new UpdateManager(this);
-        mDoorManager = new DoorManager(this, this, (doorName, wasToggled) -> {
-            // TODO Is this needed?
-            Log.d(TAG, "onToggle: Door " + doorName + " toggled " + wasToggled);
-        });
+        mDoorManager = new DoorManager(this);
 
-        // Set up the toolbar and the placeholder viewpager. // TODO Replace
+        // Set up the toolbar and the placeholder viewpager.
         setSupportActionBar(mToolbar);
-        mDoorsFragment = DoorsFragment.newInstance();
+        mDoorsFragment = DoorsFragment.newInstance(); // TODO remove reference to fragment?
         mAdapter = new SectionsPagingAdapter(getSupportFragmentManager(), mDoorsFragment);
         mViewPager.setAdapter(mAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
@@ -119,8 +116,6 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
                 Toast.makeText(getApplication(), "Socket: " + message, Toast.LENGTH_LONG).show();
             }
         });
-        mSocketManager.onDoorEvent(changed ->
-                Log.d(TAG, "onCreate: Door Changed: " + changed.name + " value: " + changed.input.value));
         mSocketManager.connect();
 
         SharedPrefs.getInstance().setFirstRun(false);
@@ -133,27 +128,18 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
             mDoorManager.query();
         }
         // TODO Start the socket and fragment views
-        // Initialize the doors fragment, i.e. get pin data
-        // mDoorsFragment.init()
-        // If already init'd, mDoorFragment.refresh()
     }
 
     @Override
     public void onLogout(boolean wasSuccess, String message) {
         // TODO Handle logout by stopping all socket activity
+        // TODO hide the fragment views and replace with placeholder image/text
         mSocketManager.disconnect();
     }
 
     @Override
     public void onError(String message) {
 
-    }
-
-    @Override
-    public void onQuery(boolean wasSuccess, ArrayList<Door> response) {
-        if (wasSuccess) {
-            mDoorsFragment.setDoors(response);
-        }
     }
 
     @Override
@@ -204,7 +190,6 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
         super.onResume();
         mAuthManager.register();
         mUpdateManager.register();
-        mDoorManager.register();
     }
 
     @Override
@@ -212,7 +197,6 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent, DoorM
         super.onPause();
         mAuthManager.stop();
         mUpdateManager.stop();
-        mDoorManager.stop();
     }
 
     @Override

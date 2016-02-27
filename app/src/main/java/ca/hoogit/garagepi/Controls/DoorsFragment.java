@@ -39,6 +39,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -47,6 +48,8 @@ import java.util.Collections;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import ca.hoogit.garagepi.R;
+import ca.hoogit.garagepi.Socket.IDoorEvent;
+import ca.hoogit.garagepi.Socket.SocketManager;
 import ca.hoogit.garagepi.Utils.Consts;
 
 /**
@@ -54,14 +57,16 @@ import ca.hoogit.garagepi.Utils.Consts;
  * Use the {@link DoorsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DoorsFragment extends Fragment {
+public class DoorsFragment extends Fragment implements DoorManager.IOnQuery, DoorManager.IOnToggle {
 
     private static final String TAG = DoorsFragment.class.getSimpleName();
 
     @Bind(R.id.controls_recycler) RecyclerView mRecyclerView;
+    @Bind(R.id.loading_placeholder) TextView mLoading;
 
     private DoorsAdapter mAdapter;
-    private ArrayList<Door> mDoors = new ArrayList<>();
+    private DoorManager mDoorManager;
+    private SocketManager mSocketManager;
 
     public DoorsFragment() {}
 
@@ -79,36 +84,76 @@ public class DoorsFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(layoutManager);
 
+        mAdapter = new DoorsAdapter(getActivity());
+        mRecyclerView.setAdapter(mAdapter);
+
+        mDoorManager = new DoorManager(getActivity(), this, this);
+        mSocketManager = new SocketManager(getActivity(), changed -> {
+            mAdapter.update(changed);
+        });
+        mSocketManager.on();
+
         return view;
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(Consts.KEY_DOORS, mDoors);
+        outState.putParcelableArrayList(Consts.KEY_DOORS, mDoorManager.getDoors());
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
-            mDoors = savedInstanceState.getParcelableArrayList(Consts.KEY_DOORS);
-            if (mDoors != null) {
-                Log.d(TAG, "onActivityCreated: Restored " + mDoors.size() + " items");
-                // TODO update adapter
+            ArrayList<Door> doors = savedInstanceState.getParcelableArrayList(Consts.KEY_DOORS);
+            if (doors != null) {
+                Log.d(TAG, "onActivityCreated: Restored " + doors.size() + " items");
+                mDoorManager.setDoors(doors);
+                mAdapter.setDoors(doors);
             }
         }
+        toggleRecyclerView(!mDoorManager.getDoors().isEmpty());
     }
 
-    public void setDoors(ArrayList<Door> doors) {
-        Log.d(TAG, "setDoors: Setting " + doors.size() + " doors");
-        mDoors = doors;
-        // TODO Update adapter
+    @Override
+    public void onResume() {
+        super.onResume();
+        mDoorManager.register();
     }
 
-    public void refresh() {
-        if (mDoors.isEmpty()) {
-            DoorControlService.startActionQuery(getActivity());
+    @Override
+    public void onPause() {
+        super.onPause();
+        mDoorManager.stop();
+        mSocketManager.off();
+    }
+
+    @Override
+    public void onQuery(boolean wasSuccess, ArrayList<Door> response) {
+        // TODO have loading screen and disable on successful query
+        Log.d(TAG, "onQuery: Query was " + (wasSuccess ? "success" : "failure"));
+        if (wasSuccess) {
+            Log.d(TAG, "onQuery: Received doors from server");
+            mDoorManager.setDoors(response);
+            mAdapter.setDoors(response);
+            // TODO disable loading screen
+        }
+        toggleRecyclerView(wasSuccess);
+    }
+
+    @Override
+    public void onToggle(String doorName, boolean wasToggled) {
+
+    }
+
+    public void toggleRecyclerView(boolean isVisible) {
+        if (isVisible) {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mLoading.setVisibility(View.GONE);
+        } else {
+            mRecyclerView.setVisibility(View.GONE);
+            mLoading.setVisibility(View.VISIBLE);
         }
     }
 }
