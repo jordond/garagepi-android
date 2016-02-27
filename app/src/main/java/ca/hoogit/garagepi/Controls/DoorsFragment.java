@@ -84,10 +84,6 @@ public class DoorsFragment extends Fragment implements DoorManager.IOnQuery, Doo
         View view = inflater.inflate(R.layout.fragment_doors, container, false);
         ButterKnife.bind(this, view);
 
-        int orientation = getResources().getBoolean(R.bool.is_landscape) ?
-                LinearLayout.HORIZONTAL : LinearLayout.VERTICAL;
-        mContainer.setOrientation(orientation);
-
         mCarView.setOnToggle(this);
         mVanView.setOnToggle(this);
 
