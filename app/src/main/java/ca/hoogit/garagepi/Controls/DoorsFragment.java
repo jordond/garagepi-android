@@ -40,6 +40,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,14 +60,15 @@ import ca.hoogit.garagepi.Utils.Consts;
  * Use the {@link DoorsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DoorsFragment extends Fragment implements DoorManager.IOnQuery, DoorManager.IOnToggle {
+public class DoorsFragment extends Fragment implements DoorManager.IOnQuery, DoorView.IOnToggle {
 
     private static final String TAG = DoorsFragment.class.getSimpleName();
 
-    @Bind(R.id.controls_recycler) RecyclerView mRecyclerView;
+    @Bind(R.id.container) LinearLayout mContainer;
     @Bind(R.id.loading_placeholder) TextView mLoading;
+    @Bind(R.id.door_car) DoorView mCarView;
+    @Bind(R.id.door_van) DoorView mVanView;
 
-    private DoorsAdapter mAdapter;
     private DoorManager mDoorManager;
     private SocketManager mSocketManager;
 
@@ -81,22 +84,39 @@ public class DoorsFragment extends Fragment implements DoorManager.IOnQuery, Doo
         View view = inflater.inflate(R.layout.fragment_doors, container, false);
         ButterKnife.bind(this, view);
 
-        // Set up the recycle view
-        // TODO switch to Custom views instead of recycler
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        mRecyclerView.setLayoutManager(layoutManager);
+        int orientation = getResources().getBoolean(R.bool.is_landscape) ?
+                LinearLayout.HORIZONTAL : LinearLayout.VERTICAL;
+        mContainer.setOrientation(orientation);
 
-        mAdapter = new DoorsAdapter(getActivity());
-        mRecyclerView.setAdapter(mAdapter);
+        mCarView.setOnToggle(this);
+        mVanView.setOnToggle(this);
 
-        mDoorManager = new DoorManager(getActivity(), this, this);
+        mDoorManager = new DoorManager(getActivity(), this);
         mSocketManager = new SocketManager(getActivity(), changed -> {
             Log.d(TAG, "onCreateView: test"); // TODO remove
-            mAdapter.update(changed);
+            updateDoorView(changed);
         });
         mSocketManager.on();
 
         return view;
+    }
+
+    private void updateDoorViews(ArrayList<Door> doors) {
+        for (Door door : doors) {
+            updateDoorView(door);
+        }
+    }
+
+    private void updateDoorView(Door door) {
+        String doorName = door.name;
+        DoorView view = Consts.DOOR_ID_CAR.equals(doorName) ? mCarView : mVanView;
+        view.setDoorName(doorName);
+        view.setDoorValue(door.input.value);
+    }
+
+    @Override
+    public void onToggle(String name) {
+        DoorControlService.startActionToggle(getActivity(), name);
     }
 
     @Override
@@ -113,16 +133,16 @@ public class DoorsFragment extends Fragment implements DoorManager.IOnQuery, Doo
             if (doors != null) {
                 Log.d(TAG, "onActivityCreated: Restored " + doors.size() + " items");
                 mDoorManager.setDoors(doors);
-                mAdapter.setDoors(doors);
+                updateDoorViews(doors);
             }
         }
-        toggleRecyclerView(!mDoorManager.getDoors().isEmpty());
     }
 
     @Override
     public void onResume() {
         super.onResume();
         mDoorManager.register();
+        toggleRecyclerView(!mDoorManager.getDoors().isEmpty());
     }
 
     @Override
@@ -139,23 +159,18 @@ public class DoorsFragment extends Fragment implements DoorManager.IOnQuery, Doo
         if (wasSuccess) {
             Log.d(TAG, "onQuery: Received doors from server");
             mDoorManager.setDoors(response);
-            mAdapter.setDoors(response);
+            updateDoorViews(response);
             // TODO disable loading screen
         }
         toggleRecyclerView(wasSuccess);
     }
 
-    @Override
-    public void onToggle(String doorName, boolean wasToggled) {
-
-    }
-
     public void toggleRecyclerView(boolean isVisible) {
         if (isVisible) {
-            mRecyclerView.setVisibility(View.VISIBLE);
+            mContainer.setVisibility(View.VISIBLE);
             mLoading.setVisibility(View.GONE);
         } else {
-            mRecyclerView.setVisibility(View.GONE);
+            mContainer.setVisibility(View.GONE);
             mLoading.setVisibility(View.VISIBLE);
         }
     }

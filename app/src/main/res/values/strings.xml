@@ -119,6 +119,6 @@
     <string name="door_view_default_name">Name</string>
     <string name="door_view_default_status">Status</string>
     <string name="door_view_status_open">Open</string>
-    <string name="door_view_status_Close">Close</string>
+    <string name="door_view_status_close">Close</string>
 
 </resources>

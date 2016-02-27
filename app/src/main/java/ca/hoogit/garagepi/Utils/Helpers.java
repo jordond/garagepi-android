@@ -61,6 +61,20 @@ public class Helpers {
     }
 
     /**
+     * Capitalize  the first letter in string
+     * @param toCapitalize String to be capitalized
+     * @return Capitalized string
+     */
+    public static String capitalize(String toCapitalize) {
+        if (toCapitalize.isEmpty()) {
+            return "";
+        }
+        StringBuilder builder = new StringBuilder(toCapitalize.toLowerCase());
+        builder.setCharAt(0, Character.toUpperCase(builder.charAt(0)));
+        return builder.toString();
+    }
+
+    /**
      * Calculate the height of the container, in order to have the RecyclerView fill the screen
      * @see <a href="http://stackoverflow.com/a/30844982/1867916"From StackOverflow</a>
      *
