@@ -62,16 +62,12 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
 
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.container) ViewPager mViewPager;
-    @Bind(R.id.tabs) TabLayout mTabLayout;
 
     private AuthManager mAuthManager;
     private UpdateManager mUpdateManager;
     private DoorManager mDoorManager;
 
     private SocketManager mSocketManager;
-
-    private SectionsPagingAdapter mAdapter;
-    private DoorsFragment mDoorsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,10 +82,8 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
 
         // Set up the toolbar and the placeholder viewpager.
         setSupportActionBar(mToolbar);
-        mDoorsFragment = DoorsFragment.newInstance(); // TODO remove reference to fragment?
-        mAdapter = new SectionsPagingAdapter(getSupportFragmentManager(), mDoorsFragment);
+        SectionsPagingAdapter mAdapter = new SectionsPagingAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mAdapter);
-        mTabLayout.setupWithViewPager(mViewPager);
 
         // Check to make sure the user is authenticated
         User user = UserManager.getInstance().user();

@@ -29,6 +29,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import butterknife.Bind;
@@ -44,6 +45,7 @@ public class DoorsViewHolder extends RecyclerView.ViewHolder {
 
     // TODO add the card views
 
+    @Bind(R.id.controls_card) LinearLayout container;
     @Bind(R.id.card_door_name) TextView title;
     @Bind(R.id.card_door_status) TextView status;
     @Bind(R.id.card_door_toggle) Button toggle;

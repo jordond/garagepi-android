@@ -40,12 +40,14 @@ public class Consts {
     public static final String INTENT_MESSAGE_DOORS = "doors_message";
     public static final String EVENT_DOOR_CHANGE = "gpio:save";
     public static final String SOCKET_PATH = "/sync";
+    public static final double PROPORTIONAL_HEIGHT_RATIO = 2.0;
 
     public class SharedPrefs {
         public static final String KEY_FIRST_RUN = "first_run";
         public static final String KEY_USER_LAST_UPDATED = "user_last_updated";
         public static final String KEY_UPDATE_LAST_CHECK = "last_update_check";
     }
+
     public static final String ACTION_AUTH_TOKEN_VALIDATE = "valid";
     public static final String ACTION_AUTH_TOKEN_REFRESH = "refresh";
     public static final String ACTION_AUTH_LOGOUT = "logout";

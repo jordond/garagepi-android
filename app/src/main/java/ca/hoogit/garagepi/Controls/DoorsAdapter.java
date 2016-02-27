@@ -24,16 +24,19 @@
 
 package ca.hoogit.garagepi.Controls;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TableRow;
 
 import java.util.ArrayList;
 
 import ca.hoogit.garagepi.R;
+import ca.hoogit.garagepi.Utils.Helpers;
 
 /**
  * Created by jordon on 23/02/16.
@@ -90,6 +93,12 @@ public class DoorsAdapter extends RecyclerView.Adapter<DoorsViewHolder> {
             Log.i(TAG, "toggleOnClick: Toggling " + door.name);
             DoorControlService.startActionToggle(mContext, door.name);
         });
+
+        // Set the height to fill the screen
+        int height = Helpers.getProportionalHeight((Activity) mContext);
+        TableRow.LayoutParams params = new TableRow
+                .LayoutParams(TableRow.LayoutParams.MATCH_PARENT, height);
+        holder.container.setLayoutParams(params);
     }
 
     @Override

@@ -36,18 +36,15 @@ import ca.hoogit.garagepi.Controls.DoorsFragment;
  */
 public class SectionsPagingAdapter extends FragmentPagerAdapter {
 
-    private DoorsFragment mDoorsFragment;
-
-    public SectionsPagingAdapter(FragmentManager fm, DoorsFragment doorsFragment) {
+    public SectionsPagingAdapter(FragmentManager fm) {
         super(fm);
-        this.mDoorsFragment = doorsFragment;
     }
 
     @Override
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return mDoorsFragment;
+                return DoorsFragment.newInstance();
         }
         return null;
     }

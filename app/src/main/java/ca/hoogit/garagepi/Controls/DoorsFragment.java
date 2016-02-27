@@ -33,6 +33,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -89,6 +90,7 @@ public class DoorsFragment extends Fragment implements DoorManager.IOnQuery, Doo
 
         mDoorManager = new DoorManager(getActivity(), this, this);
         mSocketManager = new SocketManager(getActivity(), changed -> {
+            Log.d(TAG, "onCreateView: test"); // TODO remove
             mAdapter.update(changed);
         });
         mSocketManager.on();

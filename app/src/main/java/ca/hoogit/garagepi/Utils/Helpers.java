@@ -24,6 +24,7 @@
 
 package ca.hoogit.garagepi.Utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -31,6 +32,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.DateUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -59,8 +61,31 @@ public class Helpers {
     }
 
     /**
+     * Calculate the height of the container, in order to have the RecyclerView fill the screen
+     * @see <a href="http://stackoverflow.com/a/30844982/1867916"From StackOverflow</a>
+     *
+     * @param context Activity context
+     * @return proportional device height
+     */
+    public static int getProportionalHeight(Activity context) {
+        // TODO refactor
+        DisplayMetrics dm = new DisplayMetrics();
+        context.getWindowManager().getDefaultDisplay().getMetrics(dm);
+        Log.d(TAG, "getProportionalHeight: dm.Height: " + dm.heightPixels);
+
+        int height = dm.heightPixels - (context.getResources().getDimensionPixelSize(R.dimen.appbar_height) + 100);
+        Log.d(TAG, "getProportionalHeight: height: " + height);
+
+        double ratio = Consts.PROPORTIONAL_HEIGHT_RATIO;
+
+        int prop = (int) (height / ratio);
+        Log.d(TAG, "getProportionalHeight: prop: " + prop);
+        return (int) (height / ratio);
+    }
+
+    /**
      * Check if internet access is available.
-     * Grabbed from http://stackoverflow.com/questions/4238921/detect-whether-there-is-an-internet-connection-available-on-android
+     * @see <a href="http://stackoverflow.com/questions/4238921/detect-whether-there-is-an-internet-connection-available-on-android">From StackOverflow</a>
      *
      * @param context Application context
      * @return State of internet connection
@@ -133,6 +158,12 @@ public class Helpers {
                 .progress(true, 0).build();
     }
 
+    /**
+     * Create an update available dialog
+     *
+     * @param context Application context
+     * @return MaterialDialog Built update dialog
+     */
     public static MaterialDialog buildUpdateAvailableDialog(Context context) {
         return new MaterialDialog.Builder(context)
                 .title(R.string.update_available_title)
