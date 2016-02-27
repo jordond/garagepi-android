@@ -78,10 +78,8 @@ android {
         buildConfigField "String", "GitHash", "\"${getGitHash()}\""
         buildConfigField "String", "GitBranch", "\"${getGitBranch()}\""
         buildConfigField "long", "BuildDate", System.currentTimeMillis() + "L"
-        generatedDensities = []
-    }
-    aaptOptions {
-        additionalParameters "--no-version-vectors"
+        vectorDrawables.useSupportLibrary = true
+
     }
     buildTypes {
         release {
