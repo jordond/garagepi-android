@@ -120,5 +120,8 @@
     <string name="door_view_default_status">Status</string>
     <string name="door_view_status_open">Open</string>
     <string name="door_view_status_close">Close</string>
+    <string name="pref_key_server_mock">pref_key_server_mock_toggle</string>
+    <string name="pref_title_server_mock">Mock Door Toggles</string>
+    <string name="pref_summary_server_mock">Disables the ability to toggle the doors, used for testing.</string>
 
 </resources>

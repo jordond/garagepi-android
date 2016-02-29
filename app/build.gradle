@@ -78,7 +78,6 @@ android {
         buildConfigField "String", "GitHash", "\"${getGitHash()}\""
         buildConfigField "String", "GitBranch", "\"${getGitBranch()}\""
         buildConfigField "long", "BuildDate", System.currentTimeMillis() + "L"
-        buildConfigField "boolean", "DisableToggle", "true"
         vectorDrawables.useSupportLibrary = true
 
     }

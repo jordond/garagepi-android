@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.content.Context;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -110,12 +111,9 @@ public class DoorControlService extends IntentService {
     }
 
     private void handleActionToggle(String name) {
-        if (BuildConfig.DisableToggle) {
-            Intent i = new Intent(Consts.INTENT_MESSAGE_DOORS);
-            i.putExtra(Consts.KEY_BROADCAST_ACTION, Consts.ACTION_DOORS_TOGGLE);
-            i.putExtra(Consts.KEY_BROADCAST_SUCCESS, true);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(i);
-            Log.d(TAG, "handleActionToggle: SKIPPING TOGGLE, disable in build config");
+        if (SharedPrefs.getInstance().getMockToggles()) {
+            Log.d(TAG, "handleActionToggle: SKIPPING TOGGLE, disable settings");
+            broadcastToggleEvent(true, name);
             return;
         }
         try {
@@ -130,15 +128,19 @@ public class DoorControlService extends IntentService {
             }
             ToggleResponse toggled = mGson.fromJson(response.body().string(), ToggleResponse.class);
             response.body().close();
-            Intent intent = new Intent(Consts.INTENT_MESSAGE_DOORS);
-            intent.putExtra(Consts.KEY_BROADCAST_ACTION, Consts.ACTION_DOORS_TOGGLE);
-            intent.putExtra(Consts.KEY_BROADCAST_SUCCESS, toggled.toggled);
-            intent.putExtra(Consts.KEY_DOOR_ID, name);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+            broadcastToggleEvent(toggled.toggled, name);
         } catch (Exception e) {
             Log.e(TAG, "handleActionToggle: Request failed " + e.getMessage());
             Helpers.broadcast(this, Consts.INTENT_MESSAGE_DOORS, Consts.ACTION_DOORS_TOGGLE, false, e.getMessage());
         }
+    }
+
+    private void broadcastToggleEvent(boolean toggled, String name) {
+        Intent intent = new Intent(Consts.INTENT_MESSAGE_DOORS);
+        intent.putExtra(Consts.KEY_BROADCAST_ACTION, Consts.ACTION_DOORS_TOGGLE);
+        intent.putExtra(Consts.KEY_BROADCAST_SUCCESS, toggled);
+        intent.putExtra(Consts.KEY_DOOR_ID, name);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     private class ToggleResponse {

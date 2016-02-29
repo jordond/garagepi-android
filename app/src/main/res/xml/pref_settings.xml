@@ -38,6 +38,12 @@
             android:singleLine="true"
             android:title="@string/pref_title_server_address" />
 
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/pref_key_server_mock"
+            android:summary="@string/pref_summary_server_mock"
+            android:title="@string/pref_title_server_mock" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

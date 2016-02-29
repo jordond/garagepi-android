@@ -89,6 +89,10 @@ public class SharedPrefs {
         sharedPreferences.edit().putLong(Consts.SharedPrefs.KEY_UPDATE_LAST_CHECK, System.currentTimeMillis()).apply();
     }
 
+    public boolean getMockToggles() {
+        return sharedPreferences.getBoolean(mContext.getString(R.string.pref_key_server_mock), false);
+    }
+
     /**
      * Shared Preferences accessors
      */
