@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import ca.hoogit.garagepi.BuildConfig;
 import ca.hoogit.garagepi.Networking.Client;
 import ca.hoogit.garagepi.R;
 import ca.hoogit.garagepi.Utils.Consts;
@@ -109,6 +110,14 @@ public class DoorControlService extends IntentService {
     }
 
     private void handleActionToggle(String name) {
+        if (BuildConfig.DisableToggle) {
+            Intent i = new Intent(Consts.INTENT_MESSAGE_DOORS);
+            i.putExtra(Consts.KEY_BROADCAST_ACTION, Consts.ACTION_DOORS_TOGGLE);
+            i.putExtra(Consts.KEY_BROADCAST_SUCCESS, true);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(i);
+            Log.d(TAG, "handleActionToggle: SKIPPING TOGGLE, disable in build config");
+            return;
+        }
         try {
             OkHttpClient client = Client.authClient(SharedPrefs.getInstance().getToken());
             Request request = new Request.Builder()
