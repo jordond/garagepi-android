@@ -138,6 +138,7 @@ public class DoorsFragment extends Fragment implements DoorManager.IOnQuery, Doo
     public void onResume() {
         super.onResume();
         mDoorManager.register();
+        mSocketManager.on();
         toggleRecyclerView(!mDoorManager.getDoors().isEmpty());
     }
 

@@ -47,6 +47,8 @@ public class SocketManager {
     private IConnectionEvent mListener;
     private IDoorEvent mDoorListener;
 
+    private boolean mRegistered;
+
     public SocketManager(Activity activity) {
         this.mActivity = activity;
     }
@@ -102,12 +104,13 @@ public class SocketManager {
 
     public void on() {
         io.socket.client.Socket socket = getSocket();
-        if (socket != null) {
+        if (socket != null && !mRegistered) {
             Log.d(TAG, "on: Registering all listeners");
             socket.on(io.socket.client.Socket.EVENT_CONNECT, onConnected);
             socket.on(io.socket.client.Socket.EVENT_CONNECT_ERROR, onConnectionError);
             socket.on(io.socket.client.Socket.EVENT_CONNECT_TIMEOUT, onConnectionError);
             socket.on(Consts.EVENT_DOOR_CHANGE, onDoorChange);
+            mRegistered = true;
         }
     }
 
@@ -119,6 +122,7 @@ public class SocketManager {
             socket.off(io.socket.client.Socket.EVENT_CONNECT_TIMEOUT, onConnectionError);
             socket.off(Consts.EVENT_DOOR_CHANGE, onDoorChange);
             Log.d(TAG, "off: Unregistered all listeners");
+            mRegistered = false;
         }
     }
 

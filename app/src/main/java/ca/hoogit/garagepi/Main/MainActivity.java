@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.container) ViewPager mViewPager;
 
     private AuthManager mAuthManager;
@@ -81,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
         mDoorManager = new DoorManager(this);
 
         // Set up the toolbar and the placeholder viewpager.
-        setSupportActionBar(mToolbar);
         SectionsPagingAdapter mAdapter = new SectionsPagingAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mAdapter);
 

@@ -22,49 +22,37 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi.Main;
+package ca.hoogit.garagepi.Camera;
 
+
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-import ca.hoogit.garagepi.Camera.CameraFragment;
-import ca.hoogit.garagepi.Controls.DoorsFragment;
+import butterknife.ButterKnife;
+import ca.hoogit.garagepi.R;
 
 /**
- * Created by jordon on 23/02/16.
- * PagerAdapter for {@link MainActivity}
+ * TODO implement
  */
-public class SectionsPagingAdapter extends FragmentPagerAdapter {
+public class CameraFragment extends Fragment {
 
-    public SectionsPagingAdapter(FragmentManager fm) {
-        super(fm);
+    public CameraFragment() {}
+
+    // TODO: Rename and change types and number of parameters
+    public static CameraFragment newInstance() {
+        return new CameraFragment();
     }
 
     @Override
-    public Fragment getItem(int position) {
-        switch (position) {
-            case 0:
-                return DoorsFragment.newInstance();
-            case 1:
-                return CameraFragment.newInstance();
-        }
-        return null;
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_camera, container, false);
+        ButterKnife.bind(this, view);
+
+        return view;
     }
 
-    @Override
-    public int getCount() {
-        return 2; // TODO add other fragment
-    }
-
-    @Override
-    public CharSequence getPageTitle(int position) {
-        switch (position) {
-            case 0:
-                return "Controls";
-            case 1:
-                return "View";
-        }
-        return null;
-    }
 }

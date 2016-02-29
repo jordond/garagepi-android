@@ -32,7 +32,6 @@
         android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="10dp"
         app:cardCornerRadius="0dp"
         app:cardElevation="4dp">
 
@@ -49,10 +48,9 @@
 
             <TextView
                 android:id="@+id/card_door_name"
+                style="@style/TextAppearance.AppCompat.Large"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                style="@style/TextAppearance.AppCompat.Large"
-                android:layout_marginTop="15dp"
                 android:layout_weight=".1"
                 android:fontFamily="sans-serif-thin"
                 android:gravity="center"
@@ -63,8 +61,8 @@
                 android:id="@+id/card_door_arrow"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginTop="-15dp"
                 android:layout_marginBottom="-15dp"
+                android:layout_marginTop="-15dp"
                 android:layout_weight=".6"
                 android:contentDescription="@string/desc_door_view_image"
                 android:scaleType="fitCenter"
@@ -77,7 +75,6 @@
                 android:layout_height="0dp"
                 android:layout_weight=".1"
                 android:fontFamily="sans-serif-thin"
-                android:layout_marginBottom="15dp"
                 android:gravity="center"
                 android:text="@string/door_view_default_status"
                 android:textColor="@color/md_white_1000" />
