@@ -42,42 +42,49 @@
             android:layout_height="match_parent"
             android:layout_margin="10dp"
             android:background="@color/colorAccent"
-            android:baselineAligned="false"
             android:clickable="true"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/card_door_name"
-                style="@style/TextAppearance.AppCompat.Large"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight=".1"
-                android:fontFamily="sans-serif-thin"
-                android:gravity="center"
-                android:text="@string/door_view_default_name"
-                android:textColor="@color/md_white_1000" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/card_door_status"
+                    style="@style/TextAppearance.AppCompat.Large"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-thin"
+                    android:textSize="28sp"
+                    android:paddingEnd="10dp"
+                    android:text="@string/door_view_default_status"
+                    android:textColor="@color/md_white_1000" />
+
+                <TextView
+                    android:id="@+id/card_door_name"
+                    style="@style/TextAppearance.AppCompat.Large"
+                    android:layout_width="wrap_content"
+                    android:textSize="28sp"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:fontFamily="sans-serif-thin"
+                    android:text="@string/door_view_default_name"
+                    android:textColor="@color/md_white_1000" />
+
+            </LinearLayout>
+
 
             <ImageView
                 android:id="@+id/card_door_arrow"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginBottom="-15dp"
-                android:layout_marginTop="-15dp"
-                android:layout_weight=".6"
+                android:layout_marginTop="-25dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:contentDescription="@string/desc_door_view_image"
-                android:scaleType="fitCenter"
                 android:src="@drawable/ic_arrow_upward_black_24dp" />
 
-            <TextView
-                android:id="@+id/card_door_status"
-                style="@style/TextAppearance.AppCompat.Large"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight=".1"
-                android:fontFamily="sans-serif-thin"
-                android:gravity="center"
-                android:text="@string/door_view_default_status"
-                android:textColor="@color/md_white_1000" />
+
 
         </LinearLayout>
 
