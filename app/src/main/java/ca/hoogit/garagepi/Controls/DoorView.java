@@ -27,8 +27,11 @@ package ca.hoogit.garagepi.Controls;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -37,6 +40,7 @@ import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import ca.hoogit.garagepi.R;
+import ca.hoogit.garagepi.Utils.ColorUtil;
 import ca.hoogit.garagepi.Utils.Helpers;
 
 /**
@@ -89,9 +93,20 @@ public class DoorView extends FrameLayout {
         mContext = context;
 
         mToggleContainer.setOnClickListener(v -> {
+            // TODO add debounce so button can't be spammed
             if (mOnToggle != null) {
                 mOnToggle.onToggle(mDoorName);
             }
+        });
+
+        mToggleContainer.setOnTouchListener((v, event) -> {
+            int origColor = mDoorValue ? mOpenedColor : mClosedColor;
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                mToggleContainer.setBackgroundColor(ColorUtil.darken(origColor));
+            } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                mToggleContainer.setBackgroundColor(origColor);
+            }
+            return false;
         });
 
         setupViews();

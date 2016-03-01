@@ -28,6 +28,7 @@ import android.app.Application;
 import android.preference.PreferenceManager;
 
 import ca.hoogit.garagepi.Auth.UserManager;
+import ca.hoogit.garagepi.Controls.Doors;
 import ca.hoogit.garagepi.Socket.Socket;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
 import com.crashlytics.android.Crashlytics;
@@ -42,8 +43,9 @@ public class GaragePiApp extends Application {
     public void onCreate() {
         super.onCreate();
         Fabric.with(this, new Crashlytics());
-        SharedPrefs.create(this);
         PreferenceManager.setDefaultValues(this, R.xml.pref_settings, false);
+        SharedPrefs.create(this);
+        Doors.create(this);
         UserManager.init(this);
         Socket.getInstance().setSyncUrl();
     }

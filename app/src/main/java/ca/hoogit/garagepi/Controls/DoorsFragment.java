@@ -42,6 +42,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -79,6 +80,13 @@ public class DoorsFragment extends Fragment implements DoorManager.IOnQuery, Doo
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mDoorManager = new DoorManager(getActivity(), this);
+        mDoorManager.register();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_doors, container, false);
@@ -87,9 +95,9 @@ public class DoorsFragment extends Fragment implements DoorManager.IOnQuery, Doo
         mCarView.setOnToggle(this);
         mVanView.setOnToggle(this);
 
-        mDoorManager = new DoorManager(getActivity(), this);
         mSocketManager = new SocketManager(getActivity(), changed -> {
             Log.d(TAG, "onCreateView: test"); // TODO remove
+            Doors.getInstance().update(changed);
             updateDoorView(changed);
         });
         mSocketManager.on();
@@ -118,7 +126,7 @@ public class DoorsFragment extends Fragment implements DoorManager.IOnQuery, Doo
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(Consts.KEY_DOORS, mDoorManager.getDoors());
+        outState.putParcelableArrayList(Consts.KEY_DOORS, Doors.getInstance().doors());
     }
 
     @Override
@@ -128,7 +136,7 @@ public class DoorsFragment extends Fragment implements DoorManager.IOnQuery, Doo
             ArrayList<Door> doors = savedInstanceState.getParcelableArrayList(Consts.KEY_DOORS);
             if (doors != null) {
                 Log.d(TAG, "onActivityCreated: Restored " + doors.size() + " items");
-                mDoorManager.setDoors(doors);
+                Doors.getInstance().set(doors);
                 updateDoorViews(doors);
             }
         }
@@ -139,7 +147,8 @@ public class DoorsFragment extends Fragment implements DoorManager.IOnQuery, Doo
         super.onResume();
         mDoorManager.register();
         mSocketManager.on();
-        toggleRecyclerView(!mDoorManager.getDoors().isEmpty());
+        updateDoorViews(Doors.getInstance().doors());
+        toggleRecyclerView(Doors.getInstance().hasDoors());
     }
 
     @Override
@@ -150,13 +159,12 @@ public class DoorsFragment extends Fragment implements DoorManager.IOnQuery, Doo
     }
 
     @Override
-    public void onQuery(boolean wasSuccess, ArrayList<Door> response) {
+    public void onQuery(boolean wasSuccess) {
         // TODO have loading screen and disable on successful query
         Log.d(TAG, "onQuery: Query was " + (wasSuccess ? "success" : "failure"));
         if (wasSuccess) {
             Log.d(TAG, "onQuery: Received doors from server");
-            mDoorManager.setDoors(response);
-            updateDoorViews(response);
+            updateDoorViews(Doors.getInstance().doors());
             // TODO disable loading screen
         }
         toggleRecyclerView(wasSuccess);

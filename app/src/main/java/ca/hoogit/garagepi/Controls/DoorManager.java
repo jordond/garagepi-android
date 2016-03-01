@@ -46,42 +46,34 @@ public class DoorManager extends BroadcastReceiver {
     private Context mContext;
     private IOnQuery mQueryListener;
     private IOnToggle mToggleListener;
-
-    private ArrayList<Door> mDoors;
+    private boolean mIsRegistered;
 
     public DoorManager(Context context) {
         this.mContext = context;
-        this.mDoors = new ArrayList<>();
     }
 
     public DoorManager(Context context, IOnQuery listener) {
         this.mContext = context;
         this.mQueryListener = listener;
-        this.mDoors = new ArrayList<>();
     }
 
     public DoorManager(Context context, IOnQuery onQuery, IOnToggle onToggle) {
         this.mContext = context;
         this.mQueryListener = onQuery;
         this.mToggleListener = onToggle;
-        this.mDoors = new ArrayList<>();
     }
 
     public void register() {
-        LocalBroadcastManager.getInstance(mContext).registerReceiver(this,
-                new IntentFilter(Consts.INTENT_MESSAGE_DOORS));
+        if (!mIsRegistered) {
+            LocalBroadcastManager.getInstance(mContext).registerReceiver(this,
+                    new IntentFilter(Consts.INTENT_MESSAGE_DOORS));
+            mIsRegistered = true;
+        }
     }
 
     public void stop() {
         LocalBroadcastManager.getInstance(mContext).unregisterReceiver(this);
-    }
-
-    public ArrayList<Door> getDoors() {
-        return mDoors;
-    }
-
-    public void setDoors(ArrayList<Door> doors) {
-        this.mDoors = doors;
+        mIsRegistered = false;
     }
 
     public void setOnQuery(IOnQuery listener) {
@@ -107,17 +99,7 @@ public class DoorManager extends BroadcastReceiver {
         if (Consts.ACTION_DOORS_QUERY.equals(action)) {
             if (mQueryListener != null) {
                 boolean wasSuccess = intent.getBooleanExtra(Consts.KEY_BROADCAST_SUCCESS, false);
-                if (!wasSuccess) {
-                    mQueryListener.onQuery(false, new ArrayList<>());
-                    return;
-                }
-                ArrayList<Door> doors = intent.getParcelableArrayListExtra(Consts.KEY_DOORS);
-                if (doors != null && !doors.isEmpty()) {
-                    mDoors = doors;
-                    mQueryListener.onQuery(true, doors);
-                } else {
-                    mQueryListener.onQuery(false, new ArrayList<>());
-                }
+                mQueryListener.onQuery(wasSuccess);
             }
         } else if (Consts.ACTION_DOORS_TOGGLE.equals(action)) {
             if (mToggleListener != null) {
@@ -129,7 +111,7 @@ public class DoorManager extends BroadcastReceiver {
     }
 
     public interface IOnQuery {
-        void onQuery(boolean wasSuccess, ArrayList<Door> response);
+        void onQuery(boolean wasSuccess);
     }
 
     public interface IOnToggle {
