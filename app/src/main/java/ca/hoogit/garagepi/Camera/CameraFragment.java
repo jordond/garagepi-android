@@ -22,31 +22,37 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi;
+package ca.hoogit.garagepi.Camera;
 
-import android.app.Application;
-import android.preference.PreferenceManager;
 
-import ca.hoogit.garagepi.Auth.UserManager;
-import ca.hoogit.garagepi.Controls.Doors;
-import ca.hoogit.garagepi.Socket.Socket;
-import ca.hoogit.garagepi.Utils.SharedPrefs;
-import com.crashlytics.android.Crashlytics;
-import io.fabric.sdk.android.Fabric;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import butterknife.ButterKnife;
+import ca.hoogit.garagepi.R;
 
 /**
- * Created by jordon on 12/02/16.
- * Entry-point for application
+ * TODO implement
  */
-public class GaragePiApp extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Fabric.with(this, new Crashlytics());
-        PreferenceManager.setDefaultValues(this, R.xml.pref_settings, false);
-        SharedPrefs.create(this);
-        Doors.create(this);
-        UserManager.init(this);
-        Socket.getInstance().setSyncUrl();
+public class CameraFragment extends Fragment {
+
+    public CameraFragment() {}
+
+    // TODO: Rename and change types and number of parameters
+    public static CameraFragment newInstance() {
+        return new CameraFragment();
     }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_camera, container, false);
+        ButterKnife.bind(this, view);
+
+        return view;
+    }
+
 }

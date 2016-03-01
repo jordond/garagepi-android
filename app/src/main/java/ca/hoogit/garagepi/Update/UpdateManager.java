@@ -101,7 +101,7 @@ public class UpdateManager implements IUpdateEvent {
      * @param force Ignore the last checked limit
      */
     public void check(boolean force) {
-        if (Version.shouldCheckForUpdate() || force) {
+        if (force || Version.shouldCheckForUpdate()) {
             this.mDialog = Helpers.buildProgressDialog(mContext);
             mDialog.show();
             UpdateService.startUpdateCheck(mContext);

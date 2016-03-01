@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<!--
   ~ The MIT License (MIT)
   ~
   ~ Copyright (c) 2016 Jordon de Hoog
@@ -22,19 +22,47 @@
   ~ SOFTWARE.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/md_grey_200"
-    tools:context=".Main.MainActivity">
+    tools:context=".Controls.DoorsFragment">
 
-    <android.support.v4.view.ViewPager
+    <LinearLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:layout_marginEnd="15dp"
+        android:layout_marginStart="15dp"
+        android:paddingBottom="10dp"
+        android:orientation="vertical"
+        android:visibility="visible">
 
-</RelativeLayout>
+        <ca.hoogit.garagepi.Controls.DoorView
+            android:id="@+id/door_van"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight=".5"
+            app:doorName="Van" />
+
+        <ca.hoogit.garagepi.Controls.DoorView
+            android:id="@+id/door_car"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".5"
+            app:doorName="Car" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/loading_placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="LOADING?"
+        android:textSize="40sp" />
+    <!-- TODO proper loading view -->
+</FrameLayout>

@@ -22,31 +22,14 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi;
+package ca.hoogit.garagepi.Socket;
 
-import android.app.Application;
-import android.preference.PreferenceManager;
-
-import ca.hoogit.garagepi.Auth.UserManager;
-import ca.hoogit.garagepi.Controls.Doors;
-import ca.hoogit.garagepi.Socket.Socket;
-import ca.hoogit.garagepi.Utils.SharedPrefs;
-import com.crashlytics.android.Crashlytics;
-import io.fabric.sdk.android.Fabric;
+import ca.hoogit.garagepi.Controls.Door;
 
 /**
- * Created by jordon on 12/02/16.
- * Entry-point for application
+ * Created by jordon on 23/02/16.
+ * Callback listener for Door events
  */
-public class GaragePiApp extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Fabric.with(this, new Crashlytics());
-        PreferenceManager.setDefaultValues(this, R.xml.pref_settings, false);
-        SharedPrefs.create(this);
-        Doors.create(this);
-        UserManager.init(this);
-        Socket.getInstance().setSyncUrl();
-    }
+public interface IDoorEvent {
+    void onStateChange(Door changed);
 }
