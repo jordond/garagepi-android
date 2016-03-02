@@ -54,8 +54,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    @Bind(R.id.container)
-    ViewPager mViewPager;
+    @Bind(R.id.container) ViewPager mViewPager;
 
     private AuthManager mAuthManager;
     private UpdateManager mUpdateManager;
@@ -114,12 +113,10 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
             mSocketManager.refresh();
             mDoorManager.query();
         }
-        // TODO Start the socket and fragment views
     }
 
     @Override
     public void onLogout(boolean wasSuccess, String message) {
-        // TODO Handle logout by stopping all socket activity
         // TODO hide the fragment views and replace with placeholder image/text
         mSocketManager.disconnect();
     }
@@ -162,7 +159,6 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent settings = new Intent(this, SettingsActivity.class);
             startActivityForResult(settings, Consts.RESULT_SETTINGS);
@@ -187,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
         super.onResume();
         mAuthManager.register();
         mUpdateManager.register();
+        mSocketManager.on();
     }
 
     @Override
@@ -194,6 +191,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
         super.onPause();
         mAuthManager.stop();
         mUpdateManager.stop();
+        mSocketManager.off();
     }
 
     @Override
@@ -201,5 +199,4 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
         super.onDestroy();
         mSocketManager.disconnect();
     }
-
 }

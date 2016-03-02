@@ -30,6 +30,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -42,6 +43,7 @@ import butterknife.ButterKnife;
 import ca.hoogit.garagepi.R;
 import ca.hoogit.garagepi.Utils.ColorUtil;
 import ca.hoogit.garagepi.Utils.Helpers;
+import ca.hoogit.garagepi.Utils.OnSingleClickListener;
 
 /**
  * Custom view to handle the door toggle and state
@@ -92,18 +94,18 @@ public class DoorView extends FrameLayout {
 
         mContext = context;
 
-        mToggleContainer.setOnClickListener(v -> {
-            // TODO add debounce so button can't be spammed
+        mToggleContainer.setOnClickListener(OnSingleClickListener.wrap(v -> {
             if (mOnToggle != null) {
                 mOnToggle.onToggle(mDoorName);
             }
-        });
+        }));
 
         mToggleContainer.setOnTouchListener((v, event) -> {
             int origColor = mDoorValue ? mOpenedColor : mClosedColor;
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 mToggleContainer.setBackgroundColor(ColorUtil.darken(origColor));
-            } else if (event.getAction() == MotionEvent.ACTION_UP) {
+            } else if (event.getAction() == MotionEvent.ACTION_UP
+                    || event.getAction() == MotionEvent.ACTION_CANCEL) {
                 mToggleContainer.setBackgroundColor(origColor);
             }
             return false;
