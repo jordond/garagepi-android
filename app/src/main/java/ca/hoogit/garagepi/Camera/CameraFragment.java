@@ -25,15 +25,21 @@
 package ca.hoogit.garagepi.Camera;
 
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import butterknife.Bind;
@@ -43,7 +49,7 @@ import ca.hoogit.garagepi.R;
 /**
  * TODO implement
  */
-public class CameraFragment extends Fragment {
+public class CameraFragment extends Fragment implements CameraEvents.IEvents {
 
     private static final String TAG = CameraFragment.class.getSimpleName();
 
@@ -51,6 +57,7 @@ public class CameraFragment extends Fragment {
     @Bind(R.id.card_camera) CardView mCameraCard;
     @Bind(R.id.card_weather) CardView mWeatherCard;
 
+    @Bind(R.id.camera_image) ImageView mCameraFeed;
     @Bind(R.id.camera_play_stop) ImageButton mPlayStopButton;
     @Bind(R.id.camera_refresh) ImageButton mRefreshButton;
 
@@ -90,30 +97,40 @@ public class CameraFragment extends Fragment {
         mRefreshButton.setOnClickListener(this::handleRefreshButton);
 
         mCameraSocket = new CameraSocket(getActivity());
-        mCameraSocket.setOnFeed(base64Frame -> {
-            Log.d(TAG, "onCreateView: Received frame");
-            // TODO handle the frame data - convert to bitmap?
-        });
-        // TODO display state of camera to user
-        mCameraSocket.setOnEvent(new CameraEvents.IEvents() {
-            @Override
-            public void onInitialFrame(String base64Frame) {
-                Log.d(TAG, "onInitialFrame: Gotcha");
-            }
+        mCameraSocket.setOnFeed(this::handleUpdatingCameraFeed);
+        mCameraSocket.setOnError(this::handleCameraError);
 
-            @Override
-            public void onMotionCaptureLoading() {
-                Log.d(TAG, "onMotionCaptureLoading: Loading and stuff");
-            }
-        });
-        mCameraSocket.setOnError(message -> {
-            // TODO change the image to reflect error'd state
-            Log.d(TAG, "onCameraError: Got error");
-        });
+        // TODO display state of camera to user
+        mCameraSocket.setOnEvent(this);
 
         mCameraSocket.activate();
 
         return view;
+    }
+
+    private void handleUpdatingCameraFeed(String frame) {
+        if (isAdded()) {
+            Log.v(TAG, "handleUpdatingCameraFeed: Updating image view");
+            byte[] decoded = Base64.decode(frame, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
+            Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+            mCameraFeed.setImageDrawable(drawable);
+        }
+    }
+
+    private void handleCameraError(String message) {
+        Log.d(TAG, "onCameraError: Got error " + message);
+    }
+
+    @Override
+    public void onInitialFrame(String base64Frame) {
+        Log.d(TAG, "onInitialFrame: Gotcha");
+        handleUpdatingCameraFeed(base64Frame);
+    }
+
+    @Override
+    public void onMotionCaptureLoading() {
+        Log.d(TAG, "onMotionCaptureLoading: Loading and stuff");
     }
 
     private void handlePlayStopButton(View view) {
