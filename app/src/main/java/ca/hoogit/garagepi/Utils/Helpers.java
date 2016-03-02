@@ -75,22 +75,6 @@ public class Helpers {
     }
 
     /**
-     * Calculate the height of the container, in order to have the RecyclerView fill the screen
-     * @see <a href="http://stackoverflow.com/a/30844982/1867916"From StackOverflow</a>
-     *
-     * @param context Activity context
-     * @return proportional device height
-     */
-    public static int getProportionalHeight(Activity context) {
-        DisplayMetrics dm = new DisplayMetrics();
-        context.getWindowManager().getDefaultDisplay().getMetrics(dm);
-
-        int height = dm.heightPixels - (context.getResources().getDimensionPixelSize(R.dimen.appbar_height) + 100); // TODO magic number...
-        double ratio = Consts.PROPORTIONAL_HEIGHT_RATIO;
-        return (int) (height / ratio);
-    }
-
-    /**
      * Check if internet access is available.
      * @see <a href="http://stackoverflow.com/questions/4238921/detect-whether-there-is-an-internet-connection-available-on-android">From StackOverflow</a>
      *

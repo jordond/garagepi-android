@@ -109,8 +109,6 @@
     <string name="update_finished">Update download has finished</string>
     <string name="check_failed">Update check failed</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="request_failed">Request failed</string>
     <string name="socket_connect_failed">SocketIO failed to connect</string>
     <string name="door_status_text">Door is</string>
@@ -123,5 +121,9 @@
     <string name="pref_key_server_mock">pref_key_server_mock_toggle</string>
     <string name="pref_title_server_mock">Mock Door Toggles</string>
     <string name="pref_summary_server_mock">Disables the ability to toggle the doors, used for testing.</string>
+    <string name="action_fullscreen">Fullscreen</string>
+    <string name="content_desc_camera_feed">Images from camera feed</string>
+    <string name="content_desc_camera_play_stop">Play or stop the camera feed</string>
+    <string name="content_desc_refresh_camera">Refresh camera feed</string>
 
 </resources>

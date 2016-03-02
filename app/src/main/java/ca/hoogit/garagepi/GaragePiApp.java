@@ -29,7 +29,7 @@ import android.preference.PreferenceManager;
 
 import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.Controls.Doors;
-import ca.hoogit.garagepi.Socket.Socket;
+import ca.hoogit.garagepi.Socket.MainSocket;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
 import com.crashlytics.android.Crashlytics;
 import io.fabric.sdk.android.Fabric;
@@ -47,6 +47,6 @@ public class GaragePiApp extends Application {
         SharedPrefs.create(this);
         Doors.create(this);
         UserManager.init(this);
-        Socket.getInstance().setSyncUrl();
+        MainSocket.getInstance().setSyncUrl();
     }
 }

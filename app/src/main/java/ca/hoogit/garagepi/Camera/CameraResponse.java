@@ -22,49 +22,55 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi.Main;
-
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-
-import ca.hoogit.garagepi.Camera.CameraFragment;
-import ca.hoogit.garagepi.Controls.DoorsFragment;
+package ca.hoogit.garagepi.Camera;
 
 /**
- * Created by jordon on 23/02/16.
- * PagerAdapter for {@link MainActivity}
+ * Created by jordon on 02/03/16.
+ * Container for all {@link CameraSocket} responses
  */
-public class SectionsPagingAdapter extends FragmentPagerAdapter {
+public class CameraResponse {
 
-    public SectionsPagingAdapter(FragmentManager fm) {
-        super(fm);
-    }
+    /**
+     * JSON to POJO for {@link CameraSocket#getInfo()}
+     */
+    public class Info {
 
-    @Override
-    public Fragment getItem(int position) {
-        switch (position) {
-            case 0:
-                return DoorsFragment.newInstance();
-            case 1:
-                return CameraFragment.newInstance();
+        public boolean ready;
+        public boolean isCapturing;
+        public Error error;
+        public String message;
+
+        public class Error {
+            public String message;
+            public boolean hasError;
         }
-        return null;
-    }
 
-    @Override
-    public int getCount() {
-        return 2;
-    }
-
-    @Override
-    public CharSequence getPageTitle(int position) {
-        switch (position) {
-            case 0:
-                return "Controls";
-            case 1:
-                return "View";
+        @Override
+        public String toString() {
+            if (error != null) {
+                return "Has error: " + error.message;
+            }
+            return "Ready: " + ready + ", is capturing: " + isCapturing + "\n" + message;
         }
-        return null;
     }
+
+    /**
+     * JSON to POJO container
+     */
+
+    /**
+     * JSON to POJO container for {@link CameraSocket#onError}
+     */
+    public class Error {
+
+        public String title;
+        public String message;
+        public Info info;
+
+        public class Info {
+            public String device;
+        }
+
+    }
+
 }

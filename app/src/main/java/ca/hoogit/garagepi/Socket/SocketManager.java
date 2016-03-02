@@ -28,11 +28,11 @@ import android.app.Activity;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 
 import ca.hoogit.garagepi.Controls.Door;
 import ca.hoogit.garagepi.R;
 import ca.hoogit.garagepi.Utils.Consts;
+import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
 /**
@@ -40,6 +40,12 @@ import io.socket.emitter.Emitter;
  * Handle the events for the Socket Singleton
  */
 public class SocketManager {
+
+
+    // TODO
+    // TODO Handle the state of the socket so that when it gets recreated all of the
+    // TODO listeners are added back to the socket
+    // TODO
 
     private static final String TAG = SocketManager.class.getSimpleName();
 
@@ -77,10 +83,11 @@ public class SocketManager {
         this.mDoorListener = listener;
     }
 
-    public io.socket.client.Socket getSocket() {
-        return Socket.getInstance().socket();
+    public Socket getSocket() {
+        return MainSocket.getInstance().socket();
     }
 
+    // TODO have a list of listeners for registering and unregister events
     public void connect() {
         io.socket.client.Socket socket = getSocket();
         on();
@@ -89,38 +96,38 @@ public class SocketManager {
     }
 
     public void refresh() {
-        io.socket.client.Socket socket = Socket.getInstance().newSocket();
+        Socket socket = MainSocket.getInstance().newSocket();
         on();
         socket.connect();
         Log.d(TAG, "refresh: Recreated socket object");
     }
 
     public void disconnect() {
-        io.socket.client.Socket socket = getSocket();
+        Socket socket = getSocket();
         off();
         socket.disconnect();
         Log.d(TAG, "disconnect: Disconnecting from socket server");
     }
 
     public void on() {
-        io.socket.client.Socket socket = getSocket();
+        Socket socket = getSocket();
         if (socket != null && !mRegistered) {
             Log.d(TAG, "on: Registering all listeners");
-            socket.on(io.socket.client.Socket.EVENT_CONNECT, onConnected);
-            socket.on(io.socket.client.Socket.EVENT_CONNECT_ERROR, onConnectionError);
-            socket.on(io.socket.client.Socket.EVENT_CONNECT_TIMEOUT, onConnectionError);
-            socket.on(Consts.EVENT_DOOR_CHANGE, onDoorChange);
+            socket.on(Socket.EVENT_CONNECT, onConnected);
+            socket.on(Socket.EVENT_CONNECT_ERROR, onConnectionError);
+            socket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectionError);
+            socket.on(Consts.Socket.DOOR_CHANGE, onDoorChange);
             mRegistered = true;
         }
     }
 
     public void off() {
-        io.socket.client.Socket socket = getSocket();
+        Socket socket = getSocket();
         if (socket != null) {
-            socket.off(io.socket.client.Socket.EVENT_CONNECT, onConnected);
-            socket.off(io.socket.client.Socket.EVENT_CONNECT_ERROR, onConnectionError);
-            socket.off(io.socket.client.Socket.EVENT_CONNECT_TIMEOUT, onConnectionError);
-            socket.off(Consts.EVENT_DOOR_CHANGE, onDoorChange);
+            socket.off(Socket.EVENT_CONNECT, onConnected);
+            socket.off(Socket.EVENT_CONNECT_ERROR, onConnectionError);
+            socket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectionError);
+            socket.off(Consts.Socket.DOOR_CHANGE, onDoorChange);
             Log.d(TAG, "off: Unregistered all listeners");
             mRegistered = false;
         }

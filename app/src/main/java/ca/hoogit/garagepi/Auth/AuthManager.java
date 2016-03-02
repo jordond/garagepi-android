@@ -114,6 +114,7 @@ public class AuthManager implements IAuthEvent {
     /**
      * Silently authenticate the User with the server, and only if an authentication is needed
      * i.e. No progress dialogs, and if it's been too soon since the last auth
+     * @return False if no authentication is needed
      */
     public boolean authenticate() {
         return authenticate(false, false);
@@ -122,6 +123,7 @@ public class AuthManager implements IAuthEvent {
     /**
      * Force an authentication regardless of when the last auth was, as well as showing a progress
      * dialog.
+     * @return False if no authentication is needed
      */
     public boolean forceAuthWithDialog() {
         return authenticate(true, true);
@@ -131,6 +133,7 @@ public class AuthManager implements IAuthEvent {
      * Call the authentication service to attempt to authenticate the user with the server
      * @param showDialog Whether or not to show a progress dialog
      * @param force Ignore the debounce check for authenticating
+     * @return False if no authentication is needed
      */
     public boolean authenticate(boolean showDialog, boolean force) {
         mDialog.dismiss();

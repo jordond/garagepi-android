@@ -27,6 +27,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     tools:context=".Controls.DoorsFragment">
 
     <LinearLayout
@@ -35,9 +36,17 @@
         android:layout_height="match_parent"
         android:layout_marginEnd="15dp"
         android:layout_marginStart="15dp"
-        android:paddingBottom="10dp"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:paddingBottom="10dp"
+        android:visibility="gone">
+
+        <ca.hoogit.garagepi.Controls.DoorView
+            android:id="@+id/door_car"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight=".5"
+            app:doorName="Car" />
 
         <ca.hoogit.garagepi.Controls.DoorView
             android:id="@+id/door_van"
@@ -47,14 +56,6 @@
             android:layout_weight=".5"
             app:doorName="Van" />
 
-        <ca.hoogit.garagepi.Controls.DoorView
-            android:id="@+id/door_car"
-            android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight=".5"
-            app:doorName="Car" />
-
     </LinearLayout>
 
     <TextView
@@ -62,7 +63,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="LOADING?"
+        android:text="LOADING"
         android:textSize="40sp" />
     <!-- TODO proper loading view -->
 </FrameLayout>

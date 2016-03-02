@@ -22,49 +22,26 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi.Main;
-
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-
-import ca.hoogit.garagepi.Camera.CameraFragment;
-import ca.hoogit.garagepi.Controls.DoorsFragment;
+package ca.hoogit.garagepi.Camera;
 
 /**
- * Created by jordon on 23/02/16.
- * PagerAdapter for {@link MainActivity}
+ * Created by jordon on 02/03/16.
+ * Event interfaces for {@link CameraSocket}
  */
-public class SectionsPagingAdapter extends FragmentPagerAdapter {
+public class CameraEvents {
 
-    public SectionsPagingAdapter(FragmentManager fm) {
-        super(fm);
+    public interface IEvents {
+        void onInitialFrame(String base64Frame);
+
+        void onMotionCaptureLoading();
     }
 
-    @Override
-    public Fragment getItem(int position) {
-        switch (position) {
-            case 0:
-                return DoorsFragment.newInstance();
-            case 1:
-                return CameraFragment.newInstance();
-        }
-        return null;
+    public interface IFeed {
+        void onFrame(String base64Frame);
     }
 
-    @Override
-    public int getCount() {
-        return 2;
+    public interface IError {
+        void onCameraError(String message);
     }
 
-    @Override
-    public CharSequence getPageTitle(int position) {
-        switch (position) {
-            case 0:
-                return "Controls";
-            case 1:
-                return "View";
-        }
-        return null;
-    }
 }

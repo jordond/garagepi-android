@@ -26,18 +26,14 @@ package ca.hoogit.garagepi.Main;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-
-import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -45,9 +41,7 @@ import ca.hoogit.garagepi.Auth.AuthManager;
 import ca.hoogit.garagepi.Auth.IAuthEvent;
 import ca.hoogit.garagepi.Auth.User;
 import ca.hoogit.garagepi.Auth.UserManager;
-import ca.hoogit.garagepi.Controls.Door;
 import ca.hoogit.garagepi.Controls.DoorManager;
-import ca.hoogit.garagepi.Controls.DoorsFragment;
 import ca.hoogit.garagepi.R;
 import ca.hoogit.garagepi.Settings.SettingsActivity;
 import ca.hoogit.garagepi.Socket.IConnectionEvent;
@@ -119,12 +113,10 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
             mSocketManager.refresh();
             mDoorManager.query();
         }
-        // TODO Start the socket and fragment views
     }
 
     @Override
     public void onLogout(boolean wasSuccess, String message) {
-        // TODO Handle logout by stopping all socket activity
         // TODO hide the fragment views and replace with placeholder image/text
         mSocketManager.disconnect();
     }
@@ -139,7 +131,9 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
         if (requestCode == Consts.RESULT_SETTINGS) {
             User user = UserManager.getInstance().user();
             if (user.canAuthenticate()) {
-                mAuthManager.authenticate();
+                if (!mAuthManager.authenticate()) {
+                    mDoorManager.query();
+                }
             } else {
                 showCredentialsDialog(R.string.dialog_missing_cred, R.string.dialog_missing_cred_content);
             }
@@ -167,14 +161,23 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent settings = new Intent(this, SettingsActivity.class);
             startActivityForResult(settings, Consts.RESULT_SETTINGS);
-            return true;
+        } else if (id == R.id.action_fullscreen) {
+            toggleFullscreen();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void toggleFullscreen() {
+        int newUiOptions = getWindow().getDecorView().getSystemUiVisibility();
+        newUiOptions ^= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        newUiOptions ^= View.SYSTEM_UI_FLAG_FULLSCREEN;
+        newUiOptions ^= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+
+        getWindow().getDecorView().setSystemUiVisibility(newUiOptions);
     }
 
     @Override
@@ -182,6 +185,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
         super.onResume();
         mAuthManager.register();
         mUpdateManager.register();
+        mSocketManager.on();
     }
 
     @Override
@@ -189,6 +193,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
         super.onPause();
         mAuthManager.stop();
         mUpdateManager.stop();
+        mSocketManager.off();
     }
 
     @Override
