@@ -28,6 +28,7 @@ package ca.hoogit.garagepi.Camera;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,8 @@ import ca.hoogit.garagepi.R;
  */
 public class CameraFragment extends Fragment {
 
+    private static final String TAG = CameraFragment.class.getSimpleName();
+
     @Bind(R.id.container) LinearLayout mContainer;
     @Bind(R.id.card_camera) CardView mCameraCard;
     @Bind(R.id.card_weather) CardView mWeatherCard;
@@ -51,10 +54,11 @@ public class CameraFragment extends Fragment {
     @Bind(R.id.camera_play_stop) ImageButton mPlayStopButton;
     @Bind(R.id.camera_refresh) ImageButton mRefreshButton;
 
+    private CameraSocket mCameraSocket;
+
     public CameraFragment() {
     }
 
-    // TODO: Rename and change types and number of parameters
     public static CameraFragment newInstance() {
         return new CameraFragment();
     }
@@ -69,9 +73,11 @@ public class CameraFragment extends Fragment {
         if (getResources().getBoolean(R.bool.is_landscape)) {
             mContainer.setOrientation(LinearLayout.HORIZONTAL);
 
-            ViewGroup.LayoutParams cameraParams = mCameraCard.getLayoutParams();
+            LinearLayout.LayoutParams cameraParams = (LinearLayout.LayoutParams) mCameraCard.getLayoutParams();
             cameraParams.width = 0;
             cameraParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            cameraParams.setMargins(0, 0, 0, 0);
+            cameraParams.setMarginEnd(getResources().getDimensionPixelSize(R.dimen.card_container_margin));
             mCameraCard.requestLayout();
 
             ViewGroup.LayoutParams weatherParams = mWeatherCard.getLayoutParams();
@@ -83,15 +89,50 @@ public class CameraFragment extends Fragment {
         mPlayStopButton.setOnClickListener(this::handlePlayStopButton);
         mRefreshButton.setOnClickListener(this::handleRefreshButton);
 
+        mCameraSocket = new CameraSocket(getActivity());
+        mCameraSocket.setOnFeed(base64Frame -> {
+            Log.d(TAG, "onCreateView: Received frame");
+            // TODO handle the frame data - convert to bitmap?
+        });
+        // TODO display state of camera to user
+        mCameraSocket.setOnEvent(new CameraEvents.IEvents() {
+            @Override
+            public void onInitialFrame(String base64Frame) {
+                Log.d(TAG, "onInitialFrame: Gotcha");
+            }
+
+            @Override
+            public void onMotionCaptureLoading() {
+                Log.d(TAG, "onMotionCaptureLoading: Loading and stuff");
+            }
+        });
+        mCameraSocket.setOnError(message -> {
+            // TODO change the image to reflect error'd state
+            Log.d(TAG, "onCameraError: Got error");
+        });
+
+        mCameraSocket.activate();
+
         return view;
     }
 
     private void handlePlayStopButton(View view) {
-
+        // TODO implement
     }
 
     private void handleRefreshButton(View view) {
-
+        // TODO implement
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        mCameraSocket.on();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mCameraSocket.off();
+    }
 }

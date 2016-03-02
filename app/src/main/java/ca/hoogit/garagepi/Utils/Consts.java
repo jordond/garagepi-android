@@ -38,7 +38,6 @@ public class Consts {
     public static final String KEY_DOOR_ID = "doors_id";
     public static final String KEY_DOORS = "doors_array";
     public static final String INTENT_MESSAGE_DOORS = "doors_message";
-    public static final String EVENT_DOOR_CHANGE = "gpio:save";
     public static final String SOCKET_PATH = "/sync";
     public static final double PROPORTIONAL_HEIGHT_RATIO = 2.0;
 
@@ -46,6 +45,17 @@ public class Consts {
         public static final String KEY_FIRST_RUN = "first_run";
         public static final String KEY_USER_LAST_UPDATED = "user_last_updated";
         public static final String KEY_UPDATE_LAST_CHECK = "last_update_check";
+    }
+
+    public class Socket {
+        public static final String DOOR_CHANGE = "gpio:save";
+        public static final String CAMERA_INFO = "camera:info";
+        public static final String CAMERA_START = "camera:start";
+        public static final String CAMERA_STOP = "camera:stop";
+        public static final String CAMERA_ERROR = "camera:error";
+        public static final String CAMERA_FRAME_INITIAL = "camera:initial";
+        public static final String CAMERA_LOADING = "camera:loading";
+        public static final String CAMERA_FRAME = "camera:frame";
     }
 
     public static final String ACTION_AUTH_TOKEN_VALIDATE = "valid";

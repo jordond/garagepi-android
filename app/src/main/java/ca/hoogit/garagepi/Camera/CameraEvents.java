@@ -22,31 +22,26 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi;
-
-import android.app.Application;
-import android.preference.PreferenceManager;
-
-import ca.hoogit.garagepi.Auth.UserManager;
-import ca.hoogit.garagepi.Controls.Doors;
-import ca.hoogit.garagepi.Socket.MainSocket;
-import ca.hoogit.garagepi.Utils.SharedPrefs;
-import com.crashlytics.android.Crashlytics;
-import io.fabric.sdk.android.Fabric;
+package ca.hoogit.garagepi.Camera;
 
 /**
- * Created by jordon on 12/02/16.
- * Entry-point for application
+ * Created by jordon on 02/03/16.
+ * Event interfaces for {@link CameraSocket}
  */
-public class GaragePiApp extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Fabric.with(this, new Crashlytics());
-        PreferenceManager.setDefaultValues(this, R.xml.pref_settings, false);
-        SharedPrefs.create(this);
-        Doors.create(this);
-        UserManager.init(this);
-        MainSocket.getInstance().setSyncUrl();
+public class CameraEvents {
+
+    public interface IEvents {
+        void onInitialFrame(String base64Frame);
+
+        void onMotionCaptureLoading();
     }
+
+    public interface IFeed {
+        void onFrame(String base64Frame);
+    }
+
+    public interface IError {
+        void onCameraError(String message);
+    }
+
 }

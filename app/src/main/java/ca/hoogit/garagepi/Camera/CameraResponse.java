@@ -22,31 +22,55 @@
  * SOFTWARE.
  */
 
-package ca.hoogit.garagepi;
-
-import android.app.Application;
-import android.preference.PreferenceManager;
-
-import ca.hoogit.garagepi.Auth.UserManager;
-import ca.hoogit.garagepi.Controls.Doors;
-import ca.hoogit.garagepi.Socket.MainSocket;
-import ca.hoogit.garagepi.Utils.SharedPrefs;
-import com.crashlytics.android.Crashlytics;
-import io.fabric.sdk.android.Fabric;
+package ca.hoogit.garagepi.Camera;
 
 /**
- * Created by jordon on 12/02/16.
- * Entry-point for application
+ * Created by jordon on 02/03/16.
+ * Container for all {@link CameraSocket} responses
  */
-public class GaragePiApp extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Fabric.with(this, new Crashlytics());
-        PreferenceManager.setDefaultValues(this, R.xml.pref_settings, false);
-        SharedPrefs.create(this);
-        Doors.create(this);
-        UserManager.init(this);
-        MainSocket.getInstance().setSyncUrl();
+public class CameraResponse {
+
+    /**
+     * JSON to POJO for {@link CameraSocket#getInfo()}
+     */
+    public class Info {
+
+        public boolean ready;
+        public boolean isCapturing;
+        public Error error;
+        public String message;
+
+        public class Error {
+            public String message;
+            public boolean hasError;
+        }
+
+        @Override
+        public String toString() {
+            if (error != null) {
+                return "Has error: " + error.message;
+            }
+            return "Ready: " + ready + ", is capturing: " + isCapturing + "\n" + message;
+        }
     }
+
+    /**
+     * JSON to POJO container
+     */
+
+    /**
+     * JSON to POJO container for {@link CameraSocket#onError}
+     */
+    public class Error {
+
+        public String title;
+        public String message;
+        public Info info;
+
+        public class Info {
+            public String device;
+        }
+
+    }
+
 }

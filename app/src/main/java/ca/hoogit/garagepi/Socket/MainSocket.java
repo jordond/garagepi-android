@@ -24,16 +24,13 @@
 
 package ca.hoogit.garagepi.Socket;
 
-import android.net.Uri;
 import android.util.Log;
 
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.Utils.Consts;
-import ca.hoogit.garagepi.Utils.Helpers;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
 import io.socket.client.IO;
 
@@ -41,13 +38,13 @@ import io.socket.client.IO;
  * Created by jordon on 23/02/16.
  * Manager for handling Socket object and connections
  */
-public class Socket {
+public class MainSocket {
 
-    private static final String TAG = Socket.class.getSimpleName();
+    private static final String TAG = MainSocket.class.getSimpleName();
 
-    private static Socket mInstance = new Socket();
+    private static MainSocket mInstance = new MainSocket();
 
-    public static Socket getInstance() {
+    public static MainSocket getInstance() {
         return mInstance;
     }
 
@@ -55,7 +52,7 @@ public class Socket {
     private String mSyncUrl = "";
     private String mSyncPath = "";
 
-    private Socket() {  }
+    private MainSocket() {  }
 
     public io.socket.client.Socket socket() {
         return mSocket == null ? newSocket() : mSocket;
