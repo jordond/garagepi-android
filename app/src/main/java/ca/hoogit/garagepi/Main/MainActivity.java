@@ -131,7 +131,9 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
         if (requestCode == Consts.RESULT_SETTINGS) {
             User user = UserManager.getInstance().user();
             if (user.canAuthenticate()) {
-                mAuthManager.authenticate();
+                if (!mAuthManager.authenticate()) {
+                    mDoorManager.query();
+                }
             } else {
                 showCredentialsDialog(R.string.dialog_missing_cred, R.string.dialog_missing_cred_content);
             }
