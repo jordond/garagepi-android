@@ -54,7 +54,7 @@ public class SectionsPagingAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 2; // TODO add other fragment
+        return 2;
     }
 
     @Override
