@@ -29,5 +29,7 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="appbar_padding_top">8dp</dimen>
     <dimen name="appbar_height">56dp</dimen>
+    <dimen name="card_inside_margin">5dp</dimen>
+    <dimen name="card_container_margin">10dp</dimen>
     <bool name="is_landscape">false</bool>
 </resources>

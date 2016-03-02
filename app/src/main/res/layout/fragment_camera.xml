@@ -32,17 +32,19 @@
 
     <!-- Camera and weather -->
     <LinearLayout
+        android:id="@id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="@dimen/card_container_margin"
         android:orientation="vertical">
 
         <!--Camera-->
         <android.support.v7.widget.CardView
+            android:id="@+id/card_camera"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_margin="10dp"
+            android:layout_marginBottom="@dimen/card_container_margin"
             android:layout_weight=".5"
-            android:clickable="true"
             app:cardCornerRadius="0dp"
             app:cardElevation="4dp">
 
@@ -55,41 +57,58 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_above="@+id/camera_controls"
-                    android:layout_marginEnd="5dp"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="@dimen/card_inside_margin"
+                    android:layout_marginStart="@dimen/card_inside_margin"
+                    android:layout_marginTop="@dimen/card_inside_margin"
                     android:background="@color/md_grey_500"
-                    android:scaleType="fitCenter" />
+                    android:scaleType="fitCenter"
+                    android:contentDescription="@string/content_desc_camera_feed" />
 
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/camera_controls"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
-                    android:gravity="center"
-                    android:orientation="horizontal">
+                    android:animateLayoutChanges="true"
+                    android:gravity="center_vertical">
 
                     <ImageButton
-                        android:id="@+id/imageButton"
+                        android:id="@+id/camera_play_stop"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
+                        android:layout_centerInParent="true"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginStart="15dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/ic_play_arrow" />
-                </LinearLayout>
+                        android:src="@drawable/ic_play_arrow"
+                        android:contentDescription="@string/content_desc_camera_play_stop" />
 
+                    <ImageButton
+                        android:id="@+id/camera_refresh"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="@dimen/card_inside_margin"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_refresh"
+                        android:contentDescription="@string/content_desc_refresh_camera" />
+
+                </RelativeLayout>
 
             </RelativeLayout>
 
         </android.support.v7.widget.CardView>
 
-
         <android.support.v7.widget.CardView
+            android:id="@+id/card_weather"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_margin="15dp"
-            android:layout_weight=".5">
+            android:layout_weight=".5"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="4dp">
 
             <TextView
                 android:layout_width="match_parent"
