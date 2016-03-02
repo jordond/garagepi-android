@@ -26,18 +26,14 @@ package ca.hoogit.garagepi.Main;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-
-import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -45,9 +41,7 @@ import ca.hoogit.garagepi.Auth.AuthManager;
 import ca.hoogit.garagepi.Auth.IAuthEvent;
 import ca.hoogit.garagepi.Auth.User;
 import ca.hoogit.garagepi.Auth.UserManager;
-import ca.hoogit.garagepi.Controls.Door;
 import ca.hoogit.garagepi.Controls.DoorManager;
-import ca.hoogit.garagepi.Controls.DoorsFragment;
 import ca.hoogit.garagepi.R;
 import ca.hoogit.garagepi.Settings.SettingsActivity;
 import ca.hoogit.garagepi.Socket.IConnectionEvent;
@@ -60,7 +54,8 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    @Bind(R.id.container) ViewPager mViewPager;
+    @Bind(R.id.container)
+    ViewPager mViewPager;
 
     private AuthManager mAuthManager;
     private UpdateManager mUpdateManager;
@@ -171,10 +166,20 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
         if (id == R.id.action_settings) {
             Intent settings = new Intent(this, SettingsActivity.class);
             startActivityForResult(settings, Consts.RESULT_SETTINGS);
-            return true;
+        } else if (id == R.id.action_fullscreen) {
+            toggleFullscreen();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void toggleFullscreen() {
+        int newUiOptions = getWindow().getDecorView().getSystemUiVisibility();
+        newUiOptions ^= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        newUiOptions ^= View.SYSTEM_UI_FLAG_FULLSCREEN;
+        newUiOptions ^= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+
+        getWindow().getDecorView().setSystemUiVisibility(newUiOptions);
     }
 
     @Override
@@ -196,4 +201,5 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
         super.onDestroy();
         mSocketManager.disconnect();
     }
+
 }
