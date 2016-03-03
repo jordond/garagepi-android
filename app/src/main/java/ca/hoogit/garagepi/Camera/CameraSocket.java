@@ -106,12 +106,12 @@ public class CameraSocket {
 
     public void off() {
         Socket socket = MainSocket.getInstance().socket();
-        if (socket != null && !mRegistered) {
+        if (socket != null) {
             socket.off(Consts.Socket.CAMERA_ERROR, onError);
             socket.off(Consts.Socket.CAMERA_FRAME_INITIAL, onInitialFrame);
             socket.off(Consts.Socket.CAMERA_LOADING, onMotionCaptureLoading);
             socket.off(Consts.Socket.CAMERA_FRAME, onFrame);
-            Log.d(TAG, "on: Registering all listeners");
+            Log.d(TAG, "off: Removing all listeners");
             mRegistered = false;
         }
     }
@@ -195,7 +195,7 @@ public class CameraSocket {
             mEventListener.onMotionCaptureLoading();
         }
     });
-
+    
     private Emitter.Listener onFrame = args -> mActivity.runOnUiThread(() -> {
         Log.v(TAG, "onFrame: Received frame from the server");
         String frame = (String) args[0];
