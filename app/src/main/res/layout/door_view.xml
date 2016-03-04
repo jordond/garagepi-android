@@ -32,11 +32,12 @@
         android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:cardBackgroundColor="@color/cardBackground"
         app:cardCornerRadius="0dp"
         app:cardElevation="4dp">
 
         <LinearLayout
-            android:id="@id/card_door_toggle"
+            android:id="@+id/card_door_toggle"
             style="@style/Base.Widget.AppCompat.Button"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -57,34 +58,31 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-thin"
-                    android:textSize="28sp"
                     android:paddingEnd="10dp"
                     android:text="@string/door_view_default_status"
-                    android:textColor="@color/md_white_1000" />
+                    android:textColor="?android:attr/textColorPrimaryInverse"
+                    android:textSize="28sp" />
 
                 <TextView
                     android:id="@+id/card_door_name"
                     style="@style/TextAppearance.AppCompat.Large"
                     android:layout_width="wrap_content"
-                    android:textSize="28sp"
                     android:layout_height="wrap_content"
                     android:baselineAligned="false"
                     android:fontFamily="sans-serif-thin"
                     android:text="@string/door_view_default_name"
-                    android:textColor="@color/md_white_1000" />
+                    android:textColor="?android:attr/textColorPrimaryInverse"
+                    android:textSize="28sp" />
 
             </LinearLayout>
 
-
             <ImageView
                 android:id="@+id/card_door_arrow"
-                android:layout_marginTop="-25dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="-25dp"
                 android:contentDescription="@string/desc_door_view_image"
                 android:src="@drawable/ic_arrow_upward_black_24dp" />
-
-
 
         </LinearLayout>
 
