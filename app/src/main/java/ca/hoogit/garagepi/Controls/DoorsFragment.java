@@ -84,7 +84,6 @@ public class DoorsFragment extends Fragment implements DoorManager.IOnQuery, Doo
         super.onCreate(savedInstanceState);
         mDoorManager = new DoorManager(getActivity(), this);
         mDoorManager.register();
-        mDoorManager.query();
     }
 
     @Override

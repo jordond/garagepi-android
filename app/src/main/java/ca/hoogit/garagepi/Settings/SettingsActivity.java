@@ -35,7 +35,6 @@ import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 import android.widget.EditText;
 
-import ca.hoogit.garagepi.Auth.AuthManager;
 import ca.hoogit.garagepi.Main.MainActivity;
 import ca.hoogit.garagepi.R;
 
@@ -94,8 +93,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                AuthManager authManager = new AuthManager(this);
-                authManager.authenticate();
                 setResult(RESULT_OK, new Intent(this, MainActivity.class));
                 finish();
                 return true;

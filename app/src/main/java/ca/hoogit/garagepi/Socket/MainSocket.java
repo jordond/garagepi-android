@@ -62,6 +62,7 @@ public class MainSocket {
         try {
             IO.Options opts = new IO.Options();
             opts.forceNew = true;
+            opts.reconnectionAttempts = 3;
             opts.path = mSyncPath;
             opts.query = "token=" + UserManager.getInstance().user().getToken();
             mSocket = IO.socket(mSyncUrl, opts);
