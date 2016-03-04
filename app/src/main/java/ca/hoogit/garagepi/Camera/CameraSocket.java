@@ -54,6 +54,7 @@ public class CameraSocket {
 
     private Activity mActivity;
     private boolean mRegistered;
+    private boolean mIsActive;
 
     private CameraEvents.IEvents mEventListener;
     private CameraEvents.IFeed mFeedListener;
@@ -96,6 +97,7 @@ public class CameraSocket {
         Socket socket = MainSocket.getInstance().socket();
         if (socket != null && !mRegistered) {
             Log.d(TAG, "on: Registering all listeners");
+            socket.on(Socket.EVENT_CONNECT, onConnected);
             socket.on(Consts.Socket.CAMERA_ERROR, onError);
             socket.on(Consts.Socket.CAMERA_FRAME_INITIAL, onInitialFrame);
             socket.on(Consts.Socket.CAMERA_LOADING, onMotionCaptureLoading);
@@ -106,18 +108,18 @@ public class CameraSocket {
 
     public void off() {
         Socket socket = MainSocket.getInstance().socket();
-        if (socket != null && !mRegistered) {
+        if (socket != null) {
+            socket.off(Socket.EVENT_CONNECT, onConnected);
             socket.off(Consts.Socket.CAMERA_ERROR, onError);
             socket.off(Consts.Socket.CAMERA_FRAME_INITIAL, onInitialFrame);
             socket.off(Consts.Socket.CAMERA_LOADING, onMotionCaptureLoading);
             socket.off(Consts.Socket.CAMERA_FRAME, onFrame);
-            Log.d(TAG, "on: Registering all listeners");
+            Log.d(TAG, "off: Removing all listeners");
             mRegistered = false;
         }
     }
 
     public void activate() {
-        // Get the camera info
         on();
         getInfo();
     }
@@ -171,6 +173,8 @@ public class CameraSocket {
     /**
      * Socket IO - On listeners
      */
+
+    private Emitter.Listener onConnected = args -> mActivity.runOnUiThread(this::getInfo);
 
     private Emitter.Listener onError = args -> mActivity.runOnUiThread(() -> {
         Log.d(TAG, "onError: Received error message from server");

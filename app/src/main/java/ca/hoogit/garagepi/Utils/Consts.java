@@ -77,9 +77,16 @@ public class Consts {
     public static final String FIELD_PASSWORD = "password";
     public static final String MIME_APK = "application/vnd.android.package-archive";
 
-    public static final long HOUR_IN_MILLIS = 3600000;
+    public static final long SECOND_IN_MILLIS = 1000;
+    public static final long HOUR_IN_MILLIS = SECOND_IN_MILLIS * 3600;
+
     public static final long MINIMUM_AUTH_DEBOUNCE_MILLIS = HOUR_IN_MILLIS;
     public static final long MINIMUM_UPDATE_DEBOUNCE_MILLIS = HOUR_IN_MILLIS * 12;
+
+    public static final long AUTO_AUTH_INITIAL_CHECK_INTERVAL = 0;
+    public static final long AUTO_AUTH_CHECK_INTERVAL = HOUR_IN_MILLIS * 3;
+    public static final long AUTO_UPDATE_INITIAL_CHECK_DELAY = SECOND_IN_MILLIS * 60;
+    public static final long AUTO_UPDATE_CHECK_INTERVAL = MINIMUM_UPDATE_DEBOUNCE_MILLIS;
 
     public static final int RESULT_SETTINGS = 2232;
     public static final int TOKEN_DISPLAY_LENGTH = 30;

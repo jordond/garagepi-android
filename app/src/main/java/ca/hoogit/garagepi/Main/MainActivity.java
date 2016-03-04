@@ -58,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
 
     private AuthManager mAuthManager;
     private UpdateManager mUpdateManager;
-    private DoorManager mDoorManager;
 
     private SocketManager mSocketManager;
 
@@ -71,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
         mAuthManager = new AuthManager(this, this);
         mAuthManager.enableNotifications(mViewPager);
         mUpdateManager = new UpdateManager(this);
-        mDoorManager = new DoorManager(this);
 
         // Set up the toolbar and the placeholder viewpager.
         SectionsPagingAdapter mAdapter = new SectionsPagingAdapter(getSupportFragmentManager());
@@ -81,13 +79,6 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
         User user = UserManager.getInstance().user();
         if (!user.canAuthenticate() || SharedPrefs.getInstance().isFirstRun()) {
             showCredentialsDialog(R.string.dialog_no_user_title, R.string.dialog_no_user_content);
-        } else {
-            if (savedInstanceState == null) {
-                if (!mAuthManager.authenticate()) {
-                    mDoorManager.query();
-                }
-                mUpdateManager.check();
-            }
         }
 
         mSocketManager = new SocketManager(this);
@@ -111,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
     public void onLogin(boolean wasSuccess, String message) {
         if (wasSuccess) {
             mSocketManager.refresh();
-            mDoorManager.query();
+            DoorManager.query(getApplication());
         }
     }
 
@@ -130,11 +121,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Consts.RESULT_SETTINGS) {
             User user = UserManager.getInstance().user();
-            if (user.canAuthenticate()) {
-                if (!mAuthManager.authenticate()) {
-                    mDoorManager.query();
-                }
-            } else {
+            if (!user.canAuthenticate()) {
                 showCredentialsDialog(R.string.dialog_missing_cred, R.string.dialog_missing_cred_content);
             }
         }
@@ -183,8 +170,8 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
     @Override
     protected void onResume() {
         super.onResume();
-        mAuthManager.register();
-        mUpdateManager.register();
+        mAuthManager.start();
+        mUpdateManager.start();
         mSocketManager.on();
     }
 

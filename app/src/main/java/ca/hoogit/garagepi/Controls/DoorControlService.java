@@ -111,24 +111,25 @@ public class DoorControlService extends IntentService {
     }
 
     private void handleActionToggle(String name) {
-        if (SharedPrefs.getInstance().getMockToggles()) {
-            Log.d(TAG, "handleActionToggle: SKIPPING TOGGLE, disable settings");
-            broadcastToggleEvent(true, name);
-            return;
-        }
         try {
+            String url = Helpers.getApiRoute("api", "gpios", name.toLowerCase());
+            if (SharedPrefs.getInstance().getMockToggles()) {
+                url = Helpers.getApiRoute("api", "gpios", "debug", "mock", name.toLowerCase());
+                Log.d(TAG, "handleActionToggle: SKIPPING TOGGLE, disable settings");
+            }
             OkHttpClient client = Client.authClient(SharedPrefs.getInstance().getToken());
-            Request request = new Request.Builder()
-                    .url(Helpers.getApiRoute("api", "gpios", name.toLowerCase()))
-                    .build();
+            Request request = new Request.Builder().url(url).build();
             Response response = client.newCall(request).execute();
             boolean success = response.isSuccessful();
             if (!success) {
                 throw new IOException(getString(R.string.request_failed));
             }
-            ToggleResponse toggled = mGson.fromJson(response.body().string(), ToggleResponse.class);
+            ToggleResponse toggleResponse = new ToggleResponse(true);
+            if (!SharedPrefs.getInstance().getMockToggles()) {
+                toggleResponse = mGson.fromJson(response.body().string(), ToggleResponse.class);
+            }
             response.body().close();
-            broadcastToggleEvent(toggled.toggled, name);
+            broadcastToggleEvent(toggleResponse.toggled, name);
         } catch (Exception e) {
             Log.e(TAG, "handleActionToggle: Request failed " + e.getMessage());
             Helpers.broadcast(this, Consts.INTENT_MESSAGE_DOORS, Consts.ACTION_DOORS_TOGGLE, false, e.getMessage());
@@ -145,5 +146,9 @@ public class DoorControlService extends IntentService {
 
     private class ToggleResponse {
         boolean toggled;
+
+        public ToggleResponse(boolean toggled) {
+            this.toggled = toggled;
+        }
     }
 }
