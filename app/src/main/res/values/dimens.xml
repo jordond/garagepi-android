@@ -31,5 +31,6 @@
     <dimen name="appbar_height">56dp</dimen>
     <dimen name="card_inside_margin">5dp</dimen>
     <dimen name="card_container_margin">10dp</dimen>
+    <dimen name="door_button_text_size">32sp</dimen>
     <bool name="is_landscape">false</bool>
 </resources>

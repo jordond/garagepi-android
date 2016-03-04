@@ -30,4 +30,5 @@
     <color name="colorBackground">@color/md_grey_200</color>
     <color name="cardBackground">@color/md_white_1000</color>
     <color name="colorIcon">@color/md_white_1000</color>
+    <color name="buttonTextColor">@color/md_white_1000</color>
 </resources>

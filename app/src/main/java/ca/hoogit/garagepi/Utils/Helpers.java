@@ -30,6 +30,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.support.annotation.IntDef;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatDelegate;
 import android.text.format.DateUtils;
@@ -38,6 +39,8 @@ import android.util.Log;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -58,7 +61,7 @@ public class Helpers {
      *
      * @param mode Theme mode
      */
-    public static void setNightMode(int mode) {
+    public static void setDefaultNightMode(int mode) {
         String modeString = "";
         switch (mode) {
             case AppCompatDelegate.MODE_NIGHT_AUTO:
@@ -74,7 +77,7 @@ public class Helpers {
                 modeString = "Enabled";
                 break;
         }
-        Log.i(TAG, "setNightMode: Night mode is being set to " + modeString);
+        Log.i(TAG, "setDefaultNightMode: Night mode is being set to " + modeString);
     }
 
     /**

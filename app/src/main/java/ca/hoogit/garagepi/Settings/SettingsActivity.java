@@ -39,9 +39,13 @@ import android.widget.EditText;
 import ca.hoogit.garagepi.Auth.AuthManager;
 import ca.hoogit.garagepi.Main.MainActivity;
 import ca.hoogit.garagepi.R;
+import ca.hoogit.garagepi.Utils.Consts;
 import ca.hoogit.garagepi.Utils.Helpers;
+import ca.hoogit.garagepi.Utils.SharedPrefs;
 
 public class SettingsActivity extends AppCompatPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private boolean mThemeChanged;
 
     private Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener =
             (preference, value) -> {
@@ -53,7 +57,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
                     EditText edit = ((EditTextPreference) preference).getEditText();
                     String pref = edit.getTransformationMethod().getTransformation(stringValue, edit).toString();
                     preference.setSummary(pref);
-                }  else {
+                } else if (key.equals(getString(R.string.pref_key_appearance_theme))) {
+                    int old = SharedPrefs.getInstance().getNightMode();
+                    int mode = Integer.parseInt(stringValue);
+                    if (mode != old) {
+                        Helpers.setDefaultNightMode(mode);
+                        mThemeChanged = true;
+                    }
+                } else {
                     preference.setSummary(stringValue);
                 }
                 return true;
@@ -98,7 +109,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
             case android.R.id.home:
                 AuthManager authManager = new AuthManager(this);
                 authManager.authenticate();
-                setResult(RESULT_OK, new Intent(this, MainActivity.class));
+
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtra(Consts.KEY_THEME_CHANGED, mThemeChanged);
+                setResult(RESULT_OK, intent);
                 finish();
                 return true;
         }

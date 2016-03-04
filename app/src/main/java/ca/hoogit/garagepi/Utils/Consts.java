@@ -40,6 +40,7 @@ public class Consts {
     public static final String INTENT_MESSAGE_DOORS = "doors_message";
     public static final String SOCKET_PATH = "/sync";
     public static final double PROPORTIONAL_HEIGHT_RATIO = 2.0;
+    public static final String KEY_THEME_CHANGED = "theme_changed";
 
     public class SharedPrefs {
         public static final String KEY_FIRST_RUN = "first_run";

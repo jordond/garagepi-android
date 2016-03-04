@@ -26,7 +26,6 @@ package ca.hoogit.garagepi;
 
 import android.app.Application;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatDelegate;
 
 import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.Controls.Doors;
@@ -51,6 +50,6 @@ public class GaragePiApp extends Application {
         UserManager.init(this);
         MainSocket.getInstance().setSyncUrl();
 
-        Helpers.setNightMode(SharedPrefs.getInstance().getNightMode());
+        Helpers.setDefaultNightMode(SharedPrefs.getInstance().getNightMode());
     }
 }

@@ -60,8 +60,8 @@
                     android:fontFamily="sans-serif-thin"
                     android:paddingEnd="10dp"
                     android:text="@string/door_view_default_status"
-                    android:textColor="?android:attr/textColorPrimaryInverse"
-                    android:textSize="28sp" />
+                    android:textColor="@color/buttonTextColor"
+                    android:textSize="@dimen/door_button_text_size" />
 
                 <TextView
                     android:id="@+id/card_door_name"
@@ -71,8 +71,8 @@
                     android:baselineAligned="false"
                     android:fontFamily="sans-serif-thin"
                     android:text="@string/door_view_default_name"
-                    android:textColor="?android:attr/textColorPrimaryInverse"
-                    android:textSize="28sp" />
+                    android:textColor="@color/buttonTextColor"
+                    android:textSize="@dimen/door_button_text_size" />
 
             </LinearLayout>
 
