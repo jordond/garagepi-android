@@ -103,6 +103,10 @@ public class CameraFragment extends Fragment implements CameraEvents.IEvents {
         // TODO display state of camera to user
         mCameraSocket.setOnEvent(this);
 
+        if (savedInstanceState == null) {
+            mCameraSocket.activate();
+        }
+
         return view;
     }
 
