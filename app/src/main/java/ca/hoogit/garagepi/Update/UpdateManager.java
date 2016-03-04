@@ -64,8 +64,8 @@ public class UpdateManager implements IUpdateEvent {
      */
     public UpdateManager(Context context) {
         this.mContext = context;
-        mReceiver = new UpdateReceiver(context, this);
-        mScheduler = Executors.newScheduledThreadPool(1);
+        this.mReceiver = new UpdateReceiver(context, this);
+        this.mScheduler = Executors.newScheduledThreadPool(1);
     }
 
     /**
@@ -77,8 +77,8 @@ public class UpdateManager implements IUpdateEvent {
     public UpdateManager(Context context, View snackbarView) {
         this.mContext = context;
         this.mView = snackbarView;
-        mReceiver = new UpdateReceiver(context, this);
-        mScheduler = Executors.newScheduledThreadPool(1);
+        this.mReceiver = new UpdateReceiver(context, this);
+        this.mScheduler = Executors.newScheduledThreadPool(1);
     }
 
     /**
@@ -87,8 +87,7 @@ public class UpdateManager implements IUpdateEvent {
     public void start() {
         this.mReceiver.register();
         this.mFuture = this.mScheduler.scheduleAtFixedRate((Runnable) this::checkWithoutDialog,
-                Consts.MINIMUM_UPDATE_DEBOUNCE_MILLIS,
-                Consts.MINIMUM_UPDATE_DEBOUNCE_MILLIS,
+                Consts.AUTO_UPDATE_CHECK_INTERVAL, Consts.AUTO_UPDATE_CHECK_INTERVAL,
                 TimeUnit.MILLISECONDS);
     }
 

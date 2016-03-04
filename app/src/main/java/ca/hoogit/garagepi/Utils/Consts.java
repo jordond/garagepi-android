@@ -81,6 +81,9 @@ public class Consts {
     public static final long MINIMUM_AUTH_DEBOUNCE_MILLIS = HOUR_IN_MILLIS;
     public static final long MINIMUM_UPDATE_DEBOUNCE_MILLIS = HOUR_IN_MILLIS * 12;
 
+    public static final long AUTO_AUTH_CHECK_INTERVAL = HOUR_IN_MILLIS * 3;
+    public static final long AUTO_UPDATE_CHECK_INTERVAL = MINIMUM_UPDATE_DEBOUNCE_MILLIS;
+
     public static final int RESULT_SETTINGS = 2232;
     public static final int TOKEN_DISPLAY_LENGTH = 30;
 }
