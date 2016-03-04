@@ -28,23 +28,17 @@ import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-
 import ca.hoogit.garagepi.Auth.AuthManager;
-import ca.hoogit.garagepi.Auth.AuthReceiver;
-import ca.hoogit.garagepi.Auth.AuthService;
 import ca.hoogit.garagepi.Auth.User;
 import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.R;
 import ca.hoogit.garagepi.Update.UpdateManager;
 import ca.hoogit.garagepi.Update.Version;
-import ca.hoogit.garagepi.Utils.Helpers;
 
 /**
  * Created by jordon on 12/02/16.
@@ -117,8 +111,8 @@ public class SettingsFragment extends PreferenceFragment {
     @Override
     public void onResume() {
         super.onResume();
-        mAuthManager.register();
-        mUpdateManager.register();
+        mAuthManager.start();
+        mUpdateManager.start();
     }
 
     @Override

@@ -32,7 +32,13 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import ca.hoogit.garagepi.R;
+import ca.hoogit.garagepi.Utils.Consts;
 import ca.hoogit.garagepi.Utils.Helpers;
 
 /**
@@ -48,31 +54,41 @@ public class UpdateManager implements IUpdateEvent {
     private UpdateReceiver mReceiver;
     private View mView;
 
+    private ScheduledExecutorService mScheduler;
+    private ScheduledFuture<?> mFuture;
+
     /**
      * Create the Manager object and set the Broadcast receiver's listener to this object
+     *
      * @param context Calling activity
      */
     public UpdateManager(Context context) {
         this.mContext = context;
-        mReceiver = new UpdateReceiver(context, this);
+        this.mReceiver = new UpdateReceiver(context, this);
+        this.mScheduler = Executors.newScheduledThreadPool(1);
     }
 
     /**
      * Create the manager and set the broadcast receivers listener to this object
-     * @param context Calling activity
+     *
+     * @param context      Calling activity
      * @param snackbarView View to attach SnackBar notifications to
      */
     public UpdateManager(Context context, View snackbarView) {
         this.mContext = context;
         this.mView = snackbarView;
-        mReceiver = new UpdateReceiver(context, this);
+        this.mReceiver = new UpdateReceiver(context, this);
+        this.mScheduler = Executors.newScheduledThreadPool(1);
     }
 
     /**
      * Register the UpdateReceiver with the local broadcast instance
      */
-    public void register() {
+    public void start() {
         this.mReceiver.register();
+        this.mFuture = this.mScheduler.scheduleAtFixedRate((Runnable) this::checkWithoutDialog,
+                Consts.AUTO_UPDATE_INITIAL_CHECK_DELAY, Consts.AUTO_UPDATE_CHECK_INTERVAL,
+                TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -80,30 +96,51 @@ public class UpdateManager implements IUpdateEvent {
      */
     public void stop() {
         this.mReceiver.unRegister();
+        if (this.mFuture != null) {
+            this.mFuture.cancel(true);
+        }
     }
 
     /**
      * Check for an update only if a check hasn't happened within debounce limit
      */
     public void check() {
-        check(false);
+        check(false, true);
+    }
+
+    /**
+     * Check for an update without showing a progress dialog
+     */
+    public void checkWithoutDialog() {
+        check(false, false);
     }
 
     /**
      * Check for an update regardless of when the last check took place
      */
     public void forceCheck() {
-        check(true);
+        check(true, true);
+    }
+
+    /**
+     * Force check for update without displaying a progress dialog
+     */
+    public void forceCheckWithoutDialog() {
+        check(true, false);
     }
 
     /**
      * Call the update service and check for a new update
-     * @param force Ignore the last checked limit
+     *
+     * @param force      Ignore the last checked limit
+     * @param showDialog Display the progress dialog
      */
-    public void check(boolean force) {
+    public void check(boolean force, boolean showDialog) {
         if (force || Version.shouldCheckForUpdate()) {
             this.mDialog = Helpers.buildProgressDialog(mContext);
-            mDialog.show();
+            if (showDialog) {
+                mDialog.show();
+            }
             UpdateService.startUpdateCheck(mContext);
         } else {
             Log.d(TAG, "check: Not checking for update");
@@ -112,6 +149,7 @@ public class UpdateManager implements IUpdateEvent {
 
     /**
      * Enable SnackBar notifications
+     *
      * @param view View to attach the SnackBar too
      */
     public void enableNotifications(View view) {
@@ -154,6 +192,7 @@ public class UpdateManager implements IUpdateEvent {
 
     /**
      * Build a dialog informing the user that an update is available
+     *
      * @param context Calling activity
      * @return Built MaterialDialog
      */
