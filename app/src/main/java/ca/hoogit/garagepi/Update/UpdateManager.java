@@ -87,7 +87,7 @@ public class UpdateManager implements IUpdateEvent {
     public void start() {
         this.mReceiver.register();
         this.mFuture = this.mScheduler.scheduleAtFixedRate((Runnable) this::checkWithoutDialog,
-                Consts.AUTO_UPDATE_CHECK_INTERVAL, Consts.AUTO_UPDATE_CHECK_INTERVAL,
+                Consts.AUTO_UPDATE_INITIAL_CHECK_DELAY, Consts.AUTO_UPDATE_CHECK_INTERVAL,
                 TimeUnit.MILLISECONDS);
     }
 

@@ -120,7 +120,7 @@ public class AuthManager implements IAuthEvent {
     public void start() {
         this.mReceiver.register();
         this.mFuture = this.mScheduler.scheduleAtFixedRate((Runnable) this::authenticate,
-                Consts.AUTO_AUTH_CHECK_INTERVAL, Consts.AUTO_AUTH_CHECK_INTERVAL,
+                Consts.AUTO_AUTH_INITIAL_CHECK_INTERVAL, Consts.AUTO_AUTH_CHECK_INTERVAL,
                 TimeUnit.MILLISECONDS);
     }
 
