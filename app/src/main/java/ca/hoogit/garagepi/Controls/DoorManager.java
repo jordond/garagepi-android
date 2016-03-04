@@ -85,13 +85,7 @@ public class DoorManager extends BroadcastReceiver {
     }
 
     public void query() {
-        if (!Doors.getInstance().hasDoors()) {
-            DoorControlService.startActionQuery(mContext);
-        }
-    }
-
-    public static void query(Context context) {
-        DoorControlService.startActionQuery(context);
+        DoorControlService.startActionQuery(mContext);
     }
 
     public void toggle(String id) {

@@ -31,14 +31,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
 import ca.hoogit.garagepi.R;
-import ca.hoogit.garagepi.Update.UpdateReceiver;
-import ca.hoogit.garagepi.Utils.Consts;
 import ca.hoogit.garagepi.Utils.Helpers;
 import ca.hoogit.garagepi.Utils.IBaseReceiver;
 
@@ -54,29 +47,23 @@ public class AuthManager implements IAuthEvent {
     private MaterialDialog mDialog;
     private View mView;
 
-    private ScheduledExecutorService mScheduler;
-    private ScheduledFuture<?> mFuture;
-
     private AuthReceiver mReceiver;
     private IAuthEvent mAuthEventListener;
 
     /**
      * Create the Manager object and set the Broadcast receiver's listener to this object
-     *
      * @param context Calling activity
      */
     public AuthManager(Context context) {
         this.mContext = context;
         this.mDialog = new MaterialDialog.Builder(context).build();
         this.mReceiver = new AuthReceiver(context, this);
-        this.mScheduler = Executors.newScheduledThreadPool(1);
     }
 
     /**
      * In addition to this class listening for IAuthEvents, allow an additional listener to be
      * attached.
-     *
-     * @param context  Calling activity
+     * @param context Calling activity
      * @param listener Additional IAuthEvent listener
      */
     public AuthManager(Context context, IAuthEvent listener) {
@@ -84,12 +71,10 @@ public class AuthManager implements IAuthEvent {
         this.mAuthEventListener = listener;
         this.mDialog = new MaterialDialog.Builder(context).build();
         this.mReceiver = new AuthReceiver(context, this);
-        this.mScheduler = Executors.newScheduledThreadPool(1);
     }
 
     /**
      * Show snackbar notifications upon errors, or IAuthEvents
-     *
      * @param view View to attach snackbar too
      */
     public void enableNotifications(View view) {
@@ -98,7 +83,6 @@ public class AuthManager implements IAuthEvent {
 
     /**
      * Accessor method to add an additional IAuthEvent listener
-     *
      * @param listener Additional IAuthEvent listener
      */
     public void onAuthEvent(IAuthEvent listener) {
@@ -107,7 +91,6 @@ public class AuthManager implements IAuthEvent {
 
     /**
      * Set a listener for when the receiver sends any message
-     *
      * @param listener BaseReceiver listener
      */
     public void onMessage(IBaseReceiver listener) {
@@ -117,11 +100,8 @@ public class AuthManager implements IAuthEvent {
     /**
      * Register the AuthReceiver with the local broadcast instance
      */
-    public void start() {
+    public void register() {
         this.mReceiver.register();
-        this.mFuture = this.mScheduler.scheduleAtFixedRate((Runnable) this::authenticate,
-                Consts.AUTO_AUTH_INITIAL_CHECK_INTERVAL, Consts.AUTO_AUTH_CHECK_INTERVAL,
-                TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -129,15 +109,11 @@ public class AuthManager implements IAuthEvent {
      */
     public void stop() {
         this.mReceiver.unRegister();
-        if (this.mFuture != null) {
-            this.mFuture.cancel(true);
-        }
     }
 
     /**
      * Silently authenticate the User with the server, and only if an authentication is needed
      * i.e. No progress dialogs, and if it's been too soon since the last auth
-     *
      * @return False if no authentication is needed
      */
     public boolean authenticate() {
@@ -147,7 +123,6 @@ public class AuthManager implements IAuthEvent {
     /**
      * Force an authentication regardless of when the last auth was, as well as showing a progress
      * dialog.
-     *
      * @return False if no authentication is needed
      */
     public boolean forceAuthWithDialog() {
@@ -156,9 +131,8 @@ public class AuthManager implements IAuthEvent {
 
     /**
      * Call the authentication service to attempt to authenticate the user with the server
-     *
      * @param showDialog Whether or not to show a progress dialog
-     * @param force      Ignore the debounce check for authenticating
+     * @param force Ignore the debounce check for authenticating
      * @return False if no authentication is needed
      */
     public boolean authenticate(boolean showDialog, boolean force) {
@@ -218,7 +192,6 @@ public class AuthManager implements IAuthEvent {
 
     /**
      * Helper method to determine whether or not to display a Snackbar notification
-     *
      * @param message Desired output message
      * @return Whether or not a notification was displayed
      */
@@ -232,7 +205,6 @@ public class AuthManager implements IAuthEvent {
 
     /**
      * Build a dialog informing the user of the desire to logout
-     *
      * @param context Calling activity
      * @return Built MaterialDialog
      */
