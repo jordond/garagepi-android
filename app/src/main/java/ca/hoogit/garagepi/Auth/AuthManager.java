@@ -100,7 +100,7 @@ public class AuthManager implements IAuthEvent {
     /**
      * Register the AuthReceiver with the local broadcast instance
      */
-    public void register() {
+    public void start() {
         this.mReceiver.register();
     }
 

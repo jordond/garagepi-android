@@ -183,8 +183,8 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
     @Override
     protected void onResume() {
         super.onResume();
-        mAuthManager.register();
-        mUpdateManager.register();
+        mAuthManager.start();
+        mUpdateManager.start();
         mSocketManager.on();
     }
 
