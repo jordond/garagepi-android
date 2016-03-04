@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
@@ -38,6 +39,7 @@ import android.widget.EditText;
 import ca.hoogit.garagepi.Auth.AuthManager;
 import ca.hoogit.garagepi.Main.MainActivity;
 import ca.hoogit.garagepi.R;
+import ca.hoogit.garagepi.Utils.Helpers;
 
 public class SettingsActivity extends AppCompatPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -51,7 +53,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
                     EditText edit = ((EditTextPreference) preference).getEditText();
                     String pref = edit.getTransformationMethod().getTransformation(stringValue, edit).toString();
                     preference.setSummary(pref);
-                } else {
+                }  else {
                     preference.setSummary(stringValue);
                 }
                 return true;
