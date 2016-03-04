@@ -97,7 +97,6 @@ public class DoorsFragment extends Fragment implements DoorManager.IOnQuery, Doo
         mVanView.setOnToggle(this);
 
         mSocketManager = new SocketManager(getActivity(), changed -> {
-            Log.d(TAG, "onCreateView: test"); // TODO remove
             Doors.getInstance().update(changed);
             updateDoorView(changed);
         });
@@ -114,7 +113,7 @@ public class DoorsFragment extends Fragment implements DoorManager.IOnQuery, Doo
 
     private void updateDoorView(Door door) {
         String doorName = door.name;
-        DoorView view = Consts.DOOR_ID_CAR.equals(doorName) ? mCarView : mVanView;
+        DoorView view = Consts.DOOR_ID_CAR.equalsIgnoreCase(doorName) ? mCarView : mVanView;
         view.setDoorName(doorName);
         view.setDoorValue(door.input.value);
     }
