@@ -30,13 +30,17 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.support.annotation.IntDef;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AppCompatDelegate;
 import android.text.format.DateUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -51,6 +55,37 @@ public class Helpers {
 
     private static final String TAG = Helpers.class.getSimpleName();
 
+    /**
+     * Set the NightDay system mode.
+     * Moved to helper as linter was throwing error by giving it an int
+     *
+     * @param mode Theme mode
+     */
+    public static void setDefaultNightMode(int mode) {
+        String modeString = "";
+        switch (mode) {
+            case AppCompatDelegate.MODE_NIGHT_AUTO:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO);
+                modeString = "Auto";
+                break;
+            case AppCompatDelegate.MODE_NIGHT_NO:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                modeString = "Disabled";
+                break;
+            case AppCompatDelegate.MODE_NIGHT_YES:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                modeString = "Enabled";
+                break;
+        }
+        Log.i(TAG, "setDefaultNightMode: Night mode is being set to " + modeString);
+    }
+
+    /**
+     * Create a relative from now time string
+     *
+     * @param timestamp Time since epoch
+     * @return Formatted string ie. "2 Minutes from now"
+     */
     public static String epochToFromNow(long timestamp) {
         return DateUtils
                 .getRelativeTimeSpanString(
@@ -62,6 +97,7 @@ public class Helpers {
 
     /**
      * Capitalize  the first letter in string
+     *
      * @param toCapitalize String to be capitalized
      * @return Capitalized string
      */
@@ -76,10 +112,10 @@ public class Helpers {
 
     /**
      * Check if internet access is available.
-     * @see <a href="http://stackoverflow.com/questions/4238921/detect-whether-there-is-an-internet-connection-available-on-android">From StackOverflow</a>
      *
      * @param context Application context
      * @return State of internet connection
+     * @see <a href="http://stackoverflow.com/questions/4238921/detect-whether-there-is-an-internet-connection-available-on-android">From StackOverflow</a>
      */
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager

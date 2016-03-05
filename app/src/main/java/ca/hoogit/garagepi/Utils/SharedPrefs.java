@@ -93,6 +93,11 @@ public class SharedPrefs {
         return sharedPreferences.getBoolean(mContext.getString(R.string.pref_key_server_mock), false);
     }
 
+    public int getNightMode() {
+        String mode = sharedPreferences.getString(mContext.getString(R.string.pref_key_appearance_theme), "0");
+        return Integer.parseInt(mode);
+    }
+
     /**
      * Shared Preferences accessors
      */
