@@ -23,34 +23,35 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".Controls.DoorsFragment">
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:animateLayoutChanges="true"
+             tools:context=".Controls.DoorsFragment">
 
     <LinearLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginEnd="10dp"
-        android:layout_marginStart="10dp"
+        android:layout_margin="@dimen/card_door_margin"
         android:orientation="horizontal"
-        android:visibility="visible">
+        android:visibility="gone">
+
+        <ca.hoogit.garagepi.Controls.DoorView
+            android:id="@+id/door_car"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/card_door_margin"
+            android:layout_weight=".5"
+            app:doorName="Car"/>
 
         <ca.hoogit.garagepi.Controls.DoorView
             android:id="@+id/door_van"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight=".5"
-            app:doorName="Van" />
-
-        <ca.hoogit.garagepi.Controls.DoorView
-            android:id="@+id/door_car"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight=".5"
-            app:doorName="Car" />
+            app:doorName="Van"/>
 
     </LinearLayout>
 
@@ -59,7 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="LOADING?"
-        android:textSize="40sp" />
+        android:text="LOADING"
+        android:textSize="40sp"/>
     <!-- TODO proper loading view -->
 </FrameLayout>
