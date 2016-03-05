@@ -47,6 +47,20 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="pref_key_appearance_settings"
+        android:title="@string/pref_category_title_appearance">
+
+        <ListPreference
+            android:key="@string/pref_key_appearance_theme"
+            android:title="@string/pref_title_appearance_theme"
+            android:defaultValue="0"
+            android:entries="@array/pref_entries_appearance_theme"
+            android:entryValues="@array/pref_entries_values_appearance_theme"
+            android:summary="@string/pref_summary_appearance_theme"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="pref_category_key_account"
         android:title="Account">
 

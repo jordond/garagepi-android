@@ -30,6 +30,7 @@ import android.preference.PreferenceManager;
 import ca.hoogit.garagepi.Auth.UserManager;
 import ca.hoogit.garagepi.Controls.Doors;
 import ca.hoogit.garagepi.Socket.MainSocket;
+import ca.hoogit.garagepi.Utils.Helpers;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
 import com.crashlytics.android.Crashlytics;
 import io.fabric.sdk.android.Fabric;
@@ -48,5 +49,7 @@ public class GaragePiApp extends Application {
         Doors.create(this);
         UserManager.init(this);
         MainSocket.getInstance().setSyncUrl();
+
+        Helpers.setDefaultNightMode(SharedPrefs.getInstance().getNightMode());
     }
 }

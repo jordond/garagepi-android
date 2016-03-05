@@ -26,8 +26,10 @@ package ca.hoogit.garagepi.Main;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,6 +50,7 @@ import ca.hoogit.garagepi.Socket.IConnectionEvent;
 import ca.hoogit.garagepi.Socket.SocketManager;
 import ca.hoogit.garagepi.Update.UpdateManager;
 import ca.hoogit.garagepi.Utils.Consts;
+import ca.hoogit.garagepi.Utils.Helpers;
 import ca.hoogit.garagepi.Utils.SharedPrefs;
 
 public class MainActivity extends AppCompatActivity implements IAuthEvent {
@@ -123,6 +126,9 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
             User user = UserManager.getInstance().user();
             if (!user.canAuthenticate()) {
                 showCredentialsDialog(R.string.dialog_missing_cred, R.string.dialog_missing_cred_content);
+            } else if (data.getBooleanExtra(Consts.KEY_THEME_CHANGED, false)) {
+                Handler handler = new Handler();
+                handler.postDelayed(this::recreate, 0);
             }
         }
     }

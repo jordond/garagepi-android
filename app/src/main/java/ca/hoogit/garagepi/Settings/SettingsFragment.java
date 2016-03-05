@@ -71,6 +71,7 @@ public class SettingsFragment extends PreferenceFragment {
             mListener.onBind(findPreference(getString(R.string.pref_key_server_address)));
             mListener.onBind(findPreference(getString(R.string.pref_key_account_email)));
             mListener.onBind(findPreference(getString(R.string.pref_key_account_password)));
+            mListener.onBind(findPreference(getString(R.string.pref_key_appearance_theme)));
         }
 
         mAuthManager = new AuthManager(getActivity());
