@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements IAuthEvent {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Consts.RESULT_SETTINGS) {
+        if (requestCode == Consts.RESULT_SETTINGS && resultCode == RESULT_OK) {
             User user = UserManager.getInstance().user();
             if (!user.canAuthenticate()) {
                 showCredentialsDialog(R.string.dialog_missing_cred, R.string.dialog_missing_cred_content);
