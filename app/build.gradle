@@ -74,7 +74,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 23
         versionCode 1
-        versionName "1.1"
+        versionName "1.1.2"
         buildConfigField "String", "GitHash", "\"${getGitHash()}\""
         buildConfigField "String", "GitBranch", "\"${getGitBranch()}\""
         buildConfigField "long", "BuildDate", System.currentTimeMillis() + "L"
